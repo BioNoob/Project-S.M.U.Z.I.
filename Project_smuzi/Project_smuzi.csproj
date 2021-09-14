@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Controls\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ookii.Dialogs.Wpf" Version="4.0.0" />
+    <PackageReference Include="PropertyChanging.Fody" Version="1.30.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Kompas6Constants">
+      <HintPath>Kompas6Constants.dll</HintPath>
+    </Reference>
+    <Reference Include="KompasAPI7">
+      <HintPath>KompasAPI7.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
