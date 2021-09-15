@@ -3,13 +3,12 @@ using KompasAPI7;
 using Project_smuzi.Classes;
 using Project_smuzi.Properties;
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.Json;
+using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
@@ -23,14 +22,12 @@ namespace Project_smuzi
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-
-        public enum SearchMode
+        private DataBase _db;
+        public DataBase DB 
         {
-            Base,
-            Additional
+            get {  return _db; }
+            set { _db = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DB"));  }
         }
-
-        public DataBase DB { get; set; }
         public string Prefix { get; set; }
 
         public string FolderPath = string.Empty; //= Directory.GetParent(@"./").FullName;
@@ -46,8 +43,9 @@ namespace Project_smuzi
             //Elementes = new List<Element>();
 
             if (!string.IsNullOrEmpty(Settings.Default.DB_json))
-                DB = JsonSerializer.Deserialize<DataBase>(Settings.Default.DB_json);
-            treeView1.ItemsSource = DB.HeavyProducts;
+                DB = JsonConvert.DeserializeObject<DataBase>(Settings.Default.DB_json);
+            //GC.Collect();
+            //treeView1.ItemsSource = DB.HeavyProducts;
         }
 
         public void TestSpwReader()
@@ -112,22 +110,19 @@ namespace Project_smuzi
                     }
 
                     kmpsdoc.Close(DocumentCloseOptions.kdDoNotSaveChanges);
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DB"));
                     Debug.WriteLine($"doc {ident} is {name} work done");
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"{ex.Message}\ndoc {item} open error");
                 }
-
             }
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-            };
-            Settings.Default.DB_json = JsonSerializer.Serialize(DB, options);
+            Settings.Default.DB_json = JsonConvert.SerializeObject(DB, Formatting.Indented);
             Settings.Default.Save();
             Settings.Default.Reload();
-
+            Debug.WriteLine($"Save and done {all_dir.Count} documents");
+            GC.Collect();
             kmpsApp.Quit();
         }
         private void InnerVorker_Base(ISpecificationBaseObject iSepcObj, Product base_product)
@@ -208,8 +203,8 @@ namespace Project_smuzi
             var in_in = base_product.Products.Where(t => t.Identification == oboznachenie).FirstOrDefault();
             if (in_in == null)
                 base_product.Products.Add(product_in);
-            else
-                in_in.Count += kolichestvo;
+            //else потом посчитать кол-во общее вдруг где то используется много какой нибудь херни
+            //    in_in.Count += kolichestvo;
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
@@ -219,6 +214,23 @@ namespace Project_smuzi
             {
                 FolderPath = ofd.SelectedPath;
                 await Task.Run(()=> TestSpwReader());
+            }
+        }
+
+        private void Search_tb_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            if(string.IsNullOrWhiteSpace(Search_tb.Text))
+            {
+                treeView1.ItemsSource = DB.HeavyProducts;
+            }
+            else
+            {
+                ObservableCollection<Product> a = new ObservableCollection<Product>(DB.Productes.Where(t => t.ToXString.Contains(Search_tb.Text)));
+
+                //Добавить кол-во вхождений у продукта (лист ID шников?) и подгружать те в которые он входит (и куда входит его содержатель и тд)
+                //CONTAIMENT_IN
+
+                treeView1.ItemsSource = a;
             }
         }
     }
