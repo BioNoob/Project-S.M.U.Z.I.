@@ -14,5 +14,23 @@ namespace Project_smuzi.Classes
             Elements = new List<Element>();
             Products = new List<Product>();
         }
+        public Product() : base()
+        {
+            Elements = new List<Element>();
+            Products = new List<Product>();
+        }
+        public IList<object> Items
+        {
+            get
+            {
+                IList<object> childNodes = new List<object>();
+                foreach (var group in this.Products)
+                    childNodes.Add(group);
+                foreach (var entry in this.Elements)
+                    childNodes.Add(entry);
+
+                return childNodes;
+            }
+        }
     }
 }

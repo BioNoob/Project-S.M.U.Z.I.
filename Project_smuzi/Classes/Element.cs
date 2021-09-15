@@ -23,17 +23,31 @@ namespace Project_smuzi.Classes
         {
             return Sections[id];
         }
-        public string Identification { get; private set; }
+        public string Identification { get; set; }
         public string Name { get; set; }
         public int Section_id { get; set; }
-        public int BaseId { get; private set; }
+        public int BaseId { get; set; }
         public int? Count { get; set; }
+
+        public string ToXString
+        {
+            get
+            {
+                string a = Name.Replace("\n", " ");
+                string b = Identification.Replace("\n", " ");
+                return $"{a} {b}";
+            }
+        }
+
         public Element(string ident)
         {
             Identification = ident;
             Section_id = 30;
             BaseId = Identificator++;
             Count = null;
+        }
+        public Element()
+        {
         }
         public string Section => Sections[Section_id];
 

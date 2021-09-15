@@ -4,13 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         x:Name="_window"
-        xmlns:local="clr-namespace:Project_smuzi"
+        xmlns:local="clr-namespace:Project_smuzi.Classes"
         mc:Ignorable="d"
         Title="MainWindow" Height="650" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -26,18 +26,16 @@
             <TextBox x:Name="TB"  Height="20" Width="150"  Grid.Column="1" Margin="35,0,0,0" Text="{Binding ElementName=_window, Path=Prefix, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" Background="#FFF1B6B6"/>
             <Button Content="Button" Grid.Column="2" HorizontalAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Center" Width="65" Click="Button_Click"/>
         </Grid>
-        <TreeView x:Name="treeView1" Grid.Row="1" Grid.Column="0" Height="400">
-            <TreeView.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding Path=Products}">
-                    <TextBlock Text="{Binding Name}" />
-                    <HierarchicalDataTemplate.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Name}" />
-                        </DataTemplate>
-                    </HierarchicalDataTemplate.ItemTemplate>
+        <TreeView x:Name="treeView1" Grid.Row="1" Grid.Column="0"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type local:Product}" ItemsSource="{Binding Items}">
+                    <TextBlock Text="{Binding Path=ToXString}" />
                 </HierarchicalDataTemplate>
-            </TreeView.ItemTemplate>
+                <DataTemplate DataType="{x:Type local:Element}" >
+                    <TextBlock Text="{Binding Path=ToXString}" />
+                </DataTemplate>
+            </TreeView.Resources>
         </TreeView>
-
     </Grid>
 </Window>
