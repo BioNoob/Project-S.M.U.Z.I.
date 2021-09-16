@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
 #pragma warning disable CS0067
@@ -29,6 +30,8 @@ namespace Project_smuzi.Classes
         public int BaseId { get; set; }
         public int? Count { get; set; }
 
+        private ObservableCollection<int> contaiments_in;
+        public ObservableCollection<int> Contaiments_in { get => contaiments_in; set { contaiments_in = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Contaiments_in")); } }
         public string ToXString
         {
             get
@@ -42,12 +45,19 @@ namespace Project_smuzi.Classes
         public Element(string ident)
         {
             Identification = ident;
+            InitializeComponent();
+        }
+        private void InitializeComponent()
+        {
             Section_id = 30;
             BaseId = Identificator++;
             Count = null;
+            Contaiments_in = new ObservableCollection<int>();
         }
         public Element()
         {
+            Identification = "";
+            InitializeComponent();
         }
         public string Section => Sections[Section_id];
 

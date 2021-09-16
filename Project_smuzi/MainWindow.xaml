@@ -11,42 +11,77 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Border BorderThickness="1" Grid.ColumnSpan="2" BorderBrush="Black" HorizontalAlignment="Stretch"/>
-        <Grid ClipToBounds="True" Grid.ColumnSpan="2" Grid.Row="0">
+        <Grid ClipToBounds="True" Grid.ColumnSpan="2" Grid.Row="0" Margin="0,1,0,1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Label Content="Префикс изделия"  Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-            <TextBox x:Name="TB"  Height="20" Width="150"  Grid.Column="1" Margin="35,0,0,0" Text="{Binding ElementName=_window, Path=Prefix, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" Background="#FFF1B6B6"/>
-            <Button Content="Button" Grid.Column="2" HorizontalAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Center" Width="65" Click="Button_Click"/>
+            <TextBox x:Name="TB"  Height="20" Width="150"  Grid.Column="1" Margin="10,0,0,0" Text="{Binding ElementName=_window, Path=Prefix, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" Background="#FFF1B6B6"/>
+            <Button Content="Запуск" Grid.Column="2" HorizontalAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Center" Width="65" Click="Button_Click"/>
         </Grid>
-        <Grid ClipToBounds="True" Grid.ColumnSpan="2" Grid.Row="1">
+        <Grid ClipToBounds="True" Grid.ColumnSpan="2" Grid.Row="1" Margin="0,1,0,0">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Label Content="Поиск"  Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-            <TextBox x:Name="Search_tb"  Height="20" Width="150"  Grid.Column="1" Margin="35,0,0,0" Background="#FFB4F5FF" TextChanged="Search_tb_TextChanged" />
+            <TextBox x:Name="Search_tb"  Height="20" Width="150"  Grid.Column="1" Margin="10,0,0,0" Background="#FFB4F5FF" TextChanged="Search_tb_TextChanged" />
+            <Label Content="Глубина поиска"  Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <ComboBox  x:Name="Deeb_cmb" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Width="50" 
+                       ItemsSource="{Binding ElementName=_window, Path=DB.DeepList}" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged"/>
+            <TextBlock Text="{Binding ElementName=_window, Path=DB.Selector.Count}" Grid.Column="4" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
         </Grid>
         <TreeView x:Name="treeView1" Grid.Row="2" Grid.Column="0" 
-                  ItemsSource="{Binding ElementName=_window, Path=DB.HeavyProducts }"
+                  ItemsSource="{Binding ElementName=_window, Path=DB.Selector }"
                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type local:Product}" ItemsSource="{Binding Items}">
-                    <TextBlock Text="{Binding Path=ToXString}" />
+                    <TextBlock Text="{Binding Path=ToXString}" Width="350" TextWrapping="Wrap" TextTrimming="WordEllipsis">
+                        <TextBlock.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Menu item 1" />
+                                <MenuItem Header="Menu item 2" />
+                                <Separator />
+                                <MenuItem Header="Открыть папку документа" Click="MenuItem_Folder_Click"/>
+                            </ContextMenu>
+                        </TextBlock.ContextMenu>
+                    </TextBlock>
                 </HierarchicalDataTemplate>
                 <DataTemplate DataType="{x:Type local:Element}" >
-                    <TextBlock Text="{Binding Path=ToXString}" />
+                    <TextBlock Text="{Binding Path=ToXString}" Width="350" TextWrapping="Wrap" TextTrimming="WordEllipsis" />
                 </DataTemplate>
             </TreeView.Resources>
         </TreeView>
+        <Grid Grid.Row="3" Grid.Column="0" Background="AliceBlue" Margin="5,0,5,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Label Content="Кол-во изделий"  Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <TextBlock Text="{Binding ElementName=_window, Path=DB.Productes.Count}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <Label Content="Кол-во элемемнтов"  Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <TextBlock Text="{Binding ElementName=_window, Path=DB.Elementes.Count}" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <!--кол-во изделий. кол-во сложных изделий 
+            кол-во элементов.  -->
+        </Grid>
     </Grid>
 </Window>

@@ -11,7 +11,10 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Windows;
+//using System.Windows.Forms;
+using System.Windows.Data;
 using System.Windows.Forms;
+using System.Windows.Controls;
 #pragma warning disable CS0067
 
 namespace Project_smuzi
@@ -23,10 +26,10 @@ namespace Project_smuzi
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private DataBase _db;
-        public DataBase DB 
+        public DataBase DB
         {
-            get {  return _db; }
-            set { _db = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DB"));  }
+            get { return _db; }
+            set { _db = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DB")); }
         }
         public string Prefix { get; set; }
 
@@ -43,7 +46,12 @@ namespace Project_smuzi
             //Elementes = new List<Element>();
 
             if (!string.IsNullOrEmpty(Settings.Default.DB_json))
+            {
                 DB = JsonConvert.DeserializeObject<DataBase>(Settings.Default.DB_json);
+                DB.LoadFromContaiment();
+            }
+            DB.Selector = DB.Productes;
+            ComboBox_SelectionChanged(null, null);
             //GC.Collect();
             //treeView1.ItemsSource = DB.HeavyProducts;
         }
@@ -90,12 +98,14 @@ namespace Project_smuzi
                     var buf = DB.Productes.Where(t => t.Identification == ident).FirstOrDefault();
                     if (buf == null) //если нет в спсике изделий
                     {
-                        product = new Product(ident) { Name = name, Count = 1, Section_id = 15 };
+                        product = new Product(ident) { Name = name, Count = 1, Section_id = 15, DeepLevel = 0, PathTo = item };
                         DB.Productes.Add(product); //добавляем изделие
                     }
                     else
                     {
                         product = buf;
+                        if (string.IsNullOrEmpty(product.PathTo))
+                            product.PathTo = item;
                     }
 
                     var iSpecificationBaseObjects = spec_descript.Active.BaseObjects;
@@ -111,6 +121,7 @@ namespace Project_smuzi
 
                     kmpsdoc.Close(DocumentCloseOptions.kdDoNotSaveChanges);
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DB"));
+                    DB.Selector = DB.HeavyProducts;
                     Debug.WriteLine($"doc {ident} is {name} work done");
                 }
                 catch (Exception ex)
@@ -179,10 +190,14 @@ namespace Project_smuzi
             {
                 element_in = buf_in;
             }
+            element_in.Contaiments_in.Add(base_product.BaseId);
             //Если есть такой элемент внутри издеия, то увеличиваем кол-во, если нет добавляем
             var in_in = base_product.Elements.Where(t => t.Name == naimenovanie).FirstOrDefault();
             if (in_in == null)
+            {
                 base_product.Elements.Add(element_in);
+                base_product.Contaiment.Add(element_in.BaseId);
+            }
             else
                 in_in.Count += kolichestvo;
         }
@@ -192,19 +207,29 @@ namespace Project_smuzi
             var buf_in = DB.Productes.Where(t => t.Identification == oboznachenie).FirstOrDefault();
             if (buf_in == null) //если нет в спсике изделий
             {
-                product_in = new Product(oboznachenie) { Name = naimenovanie, Count = 1, Section_id = 15 };
+                product_in = new Product(oboznachenie) { Name = naimenovanie, Count = kolichestvo, Section_id = 15 };
                 DB.Productes.Add(product_in); //добавляем изделие
             }
             else
             {
                 product_in = buf_in;
             }
+
+
+            //product_in.DeepLevel++; //(НЕ ПРАВИЛЬНА)
+
+            product_in.DeepLevel = product_in.DeepLevel < (base_product.DeepLevel + 1) ? base_product.DeepLevel + 1 : product_in.DeepLevel;
+
+            product_in.Contaiments_in.Add(base_product.BaseId);
             //Если есть такое изделие внутри издеия, то увеличиваем кол-во, если нет добавляем
             var in_in = base_product.Products.Where(t => t.Identification == oboznachenie).FirstOrDefault();
             if (in_in == null)
+            {
                 base_product.Products.Add(product_in);
-            //else потом посчитать кол-во общее вдруг где то используется много какой нибудь херни
-            //    in_in.Count += kolichestvo;
+                base_product.Contaiment.Add(product_in.BaseId);
+            }
+            else //потом посчитать кол-во общее вдруг где то используется много какой нибудь херни
+                in_in.Count += kolichestvo;
         }
 
         private async void Button_Click(object sender, RoutedEventArgs e)
@@ -213,25 +238,41 @@ namespace Project_smuzi
             if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 FolderPath = ofd.SelectedPath;
-                await Task.Run(()=> TestSpwReader());
+                await Task.Run(() => TestSpwReader());
             }
         }
 
         private void Search_tb_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            if(string.IsNullOrWhiteSpace(Search_tb.Text))
+            if (string.IsNullOrWhiteSpace(Search_tb.Text))
             {
-                treeView1.ItemsSource = DB.HeavyProducts;
+                DB.Selector = new ObservableCollection<Product>(DB.Productes.Where(t => t.DeepLevel <= (int)Deeb_cmb.SelectedItem));
             }
             else
             {
-                ObservableCollection<Product> a = new ObservableCollection<Product>(DB.Productes.Where(t => t.ToXString.Contains(Search_tb.Text)));
-
-                //Добавить кол-во вхождений у продукта (лист ID шников?) и подгружать те в которые он входит (и куда входит его содержатель и тд)
-                //CONTAIMENT_IN
-
-                treeView1.ItemsSource = a;
+                ObservableCollection<Product> a = new ObservableCollection<Product>(DB.Productes.Where(t => t.ToXString.Contains(Search_tb.Text) & t.DeepLevel <= (int)Deeb_cmb.SelectedItem));
+                DB.Selector = a;
             }
+        }
+
+        private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            Search_tb_TextChanged(null, null);
+        }
+
+        private void TextBlock_MouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            ContextMenu cm = FindResource("cmProduct") as ContextMenu;
+            cm.PlacementTarget = sender as UIElement;
+            cm.IsOpen = true;
+            cm.Tag = ((TextBlock)sender).Text;
+
+        }
+
+        private void MenuItem_Folder_Click(object sender, RoutedEventArgs e)
+        {
+            var a = (Product)((MenuItem)sender).DataContext;
+                Process.Start("explorer.exe", $"{a.FolderTo}");
         }
     }
 }
