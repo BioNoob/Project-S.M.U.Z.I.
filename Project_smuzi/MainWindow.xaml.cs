@@ -52,6 +52,7 @@ namespace Project_smuzi
             DB.Selector = DB.Productes;
             ComboBox_SelectionChanged(null, null);
             DB.ReadDataDone += DB_ReadDataDone;
+
         }
 
         private void DB_ReadDataDone()
@@ -60,6 +61,8 @@ namespace Project_smuzi
             this.Deeb_cmb.IsEnabled = true;
             this.TB.IsEnabled = true;
             Deeb_cmb.SelectedIndex = DB.DeepList.Count - 1;
+            //someControl.Dispatcher.Invoke(new Action(() => { /* Your code here */ }));
+            //or Application.Current.Dispatcher.Invoke(new Action(() => { /* Your code here */ }));
             //RotateTransform rotateTransform = new RotateTransform(45);
             //while (true)
             //{
