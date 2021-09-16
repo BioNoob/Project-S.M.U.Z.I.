@@ -1,5 +1,6 @@
 ﻿using Kompas6Constants;
 using KompasAPI7;
+using Newtonsoft.Json;
 using Project_smuzi.Classes;
 using Project_smuzi.Properties;
 using System;
@@ -8,13 +9,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Windows;
-//using System.Windows.Forms;
-using System.Windows.Data;
-using System.Windows.Forms;
 using System.Windows.Controls;
+using System.Windows.Forms;
+using System.Windows.Media;
 #pragma warning disable CS0067
 
 namespace Project_smuzi
@@ -52,15 +51,27 @@ namespace Project_smuzi
             }
             DB.Selector = DB.Productes;
             ComboBox_SelectionChanged(null, null);
-            //GC.Collect();
-            //treeView1.ItemsSource = DB.HeavyProducts;
+            DB.ReadDataDone += DB_ReadDataDone;
+        }
+
+        private void DB_ReadDataDone()
+        {
+            this.Search_tb.IsEnabled = true;
+            this.Deeb_cmb.IsEnabled = true;
+            this.TB.IsEnabled = true;
+            Deeb_cmb.SelectedIndex = DB.DeepList.Count - 1;
+            //RotateTransform rotateTransform = new RotateTransform(45);
+            //while (true)
+            //{
+            //    Img_refresh.RenderTransform = rotateTransform;
+
+            //}
         }
 
         public void TestSpwReader()
         {
             DB = new DataBase();
             IApplication kmpsApp = null;
-            //string spFile = @"C:\Users\user\Documents\ТСЮИ.468359.109sp.spw";
             Type t7 = Type.GetTypeFromProgID("KOMPAS.Application.7");
             kmpsApp = (IApplication)Activator.CreateInstance(t7);
             if (kmpsApp == null)
@@ -71,7 +82,6 @@ namespace Project_smuzi
             kmpsApp.HideMessage = ksHideMessageEnum.ksHideMessageYes;
 
             var all_dir = Directory.GetFiles(FolderPath, "*sp.spw*", SearchOption.AllDirectories).ToList();
-
             foreach (var item in all_dir)
             {
 
@@ -79,11 +89,6 @@ namespace Project_smuzi
                 {
                     IKompasDocument kmpsdoc = kmpsApp.Documents.Open(item);
                     var spec_descript = kmpsdoc.SpecificationDescriptions;
-
-                    //var seqtions = spec_descript.Active.SpecificationStyle.Sections; // СЕКЦИИ ДОКУМЕНТА
-                    //sect name = qw[0].Name 
-                    //sect ID = qw[0].Number
-
                     string name = "";
                     string ident = "";
                     if (kmpsdoc.LayoutSheets.Count > 0)
@@ -93,7 +98,14 @@ namespace Project_smuzi
                     }
                     //
                     if (!ident.Contains(Prefix))
-                        ident = Path.GetFileNameWithoutExtension(item);
+                    {
+                        var st = kmpsdoc.LayoutSheets[0].Stamp.Text[2].Str.Trim();
+                        if (st.Contains(Prefix))
+                            ident = st;
+                        else
+                            ident = Path.GetFileNameWithoutExtension(item);
+                    }
+
                     Product product = null;
                     var buf = DB.Productes.Where(t => t.Identification == ident).FirstOrDefault();
                     if (buf == null) //если нет в спсике изделий
@@ -133,6 +145,7 @@ namespace Project_smuzi
             Settings.Default.Save();
             Settings.Default.Reload();
             Debug.WriteLine($"Save and done {all_dir.Count} documents");
+            DB.InvokeReadDataDone();
             GC.Collect();
             kmpsApp.Quit();
         }
@@ -147,8 +160,10 @@ namespace Project_smuzi
                 sect_num = iSepcObj.AdditionalSection;
             var naimenovanie = iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnName, 1, 0].Text.Str.Trim();//   # 5 - колонка "Наименование"
             var oboznachenie = iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnMark, 1, 0].Text.Str.Trim();//   # Обозначение
-            int kolichestvo = 0;
-            int.TryParse(iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnCount, 1, 0].Text.Str, out kolichestvo);//   # кол-во   
+            if (string.IsNullOrEmpty(naimenovanie) & string.IsNullOrEmpty(oboznachenie))
+                return;
+            double kolichestvo = 0;
+            double.TryParse(iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnCount, 1, 0].Text.Str, out kolichestvo);//   # кол-во   
             Placer(base_product, sect_num, naimenovanie, oboznachenie, kolichestvo);
         }
         private void InnerVorker_Additioanl(ISpecificationCommentObject iSepcObj, Product base_product)
@@ -160,11 +175,11 @@ namespace Project_smuzi
             var oboznachenie = iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnMark, 1, 0].Text.Str.Trim();//        # Обозначение
             if (string.IsNullOrEmpty(naimenovanie) & string.IsNullOrEmpty(oboznachenie))
                 return;
-            int kolichestvo = 0;
-            int.TryParse(iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnCount, 1, 0].Text.Str, out kolichestvo);//  # кол-во   
+            double kolichestvo = 0;
+            double.TryParse(iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnCount, 1, 0].Text.Str, out kolichestvo);//  # кол-во   
             Placer(base_product, sect_num, naimenovanie, oboznachenie, kolichestvo);
         }
-        private void Placer(Product base_product, int sect_num, string naimenovanie, string oboznachenie, int kolichestvo)
+        private void Placer(Product base_product, int sect_num, string naimenovanie, string oboznachenie, double kolichestvo)
         {
             if (oboznachenie.Contains(Prefix))//item.Contains(Prefix))
             {
@@ -176,48 +191,47 @@ namespace Project_smuzi
             else
                 AddElement(oboznachenie, naimenovanie, sect_num, kolichestvo, base_product);
         }
-        private void AddElement(string oboznachenie, string naimenovanie, int section_num, int kolichestvo, Product base_product)
+        private void AddElement(string oboznachenie, string naimenovanie, int section_num, double kolichestvo, Product base_product)
         {
             //ЕЛЕМЕНТ
             Element element_in = null;
             var buf_in = DB.Elementes.Where(t => t.Name == naimenovanie).FirstOrDefault();
             if (buf_in == null) //если нет в спсике елементов
             {
-                element_in = new Element(oboznachenie) { Name = naimenovanie, Count = 1, Section_id = section_num };
+                element_in = new Element(oboznachenie) { Name = naimenovanie, Count = kolichestvo, Section_id = section_num };
                 DB.Elementes.Add(element_in); //добавляем елемент
             }
             else
             {
                 element_in = buf_in;
+                element_in.Count += kolichestvo;
             }
             element_in.Contaiments_in.Add(base_product.BaseId);
             //Если есть такой элемент внутри издеия, то увеличиваем кол-во, если нет добавляем
             var in_in = base_product.Elements.Where(t => t.Name == naimenovanie).FirstOrDefault();
             if (in_in == null)
             {
-                base_product.Elements.Add(element_in);
-                base_product.Contaiment.Add(element_in.BaseId);
+                var buf_el = element_in.Copy();
+                buf_el.Count = kolichestvo;
+                base_product.Elements.Add(buf_el);
+                base_product.Contaiment.Add(buf_el.BaseId, buf_el.Count);
             }
             else
                 in_in.Count += kolichestvo;
         }
-        private void AddProduct(string oboznachenie, string naimenovanie, int section_num, int kolichestvo, Product base_product)
+        private void AddProduct(string oboznachenie, string naimenovanie, int section_num, double kolichestvo, Product base_product)
         {
             Product product_in = null;
             var buf_in = DB.Productes.Where(t => t.Identification == oboznachenie).FirstOrDefault();
             if (buf_in == null) //если нет в спсике изделий
             {
-                product_in = new Product(oboznachenie) { Name = naimenovanie, Count = kolichestvo, Section_id = 15 };
+                product_in = new Product(oboznachenie) { Name = naimenovanie, Count = kolichestvo, Section_id = section_num };
                 DB.Productes.Add(product_in); //добавляем изделие
             }
             else
             {
                 product_in = buf_in;
             }
-
-
-            //product_in.DeepLevel++; //(НЕ ПРАВИЛЬНА)
-
             product_in.DeepLevel = product_in.DeepLevel < (base_product.DeepLevel + 1) ? base_product.DeepLevel + 1 : product_in.DeepLevel;
 
             product_in.Contaiments_in.Add(base_product.BaseId);
@@ -225,8 +239,10 @@ namespace Project_smuzi
             var in_in = base_product.Products.Where(t => t.Identification == oboznachenie).FirstOrDefault();
             if (in_in == null)
             {
-                base_product.Products.Add(product_in);
-                base_product.Contaiment.Add(product_in.BaseId);
+                var buf_prd = product_in.Copy();
+                buf_prd.Count = kolichestvo;
+                base_product.Products.Add(buf_prd);
+                base_product.Contaiment.Add(buf_prd.BaseId, buf_prd.Count);
             }
             else //потом посчитать кол-во общее вдруг где то используется много какой нибудь херни
                 in_in.Count += kolichestvo;
@@ -238,12 +254,21 @@ namespace Project_smuzi
             if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 FolderPath = ofd.SelectedPath;
+                this.Search_tb.IsEnabled = false;
+                this.Deeb_cmb.IsEnabled = false;
+                this.TB.IsEnabled = false;
                 await Task.Run(() => TestSpwReader());
             }
         }
 
         private void Search_tb_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
+            if(Deeb_cmb.SelectedIndex < 0)
+            {
+                Deeb_cmb.SelectionChanged -= ComboBox_SelectionChanged;
+                Deeb_cmb.SelectedIndex = 0;
+                Deeb_cmb.SelectionChanged += ComboBox_SelectionChanged;
+            }
             if (string.IsNullOrWhiteSpace(Search_tb.Text))
             {
                 DB.Selector = new ObservableCollection<Product>(DB.Productes.Where(t => t.DeepLevel <= (int)Deeb_cmb.SelectedItem));
@@ -272,7 +297,7 @@ namespace Project_smuzi
         private void MenuItem_Folder_Click(object sender, RoutedEventArgs e)
         {
             var a = (Product)((MenuItem)sender).DataContext;
-                Process.Start("explorer.exe", $"{a.FolderTo}");
+            Process.Start("explorer.exe", $"{a.FolderTo}");
         }
     }
 }

@@ -1,11 +1,8 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
 #pragma warning disable CS0067
 namespace Project_smuzi.Classes
 {
@@ -17,13 +14,16 @@ namespace Project_smuzi.Classes
         [JsonIgnore]
         private ObservableCollection<Element> elements;
         [JsonIgnore]
-        private ObservableCollection<int> contaiment;
+        private Dictionary<int, double> contaiment;
 
         [JsonIgnore]
         public ObservableCollection<Product> Products { get => products; set { products = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Productes")); } }
         [JsonIgnore]
         public ObservableCollection<Element> Elements { get => elements; set { elements = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Elementes")); } }
-        public ObservableCollection<int> Contaiment
+        /// <summary>
+        /// ID element based, count
+        /// </summary>
+        public Dictionary<int,double> Contaiment
         {
             get { return contaiment; } //return new ObservableCollection<int>(Products.Select(t => t.BaseId).Concat(elements.Select(t => t.BaseId)));
             set { contaiment = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Contaiment")); }
@@ -46,9 +46,29 @@ namespace Project_smuzi.Classes
         {
             Elements = new ObservableCollection<Element>();
             Products = new ObservableCollection<Product>();
-            Contaiment = new ObservableCollection<int>();
+            Contaiment = new Dictionary<int, double>();
             DeepLevel = 0;
         }
+
+        public new Product Copy()
+        {
+            var cp = new Product()
+            {
+                BaseId = this.BaseId,
+                Contaiment = this.Contaiment,
+                Count = this.Count,
+                Section_id = this.Section_id,
+                Products = this.Products,
+                Name = this.Name,
+                PathTo = this.PathTo,
+                Identification = this.Identification,
+                Elements = this.Elements,
+                DeepLevel = this.DeepLevel,
+                Contaiments_in = this.Contaiments_in
+            };
+            return cp;
+        }
+
         [JsonIgnore]
         public IList<object> Items
         {

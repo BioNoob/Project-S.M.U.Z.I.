@@ -44,6 +44,7 @@
                        ItemsSource="{Binding ElementName=_window, Path=DB.DeepList}" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged"/>
             <TextBlock Text="{Binding ElementName=_window, Path=DB.Selector.Count}" Grid.Column="4" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
         </Grid>
+        
         <TreeView x:Name="treeView1" Grid.Row="2" Grid.Column="0" 
                   ItemsSource="{Binding ElementName=_window, Path=DB.Selector }"
                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
@@ -65,6 +66,11 @@
                 </DataTemplate>
             </TreeView.Resources>
         </TreeView>
+        <Image Width="48" Height="48" Grid.Row="2" Grid.Column="0" x:Name="Img_refresh">
+            <Image.Source>
+                <BitmapImage UriSource="/Resources/ico_refresh_48.png"/>
+            </Image.Source>
+        </Image>
         <Grid Grid.Row="3" Grid.Column="0" Background="AliceBlue" Margin="5,0,5,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
