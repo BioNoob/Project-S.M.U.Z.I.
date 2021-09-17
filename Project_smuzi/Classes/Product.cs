@@ -1,8 +1,11 @@
 ﻿using Newtonsoft.Json;
+using Project_smuzi.Controls;
+using Project_smuzi.Models;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 #pragma warning disable CS0067
 namespace Project_smuzi.Classes
 {
@@ -75,12 +78,29 @@ namespace Project_smuzi.Classes
             get
             {
                 IList<object> childNodes = new ObservableCollection<object>();
-                foreach (var group in this.Products)
+                foreach (var group in this.Products.OrderByDescending(t=>t.Products.Count))
                     childNodes.Add(group);
                 foreach (var entry in this.Elements)
                     childNodes.Add(entry);
 
+               
+
                 return childNodes;
+            }
+        }
+        [JsonIgnore]
+        private CommandHandler _openInfo;
+        [JsonIgnore]
+        public CommandHandler OpenInfoCommand
+        {
+            get
+            {
+                return _openInfo ?? (_openInfo = new CommandHandler(obj =>
+                {
+                    SharedModel.InvokeOpenInfoEvent(this);
+                },
+                (obj) => true
+                ));
             }
         }
     }

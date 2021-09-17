@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Project_smuzi.Models"
         xmlns:local_class="clr-namespace:Project_smuzi.Classes"
         mc:Ignorable="d"
-        Title="ProductInfo" Height="450" Width="470">
+        Title="ProductInfo" Height="700" Width="670">
     <Window.DataContext>
         <local:ProductViewModel/>
     </Window.DataContext>
@@ -21,7 +21,7 @@
             <RowDefinition Height="10*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Border BorderBrush="Black" BorderThickness="1" Grid.ColumnSpan="2"/>
+        <Border BorderBrush="Black" BorderThickness="0,1" Grid.ColumnSpan="2"/>
         <Grid Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="10,5,0,5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
@@ -29,7 +29,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="50"/>
-                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="150"/>
             </Grid.ColumnDefinitions>
@@ -38,7 +38,8 @@
             <Label Grid.Row="0" Grid.Column="2" Content="Обозначение" VerticalAlignment="Center"/>
             <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Prod.Identification}" VerticalAlignment="Center" Background="Aqua"/>
             <Label Grid.Row="1" Grid.Column="0" Content="Путь" VerticalAlignment="Center"/>
-            <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Prod.PathTo}" VerticalAlignment="Center" Background="Aquamarine"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Prod.PathTo}" VerticalAlignment="Center" Background="Aquamarine" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                       TextAlignment="Left" ToolTip="{Binding Prod.PathTo}"/>
             <Button Grid.Column="3" Grid.Row="1" Content="G" Width="50" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0"/>
         </Grid>
         <Grid  Grid.Row="1" Grid.ColumnSpan="2" Margin="5,0,5,0">
@@ -51,8 +52,22 @@
         </Grid>
 
 
-        <TreeView Grid.Row="2" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5">
-
+        <TreeView Grid.Row="2" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5"
+                                    ItemsSource="{Binding Prod.Items }">
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type local_class:Product}" ItemsSource="{Binding Items}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Width="16" Height="16" Source="{Binding GetUriImg}" />
+                        <TextBlock Text="{Binding ToXString}" Width="350" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                <DataTemplate DataType="{x:Type local_class:Element}" >
+                    <StackPanel Orientation="Horizontal">
+                        <Image Width="16" Height="16" Source="{Binding GetUriImg}" />
+                        <TextBlock Text="{Binding ToXString}" Width="350" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </DataTemplate>
+            </TreeView.Resources>
         </TreeView>
         <ListView Grid.Row="2" Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5">
 
@@ -65,9 +80,9 @@
                 <ColumnDefinition Width="40*"/>
             </Grid.ColumnDefinitions>
             <TextBlock Text="Кол-во изделий"  Grid.Column="0" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,0"/>
-            <TextBlock Text="{Binding }" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            <TextBlock Text="{Binding Prod.Products.Count}" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="5,0,0,0"/>
             <TextBlock Text="Кол-во элемемнтов"  Grid.Column="2" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,0"/>
-            <TextBlock Text="{Binding }" Grid.Column="3" Grid.Row="0" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            <TextBlock Text="{Binding Prod.Elements.Count}" Grid.Column="3" Grid.Row="0" VerticalAlignment="Center" Margin="5,0,0,0"/>
         </Grid>
         <Grid  Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" Margin="5,0,5,5">
             <Grid.ColumnDefinitions>

@@ -1,20 +1,10 @@
-﻿using Kompas6Constants;
-using KompasAPI7;
-using Newtonsoft.Json;
-using Project_smuzi.Classes;
+﻿using Project_smuzi.Classes;
 using Project_smuzi.Models;
-using Project_smuzi.Properties;
 using System;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
-using System.Windows.Media;
 #pragma warning disable CS0067
 
 namespace Project_smuzi
@@ -39,10 +29,18 @@ namespace Project_smuzi
             //Elementes = new List<Element>();
 
             ComboBox_SelectionChanged(null, null);
-            MVM.ReadDataDone += MVM_ReadDataDone;
-            MVM.ReadDataStart += MVM_ReadDataStart;
+            SharedModel.ReadDataDone += MVM_ReadDataDone;
+            SharedModel.ReadDataStart += MVM_ReadDataStart;
+            Closing += MainWindow_Closing;
 
         }
+
+        private void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            SharedModel.InvokeCloseApp();
+            e.Cancel = false;
+        }
+
         public (string s, int i) SwitchRepresentParameter
         {
             get => switchRepresentParameter;
@@ -84,7 +82,7 @@ namespace Project_smuzi
                 Deeb_cmb.SelectedIndex = 0;
                 Deeb_cmb.SelectionChanged += ComboBox_SelectionChanged;
             }
-            MVM.SelectorSwitch(Search_tb.Text, (int)Deeb_cmb.SelectedItem); // По идее тут должна быть комманда в привязке
+            MVM.DB.SelectorSwitch(Search_tb.Text, (int)Deeb_cmb.SelectedItem); // По идее тут должна быть комманда в привязке
         }
 
         private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -104,7 +102,8 @@ namespace Project_smuzi
         private void MenuItem_Folder_Click(object sender, RoutedEventArgs e)
         {
             var a = (Product)((MenuItem)sender).DataContext;
-            Process.Start("explorer.exe", $"{a.FolderTo}");
+            if (!string.IsNullOrEmpty(a.FolderTo))
+                Process.Start("explorer.exe", $"{a.FolderTo}");
         }
     }
 }
