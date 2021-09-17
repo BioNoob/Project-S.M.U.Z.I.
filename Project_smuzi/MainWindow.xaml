@@ -4,9 +4,40 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         x:Name="_window"
-        xmlns:local="clr-namespace:Project_smuzi.Classes"
+        xmlns:local="clr-namespace:Project_smuzi.Models"
+        xmlns:local_class="clr-namespace:Project_smuzi.Classes"
         mc:Ignorable="d"
         Title="MainWindow" Height="768" Width="1024">
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <Style x:Key="Spinner" TargetType="Image">
+            <Setter Property="Height" Value="48" />
+            <Setter Property="Image.RenderTransform">
+                <Setter.Value>
+                    <RotateTransform CenterX="24" CenterY="24" />
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation
+                                        Storyboard.TargetProperty="RenderTransform.Angle"
+                                        From="0"
+                                        To="-180"
+                                        Duration="0:0:1"
+                                        RepeatBehavior="Forever" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -26,8 +57,10 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Label Content="Префикс изделия"  Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-            <TextBox x:Name="TB"  Height="20" Width="150"  Grid.Column="1" Margin="10,0,0,0" Text="{Binding ElementName=_window, Path=Prefix, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" Background="#FFF1B6B6"/>
-            <Button Content="Запуск" Grid.Column="2" HorizontalAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Center" Width="65" Click="Button_Click"/>
+            <TextBox x:Name="TB"  Height="20" Width="150"  Grid.Column="1" Margin="10,0,0,0" Text="{Binding Prefix, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" Background="#FFF1B6B6"/>
+            <Button x:Name="Start_btn" Content="Запуск" Grid.Column="2" HorizontalAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Center" Width="65"
+                    Command="{Binding StartReadCommand}"/>
+            <!-- Click="Button_Click"/> -->
         </Grid>
         <Grid ClipToBounds="True" Grid.ColumnSpan="2" Grid.Row="1" Margin="0,1,0,0">
             <Grid.ColumnDefinitions>
@@ -38,19 +71,19 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Label Content="Поиск"  Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-            <TextBox x:Name="Search_tb"  Height="20" Width="150"  Grid.Column="1" Margin="10,0,0,0" Background="#FFB4F5FF" TextChanged="Search_tb_TextChanged" />
+            <TextBox x:Name="Search_tb"  Height="20" Width="150"  Grid.Column="1" Margin="10,0,0,0" Background="#FFB4F5FF" TextChanged="Search_tb_TextChanged"/>
             <Label Content="Глубина поиска"  Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
             <ComboBox  x:Name="Deeb_cmb" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Width="50" 
-                       ItemsSource="{Binding ElementName=_window, Path=DB.DeepList}" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged"/>
-            <TextBlock Text="{Binding ElementName=_window, Path=DB.Selector.Count}" Grid.Column="4" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                       ItemsSource="{Binding DB.DeepList}" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged"/>
+            <TextBlock Text="{Binding DB.Selector.Count}" Grid.Column="4" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
         </Grid>
         
         <TreeView x:Name="treeView1" Grid.Row="2" Grid.Column="0" 
-                  ItemsSource="{Binding ElementName=_window, Path=DB.Selector }"
+                  ItemsSource="{Binding DB.Selector }"
                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5">
             <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type local:Product}" ItemsSource="{Binding Items}">
-                    <TextBlock Text="{Binding Path=ToXString}" Width="350" TextWrapping="Wrap" TextTrimming="WordEllipsis">
+                <HierarchicalDataTemplate DataType="{x:Type local_class:Product}" ItemsSource="{Binding Items}">
+                    <TextBlock Text="{Binding ToXString}" Width="350" TextWrapping="Wrap" TextTrimming="WordEllipsis">
                         <TextBlock.ContextMenu>
                             <ContextMenu>
                                 <MenuItem Header="Menu item 1" />
@@ -61,12 +94,13 @@
                         </TextBlock.ContextMenu>
                     </TextBlock>
                 </HierarchicalDataTemplate>
-                <DataTemplate DataType="{x:Type local:Element}" >
-                    <TextBlock Text="{Binding Path=ToXString}" Width="350" TextWrapping="Wrap" TextTrimming="WordEllipsis" />
+                <DataTemplate DataType="{x:Type local_class:Element}" >
+                    <TextBlock Text="{Binding ToXString}" Width="350" TextWrapping="Wrap" TextTrimming="WordEllipsis" />
                 </DataTemplate>
             </TreeView.Resources>
         </TreeView>
-        <Image Width="48" Height="48" Grid.Row="2" Grid.Column="0" x:Name="Img_refresh">
+        <Image Width="48" Height="48" Grid.Row="2" Grid.Column="0" x:Name="Img_refresh" Style="{StaticResource Spinner}" Visibility="Collapsed"
+               VerticalAlignment="Top" HorizontalAlignment="Right" Margin="10,10,30,10">
             <Image.Source>
                 <BitmapImage UriSource="/Resources/ico_refresh_48.png"/>
             </Image.Source>
@@ -83,9 +117,9 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Label Content="Кол-во изделий"  Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-            <TextBlock Text="{Binding ElementName=_window, Path=DB.Productes.Count}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <TextBlock Text="{Binding DB.Productes.Count}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
             <Label Content="Кол-во элемемнтов"  Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-            <TextBlock Text="{Binding ElementName=_window, Path=DB.Elementes.Count}" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <TextBlock Text="{Binding DB.Elementes.Count}" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
             <!--кол-во изделий. кол-во сложных изделий 
             кол-во элементов.  -->
         </Grid>

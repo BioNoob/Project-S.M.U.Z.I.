@@ -32,13 +32,6 @@ namespace Project_smuzi.Classes
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public delegate void JobInfo();
-        public event JobInfo ReadDataDone;
-
-        public void InvokeReadDataDone()
-        {
-            ReadDataDone?.Invoke();
-        }
         public void LoadFromContaiment()
         {
             foreach (var prd in Productes)
@@ -59,9 +52,15 @@ namespace Project_smuzi.Classes
                         q.Count = item.Value;
                         prd.Products.Add(q);
                     }
-
                 }
             }
+        }
+        public void Clear()
+        {
+            Productes = new ObservableCollection<Product>();
+            Elementes = new ObservableCollection<Element>();
+            Selector = new ObservableCollection<Product>();
+            Element.Identificator = 1;
         }
     }
 }

@@ -1,10 +1,68 @@
-﻿using System;
+﻿using Project_smuzi.Classes;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
+using System.Linq;
+using System.Collections.ObjectModel;
 
 namespace Project_smuzi.Models
 {
-    class ProductViewModel
+    public class ProductViewModel : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public Product Prod { get; set; }
+        public DataBase DB { get; set; }
+
+        public DataBase Filtered_children { get; set; }
+        public DataBase Filtered_parent { get; set; }
+        public ProductViewModel()
+        {
+        }
+        public void FilterBase_Parent()
+        {
+            //В продуктах все продукты где упоинается этот продукт
+            //в элементах все элементы ....
+            Filtered_parent = new DataBase();
+            foreach (var prd in Prod.Contaiments_in)
+            {
+                var q = DB.Productes.Where(t => t.BaseId == prd).FirstOrDefault();
+                if (q == null)
+                {
+                    var z = DB.Elementes.Where(t => t.BaseId == prd).FirstOrDefault();
+                    z = z.Copy();
+                    Filtered_parent.Elementes.Add(z);
+                }
+                else
+                {
+                    q = q.Copy();
+                    Filtered_parent.Productes.Add(q);
+                }
+            }
+        }
+        public void FilterBase_child()
+        {
+            //В продуктах все продукты где упоинается этот продукт
+            //в элементах все элементы ....
+            Filtered_parent = new DataBase();
+            foreach (var prd in Prod.Contaiment)
+            {
+                var q = DB.Productes.Where(t => t.BaseId == prd.Key).FirstOrDefault();
+                if (q == null)
+                {
+                    var z = DB.Elementes.Where(t => t.BaseId == prd.Key).FirstOrDefault();
+                    z = z.Copy();
+                    z.Count = prd.Value;
+                    Filtered_parent.Elementes.Add(z);
+                }
+                else
+                {
+                    q = q.Copy();
+                    q.Count = prd.Value;
+                    Filtered_parent.Productes.Add(q);
+                }
+            }
+        }
     }
 }
