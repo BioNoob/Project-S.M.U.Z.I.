@@ -1,17 +1,8 @@
 ﻿using Project_smuzi.Classes;
 using Project_smuzi.Models;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Project_smuzi.Controls
 {
@@ -25,6 +16,13 @@ namespace Project_smuzi.Controls
             InitializeComponent();
             this.Closing += ProductInfo_Closing;
             SharedModel.CloseEvent += SharedModel_CloseEvent;
+            SharedModel.OpenFolderEvent += SharedModel_OpenFolderEvent;
+        }
+
+        private void SharedModel_OpenFolderEvent(Product product)
+        {
+            if (!string.IsNullOrEmpty(product.FolderTo))
+                Process.Start("explorer.exe", $"{product.FolderTo}");
         }
 
         private void SharedModel_CloseEvent()
@@ -37,15 +35,6 @@ namespace Project_smuzi.Controls
         {
             this.Hide();
             e.Cancel = true; 
-        }
-
-
-
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            var a = (Product)((MenuItem)sender).DataContext;
-            if (!string.IsNullOrEmpty(a.FolderTo))
-                Process.Start("explorer.exe", $"{a.FolderTo}");
         }
     }
 }

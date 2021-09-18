@@ -102,6 +102,8 @@ namespace Project_smuzi.Classes
                     {
                         ident = kmpsdoc.LayoutSheets[0].Stamp.Text[0].Str.Trim();
                         name = kmpsdoc.LayoutSheets[0].Stamp.Text[1].Str.Trim();
+                        name = name.Replace("\n", " ");
+                        ident = ident.Replace("\n", " ");
                     }
                     //
                     if (!ident.Contains(Prefix))
@@ -183,11 +185,13 @@ namespace Project_smuzi.Classes
                 sect_num = iSepcObj.AdditionalSection;
             var naimenovanie = iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnName, 1, 0].Text.Str.Trim();//   # 5 - колонка "Наименование"
             var oboznachenie = iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnMark, 1, 0].Text.Str.Trim();//   # Обозначение
+            naimenovanie = naimenovanie.Replace("\n", " ");
+            oboznachenie = naimenovanie.Replace("\n", " ");
             if (string.IsNullOrEmpty(naimenovanie) & string.IsNullOrEmpty(oboznachenie))
                 return;
             double kolichestvo = 0;
             double.TryParse(iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnCount, 1, 0].Text.Str, out kolichestvo);//   # кол-во   
-            Placer(base_product, sect_num, naimenovanie, oboznachenie, kolichestvo);
+            Placer(base_product, sect_num, naimenovanie, oboznachenie, kolichestvo, false);
         }
         private void InnerVorker_Additioanl(ISpecificationCommentObject iSepcObj, Product base_product)
         {
@@ -196,38 +200,41 @@ namespace Project_smuzi.Classes
                 sect_num = iSepcObj.AdditionalSection;
             var naimenovanie = iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnName, 1, 0].Text.Str.Trim();//        # Наименование
             var oboznachenie = iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnMark, 1, 0].Text.Str.Trim();//        # Обозначение
+            naimenovanie = naimenovanie.Replace("\n", " ");
+            oboznachenie = naimenovanie.Replace("\n", " ");
             if (string.IsNullOrEmpty(naimenovanie) & string.IsNullOrEmpty(oboznachenie))
                 return;
             double kolichestvo = 0;
             double.TryParse(iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnCount, 1, 0].Text.Str, out kolichestvo);//  # кол-во   
-            Placer(base_product, sect_num, naimenovanie, oboznachenie, kolichestvo);
+            Placer(base_product, sect_num, naimenovanie, oboznachenie, kolichestvo, true);
         }
-        private void Placer(Product base_product, int sect_num, string naimenovanie, string oboznachenie, double kolichestvo)
+        private void Placer(Product base_product, int sect_num, string naimenovanie, string oboznachenie, double kolichestvo, bool isadditional)
         {
             if (oboznachenie.Contains(Prefix))//item.Contains(Prefix))
             {
                 if ("Документация" != Element.GetInterpritation(sect_num))
-                    AddProduct(oboznachenie, naimenovanie, sect_num, kolichestvo, base_product);
+                    AddProduct(oboznachenie, naimenovanie, sect_num, kolichestvo, base_product, isadditional);
                 else
-                    AddElement(oboznachenie, naimenovanie, sect_num, kolichestvo, base_product);
+                    AddElement(oboznachenie, naimenovanie, sect_num, kolichestvo, base_product, isadditional);
             }
             else
-                AddElement(oboznachenie, naimenovanie, sect_num, kolichestvo, base_product);
+                AddElement(oboznachenie, naimenovanie, sect_num, kolichestvo, base_product, isadditional);
         }
-        private void AddElement(string oboznachenie, string naimenovanie, int section_num, double kolichestvo, Product base_product)
+        private void AddElement(string oboznachenie, string naimenovanie, int section_num, double kolichestvo, Product base_product, bool isAdd)
         {
             //ЕЛЕМЕНТ
             Element element_in = null;
             var buf_in = Elementes.Where(t => t.Name == naimenovanie).FirstOrDefault();
-            if (buf_in == null) //если нет в спсике елементов
+            //если нет в спсике елементов
+            if (buf_in != null)
             {
-                element_in = new Element(oboznachenie) { Name = naimenovanie, Count = kolichestvo, Section_id = section_num };
-                Elementes.Add(element_in); //добавляем елемент
+                    element_in = buf_in;
+                    element_in.Count += kolichestvo;
             }
             else
             {
-                element_in = buf_in;
-                element_in.Count += kolichestvo;
+                element_in = new Element(oboznachenie) { Name = naimenovanie, Count = kolichestvo, Section_id = section_num, IsAdditional = isAdd };
+                Elementes.Add(element_in); //добавляем елемент
             }
             element_in.Contaiments_in.Add(base_product.BaseId);
             //Если есть такой элемент внутри издеия, то увеличиваем кол-во, если нет добавляем
@@ -242,21 +249,22 @@ namespace Project_smuzi.Classes
             else
                 in_in.Count += kolichestvo;
         }
-        private void AddProduct(string oboznachenie, string naimenovanie, int section_num, double kolichestvo, Product base_product)
+        private void AddProduct(string oboznachenie, string naimenovanie, int section_num, double kolichestvo, Product base_product, bool isAdd)
         {
             Product product_in = null;
             var buf_in = Productes.Where(t => t.Identification == oboznachenie).FirstOrDefault();
-            if (buf_in == null) //если нет в спсике изделий
+            if(buf_in != null)
             {
-                product_in = new Product(oboznachenie) { Name = naimenovanie, Count = kolichestvo, Section_id = section_num };
-                Productes.Add(product_in); //добавляем изделие
+                    product_in = buf_in;
+                    if (product_in.BaseId == base_product.BaseId)
+                        throw new Exception("Ошибка чтения строки спецификации") { HResult = 101 };
             }
             else
             {
-                product_in = buf_in;
-                if (product_in.BaseId == base_product.BaseId)
-                    throw new Exception("Ошибка чтения строки спецификации") { HResult = 101 };
+                product_in = new Product(oboznachenie) { Name = naimenovanie, Count = kolichestvo, Section_id = section_num, IsAdditional = isAdd };
+                Productes.Add(product_in); //добавляем изделие
             }
+
             product_in.DeepLevel = product_in.DeepLevel < (base_product.DeepLevel + 1) ? base_product.DeepLevel + 1 : product_in.DeepLevel;
 
             product_in.Contaiments_in.Add(base_product.BaseId);

@@ -14,7 +14,7 @@ namespace Project_smuzi.Models
 
         public delegate void OpenInfo(Product product);
         public static event OpenInfo OpenInfoEvent;
-
+        public static event OpenInfo OpenFolderEvent;
 
 
         public delegate void JobInfo();
@@ -36,6 +36,10 @@ namespace Project_smuzi.Models
         public static void InvokeOpenInfoEvent(Product prd)
         {
             OpenInfoEvent?.Invoke(prd);
+        }
+        public static void InvokeOpenFolderEvent(Product prd)
+        {
+            OpenFolderEvent?.Invoke(prd);
         }
         public static void LoadDataBase()
         {

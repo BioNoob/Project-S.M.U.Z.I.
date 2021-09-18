@@ -12,16 +12,19 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using UserControl = Project_smuzi.Controls.UserControl;
 
 namespace Project_smuzi.Models
 {
     public class MainViewModel : INotifyPropertyChanged
     {
         ProductInfo pi = new ProductInfo();
+        UserControl usc = new UserControl();
         public MainViewModel()
         {
             SharedModel.LoadDataBase();
             SharedModel.OpenInfoEvent += SharedModel_OpenInfoEvent;
+            usc.Show();
         }
 
         private void SharedModel_OpenInfoEvent(Product product)

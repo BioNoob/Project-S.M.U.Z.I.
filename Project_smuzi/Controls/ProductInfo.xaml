@@ -1,12 +1,12 @@
 ﻿<Window x:Class="Project_smuzi.Controls.ProductInfo"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Project_smuzi.Models"
         xmlns:local_class="clr-namespace:Project_smuzi.Classes"
+        xmlns:local="clr-namespace:Project_smuzi.Models"
         mc:Ignorable="d"
-        Title="ProductInfo" Height="700" Width="670">
+        Title="ProductInfo" Height="700" Width="800" MinHeight="300" MinWidth="800">
     <Window.DataContext>
         <local:ProductViewModel/>
     </Window.DataContext>
@@ -19,7 +19,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="10*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
         <Border BorderBrush="Black" BorderThickness="0,1" Grid.ColumnSpan="2"/>
         <Grid Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="10,5,0,5">
@@ -28,19 +28,44 @@
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50"/>
-                <ColumnDefinition Width="250"/>
-                <ColumnDefinition Width="100"/>
-                <ColumnDefinition Width="150"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Grid.Column="0" Content="Имя" VerticalAlignment="Center"/>
-            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Prod.Name}" VerticalAlignment="Center" Background="Bisque" />
-            <Label Grid.Row="0" Grid.Column="2" Content="Обозначение" VerticalAlignment="Center"/>
-            <TextBlock Grid.Row="0" Grid.Column="3" Text="{Binding Prod.Identification}" VerticalAlignment="Center" Background="Aqua"/>
-            <Label Grid.Row="1" Grid.Column="0" Content="Путь" VerticalAlignment="Center"/>
-            <TextBlock Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Prod.PathTo}" VerticalAlignment="Center" Background="Aquamarine" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
-                       TextAlignment="Left" ToolTip="{Binding Prod.PathTo}"/>
-            <Button Grid.Column="3" Grid.Row="1" Content="G" Width="50" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="15,0,0,0"/>
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+                <Label  Content="Имя: " VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Prod.Name}" VerticalAlignment="Center" Width="300" TextWrapping="Wrap"/>
+                <Label Content="Обозначение:" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="15,0,0,0" Padding="0"/>
+                <TextBlock Text="{Binding Prod.Identification}" VerticalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0">
+                <Label  Content="Путь: " VerticalAlignment="Center"/>
+                <TextBlock  Grid.ColumnSpan="2" Text="{Binding Prod.PathTo}" VerticalAlignment="Center" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis"
+                       TextAlignment="Left" ToolTip="{Binding Prod.PathTo}" Width="300" />
+                <Button Width="32" HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="15,0,0,0" Command="{Binding Prod.OpenFolderCommand}"
+                        BorderThickness="2" Padding="0" Background="Transparent">
+                    <StackPanel>
+                        <Image Source="/Resources/папка_48.png" Width="24" Height="24"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            <StackPanel Grid.RowSpan="2" Grid.Row="0" Grid.Column="1" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="0,0,10,0">
+                <StackPanel Orientation="Horizontal"  HorizontalAlignment="Right">
+                    <Label Content="Тип: " VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    <TextBlock Text="{Binding Prod.Section}" VerticalAlignment="Center"
+                       HorizontalAlignment="Stretch"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"  HorizontalAlignment="Right">
+                    <Label  Content="Доп. элемент" VerticalAlignment="Stretch" VerticalContentAlignment="Bottom"/>
+                    <CheckBox IsChecked="{Binding Prod.IsAdditional}" VerticalAlignment="Stretch" Height="20" 
+                      IsEnabled="False" HorizontalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Stretch" Margin="0,2,0,0" >
+                        <CheckBox.LayoutTransform>
+                            <ScaleTransform ScaleX="1" ScaleY="1.1" />
+                        </CheckBox.LayoutTransform>
+                    </CheckBox>
+                </StackPanel>
+            </StackPanel>
+
+
         </Grid>
         <Grid  Grid.Row="1" Grid.ColumnSpan="2" Margin="5,0,5,0">
             <Grid.ColumnDefinitions>
@@ -52,45 +77,89 @@
         </Grid>
 
 
-        <TreeView Grid.Row="2" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5"
+        <TreeView Grid.Row="2" Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5,0,5,5"
                                     ItemsSource="{Binding Prod.Items }">
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type local_class:Product}" ItemsSource="{Binding Items}">
                     <StackPanel Orientation="Horizontal">
                         <Image Width="16" Height="16" Source="{Binding GetUriImg}" />
-                        <TextBlock Text="{Binding ToXString}" Width="350" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0"/>
+                        <TextBlock Text="{Binding ToXString}" Width="300" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0">
+                            <TextBlock.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Открыть информацию по документу" Command="{Binding OpenInfoCommand}" />
+                                    <Separator />
+                                    <MenuItem Header="Открыть папку документа" Command="{Binding OpenFolderCommand}"/>
+                                </ContextMenu>
+                            </TextBlock.ContextMenu>
+                        </TextBlock>
                     </StackPanel>
                 </HierarchicalDataTemplate>
                 <DataTemplate DataType="{x:Type local_class:Element}" >
                     <StackPanel Orientation="Horizontal">
                         <Image Width="16" Height="16" Source="{Binding GetUriImg}" />
-                        <TextBlock Text="{Binding ToXString}" Width="350" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0"/>
+                        <TextBlock Text="{Binding ToXString}" Width="300" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0"/>
                     </StackPanel>
                 </DataTemplate>
             </TreeView.Resources>
         </TreeView>
-        <ListView Grid.Row="2" Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5">
-
-        </ListView>
-        <Grid  Grid.Row="3" Grid.ColumnSpan="1" Margin="5,0,5,5">
+        <TreeView Grid.Row="2" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5,0,5,5"
+                                    ItemsSource="{Binding Prod.Contaiments_in_prod }">
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type local_class:Product}" ItemsSource="{Binding Contaiments_in_prod}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Width="16" Height="16" Source="{Binding GetUriImg}" />
+                        <TextBlock Text="{Binding ToXString}" Width="300" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0">
+                            <TextBlock.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Открыть информацию по документу" Command="{Binding OpenInfoCommand}" />
+                                    <Separator />
+                                    <MenuItem Header="Открыть папку документа" Command="{Binding OpenFolderCommand}"/>
+                                </ContextMenu>
+                            </TextBlock.ContextMenu>
+                        </TextBlock>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                <DataTemplate DataType="{x:Type local_class:Element}" >
+                    <StackPanel Orientation="Horizontal">
+                        <Image Width="16" Height="16" Source="{Binding GetUriImg}" />
+                        <TextBlock Text="{Binding ToXString}" Width="300" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </DataTemplate>
+            </TreeView.Resources>
+        </TreeView>
+        <!--<ListView Grid.Row="2" Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5" ItemsSource="{Binding Prod.Contaiments_in_prod}">
+            <ListView.View>
+                <GridView AllowsColumnReorder="True" >
+                    <GridViewColumn Width="190" Header="Название"
+         DisplayMemberBinding="{Binding Name}"  />
+                    <GridViewColumn Width="110" Header="Обозначение"  
+         DisplayMemberBinding="{Binding Identification}" />
+                    <GridViewColumn Width="50" Header="Кол-во"
+         DisplayMemberBinding="{Binding Count}" />
+                </GridView>
+            </ListView.View>
+        </ListView>-->
+        <Border BorderThickness="1,1,1,1" Margin="5,-6,5,5" Grid.Row="3" Grid.ColumnSpan="1" BorderBrush="Gray" HorizontalAlignment="Stretch"/>
+        <Grid  Grid.Row="3" Grid.ColumnSpan="1" Margin="5,-6,5,5">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="70*"/>
-                <ColumnDefinition Width="40*"/>
-                <ColumnDefinition Width="70*"/>
-                <ColumnDefinition Width="40*"/>
-            </Grid.ColumnDefinitions>
-            <TextBlock Text="Кол-во изделий"  Grid.Column="0" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,0"/>
-            <TextBlock Text="{Binding Prod.Products.Count}" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="5,0,0,0"/>
-            <TextBlock Text="Кол-во элемемнтов"  Grid.Column="2" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,0"/>
-            <TextBlock Text="{Binding Prod.Elements.Count}" Grid.Column="3" Grid.Row="0" VerticalAlignment="Center" Margin="5,0,0,0"/>
-        </Grid>
-        <Grid  Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" Margin="5,0,5,5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="70"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="Кол-во вхождений"  Grid.Column="0" VerticalAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,0"/>
-            <TextBlock Text="фывфвыфыв" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="5,0,0,0"/>
+            <TextBlock Text="Кол-во изделий" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <TextBlock Text="{Binding Prod.Products.Count}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <TextBlock Text="Кол-во элемемнтов" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <TextBlock Text="{Binding Prod.Elements.Count}" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+        </Grid>
+        <Border BorderThickness="1,1,1,1" Margin="5,-6,5,5" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="1" BorderBrush="Gray" HorizontalAlignment="Stretch"/>
+        <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" Margin="5,-6,5,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Кол-во вхождений" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <TextBlock Text="{Binding Prod.Contaiments_in.Count}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
         </Grid>
     </Grid>
 </Window>

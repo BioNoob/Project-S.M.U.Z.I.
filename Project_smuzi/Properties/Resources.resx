@@ -127,6 +127,12 @@
   <data name="деталь_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\деталь_16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="добавить_группу_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\добавить_группу_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="добавить_пользователя_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\добавить_пользователя_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="документ_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\документ_16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -136,6 +142,9 @@
   <data name="материал_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\материал_16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="папка_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\папка_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="прочие_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\прочие_16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -144,5 +153,11 @@
   </data>
   <data name="стандарт_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\стандарт_16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="удалить_группу_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\удалить_группу_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="удалить_пользователя_48" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\удалить_пользователя_48.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

@@ -34,5 +34,17 @@ namespace Project_smuzi.Properties {
                 this["DB_json"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NPC_DB_json {
+            get {
+                return ((string)(this["NPC_DB_json"]));
+            }
+            set {
+                this["NPC_DB_json"] = value;
+            }
+        }
     }
 }

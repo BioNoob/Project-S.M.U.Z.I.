@@ -10,12 +10,17 @@
     <None Remove="Resources\icons8-электроника-16.png" />
     <None Remove="Resources\ico_refresh_48.png" />
     <None Remove="Resources\деталь_16.png" />
+    <None Remove="Resources\добавить_группу_48.png" />
+    <None Remove="Resources\добавить_пользователя_48.png" />
     <None Remove="Resources\документ_16.png" />
     <None Remove="Resources\комплект_16.png" />
     <None Remove="Resources\материал_16.png" />
+    <None Remove="Resources\папка_48.png" />
     <None Remove="Resources\прочие_16.png" />
     <None Remove="Resources\сборочные_16.png" />
     <None Remove="Resources\стандарт_16.png" />
+    <None Remove="Resources\удалить_группу_48.png" />
+    <None Remove="Resources\удалить_пользователя_48.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,12 +44,17 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\деталь_16.png" />
+    <Resource Include="Resources\добавить_группу_48.png" />
+    <Resource Include="Resources\добавить_пользователя_48.png" />
     <Resource Include="Resources\документ_16.png" />
     <Resource Include="Resources\комплект_16.png" />
     <Resource Include="Resources\материал_16.png" />
+    <Resource Include="Resources\папка_48.png" />
     <Resource Include="Resources\прочие_16.png" />
     <Resource Include="Resources\сборочные_16.png" />
     <Resource Include="Resources\стандарт_16.png" />
+    <Resource Include="Resources\удалить_группу_48.png" />
+    <Resource Include="Resources\удалить_пользователя_48.png" />
   </ItemGroup>
 
   <ItemGroup>

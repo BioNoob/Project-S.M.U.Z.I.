@@ -1,10 +1,7 @@
-﻿using Project_smuzi.Classes;
-using Project_smuzi.Models;
+﻿using Project_smuzi.Models;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls;
 #pragma warning disable CS0067
 
 namespace Project_smuzi
@@ -88,22 +85,6 @@ namespace Project_smuzi
         private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             Search_tb_TextChanged(null, null);
-        }
-
-        private void TextBlock_MouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            ContextMenu cm = FindResource("cmProduct") as ContextMenu;
-            cm.PlacementTarget = sender as UIElement;
-            cm.IsOpen = true;
-            cm.Tag = ((TextBlock)sender).Text;
-
-        }
-
-        private void MenuItem_Folder_Click(object sender, RoutedEventArgs e)
-        {
-            var a = (Product)((MenuItem)sender).DataContext;
-            if (!string.IsNullOrEmpty(a.FolderTo))
-                Process.Start("explorer.exe", $"{a.FolderTo}");
         }
     }
 }

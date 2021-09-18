@@ -82,9 +82,6 @@ namespace Project_smuzi.Classes
                     childNodes.Add(group);
                 foreach (var entry in this.Elements)
                     childNodes.Add(entry);
-
-               
-
                 return childNodes;
             }
         }
@@ -99,7 +96,22 @@ namespace Project_smuzi.Classes
                 {
                     SharedModel.InvokeOpenInfoEvent(this);
                 },
-                (obj) => true
+                (obj) => true    
+                ));
+            }
+        }
+        [JsonIgnore]
+        private CommandHandler _openfolder;
+        [JsonIgnore]
+        public CommandHandler OpenFolderCommand
+        {
+            get
+            {
+                return _openfolder ?? (_openfolder = new CommandHandler(obj =>
+                {
+                    SharedModel.InvokeOpenFolderEvent(this);
+                },
+                (obj) => !string.IsNullOrEmpty(FolderTo)
                 ));
             }
         }

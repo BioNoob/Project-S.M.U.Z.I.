@@ -1,0 +1,72 @@
+﻿<Window x:Class="Project_smuzi.Controls.UserControl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local_class="clr-namespace:Project_smuzi.Classes"
+        xmlns:local="clr-namespace:Project_smuzi.Models"
+        mc:Ignorable="d"
+        Title="UserControl" Height="450" Width="800">
+    <Window.DataContext>
+        <local:UserControlViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="9*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Margin="10,10,0,10">
+            <Label Padding="0" Content="Имя администратора" VerticalAlignment="Center"/>
+            <TextBlock Background="Aquamarine" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="150" Margin="15,0,0,0"/>
+        </StackPanel>
+        <TreeView Grid.Row="2" Margin="5" ItemsSource="{Binding Groups }">
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type local_class:NpcSector}" ItemsSource="{Binding SectorWorkers}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Width="16" Height="16" Source="/Resources/добавить_группу_48.png" />
+                        <TextBlock Text="{Binding SectorLabel}" Width="150" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0"/>
+
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+                <DataTemplate DataType="{x:Type local_class:NpcWorker}" >
+                    <StackPanel Orientation="Horizontal">
+                        <Image Width="16" Height="16" Source="{Binding GetImg}" />
+                        <TextBlock Text="{Binding Name}" Width="150" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0"/>
+                    </StackPanel>
+                </DataTemplate>
+            </TreeView.Resources>
+        </TreeView>
+        <Grid Grid.Row="1" Margin="10,5,0,5">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button Width="24" Height="24"  Margin="5,0,5,0" HorizontalAlignment="Center" Padding="0">
+                    <StackPanel>
+                        <Image Source="/Resources/добавить_пользователя_48.png" Width="22" Height="22" Stretch="Fill"/>
+                    </StackPanel>
+                </Button>
+                <Button Width="24" Height="24"  Margin="5,0,5,0" HorizontalAlignment="Center" Padding="0">
+                    <StackPanel>
+                        <Image Source="/Resources/удалить_пользователя_48.png" Width="22" Height="22" Stretch="Fill"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Width="24" Height="24"  Margin="5,0,5,0" HorizontalAlignment="Center" Padding="0">
+                    <StackPanel>
+                        <Image Source="/Resources/добавить_группу_48.png" Width="22" Height="22" Stretch="Fill"/>
+                    </StackPanel>
+                </Button>
+                <Button Width="24" Height="24"  Margin="5,0,5,0" HorizontalAlignment="Center" Padding="0">
+                    <StackPanel>
+                        <Image Source="/Resources/удалить_группу_48.png" Width="22" Height="22" Stretch="Fill"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</Window>

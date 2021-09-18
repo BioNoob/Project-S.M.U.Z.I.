@@ -1,11 +1,9 @@
 ﻿using Newtonsoft.Json;
-using Project_smuzi.Properties;
-using System;
+using Project_smuzi.Models;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using System.Linq;
 #pragma warning disable CS0067
 namespace Project_smuzi.Classes
 {
@@ -71,11 +69,28 @@ namespace Project_smuzi.Classes
         public int Section_id { get; set; }
         public int BaseId { get; set; }
         public double Count { get; set; }
-
+        [JsonIgnore]
         private ObservableCollection<int> contaiments_in;
 
+        public bool IsAdditional { get; set; }
 
         public ObservableCollection<int> Contaiments_in { get => contaiments_in; set { contaiments_in = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Contaiments_in")); } }
+
+        [JsonIgnore]
+        public ObservableCollection<Product> Contaiments_in_prod
+        {
+            get
+            {
+                ObservableCollection<Product> prd = new ObservableCollection<Product>();
+                foreach (var item in Contaiments_in)
+                {
+                    prd.Add(SharedModel.DB.Productes.Where(t => t.BaseId == item).FirstOrDefault());
+                }
+                return prd;
+
+            }
+        }
+
         public string ToXString
         {
             get
@@ -118,7 +133,8 @@ namespace Project_smuzi.Classes
                 Contaiments_in = this.Contaiments_in,
                 Count = this.Count,
                 Identification = this.Identification,
-                Name = this.Name
+                Name = this.Name,
+                IsAdditional = this.IsAdditional
             };
         }
     }

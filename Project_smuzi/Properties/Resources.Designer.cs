@@ -93,6 +93,26 @@ namespace Project_smuzi.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap добавить_группу_48 {
+            get {
+                object obj = ResourceManager.GetObject("добавить_группу_48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap добавить_пользователя_48 {
+            get {
+                object obj = ResourceManager.GetObject("добавить_пользователя_48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap документ_16 {
             get {
                 object obj = ResourceManager.GetObject("документ_16", resourceCulture);
@@ -123,6 +143,16 @@ namespace Project_smuzi.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap папка_48 {
+            get {
+                object obj = ResourceManager.GetObject("папка_48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap прочие_16 {
             get {
                 object obj = ResourceManager.GetObject("прочие_16", resourceCulture);
@@ -146,6 +176,26 @@ namespace Project_smuzi.Properties {
         public static System.Drawing.Bitmap стандарт_16 {
             get {
                 object obj = ResourceManager.GetObject("стандарт_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap удалить_группу_48 {
+            get {
+                object obj = ResourceManager.GetObject("удалить_группу_48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap удалить_пользователя_48 {
+            get {
+                object obj = ResourceManager.GetObject("удалить_пользователя_48", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

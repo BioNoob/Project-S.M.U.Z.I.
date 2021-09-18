@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Text;
 using System.Linq;
 using System.Collections.ObjectModel;
+using Project_smuzi.Properties;
 
 namespace Project_smuzi.Models
 {
@@ -15,13 +16,11 @@ namespace Project_smuzi.Models
         private Product _prod;
         public Product Prod { get => _prod; set { _prod = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Prod")); } }
             
-        //public DataBase DB { get; set; }
-
-        //public DataBase Filtered_children { get; set; }
-        //public DataBase Filtered_parent { get; set; }
+        //public string Source { get=>Resource}
         public ProductViewModel()
         {
             SharedModel.OpenInfoEvent += SharedModel_OpenInfoEvent;
+           // Resources.папка_16.
         }
 
         private void SharedModel_OpenInfoEvent(Product product)
