@@ -10,17 +10,17 @@ namespace Project_smuzi.Classes
             get
             {
                 if (IsAdmin)
-                    return "";
+                    return "/Resources/админ_16.png";
                 else
-                    return "";
+                    return "/Resources/юзер_16.png";
             }
         }
         public bool IsAdmin { get; set; }
         public string Name { get; set; }
-        public ObservableCollection<NpcSector> Sectors { get; set; }
+        //public ObservableCollection<NpcSector> Sectors { get; set; }
         public NpcWorker()
         {
-            Sectors = new ObservableCollection<NpcSector>();
+            //Sectors = new ObservableCollection<NpcSector>();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

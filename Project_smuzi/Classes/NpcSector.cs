@@ -7,11 +7,11 @@ namespace Project_smuzi.Classes
     {
         public string SectorLabel { get; set; }
         public ObservableCollection<NpcWorker> SectorWorkers { get; set; }
-        public ObservableCollection<Product> SectorProducts { get; set; }
+        public ObservableCollection<int> SectorProducts { get; set; }
         public NpcSector()
         {
             SectorWorkers = new ObservableCollection<NpcWorker>();
-            SectorProducts = new ObservableCollection<Product>();
+            SectorProducts = new ObservableCollection<int>();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

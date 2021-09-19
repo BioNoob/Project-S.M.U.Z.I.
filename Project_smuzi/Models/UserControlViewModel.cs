@@ -10,13 +10,15 @@ namespace Project_smuzi.Models
     public class UserControlViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public DataBase DB => SharedModel.DB;
         public UserControlViewModel()
         {
             Groups = new ObservableCollection<NpcSector>();
             var tg = new NpcSector() { SectorLabel = "тест" };
             tg.SectorWorkers.Add(new NpcWorker() { Name = "STAS", IsAdmin = true });
-            tg.SectorWorkers.Add(new NpcWorker() { Name = "STAS1", IsAdmin = false });
-            tg.SectorWorkers.Add(new NpcWorker() { Name = "STAS2", IsAdmin = false });
+            tg.SectorWorkers.Add(new NpcWorker() { Name = "Дударенко Светлана николаевна", IsAdmin = false });
+            tg.SectorWorkers.Add(new NpcWorker() { Name = "Соколенко Артем Сергеевич", IsAdmin = false });
             Groups.Add(tg);
             tg = new NpcSector() { SectorLabel = "тест2" };
             tg.SectorWorkers.Add(new NpcWorker() { Name = "STAS3", IsAdmin = true });

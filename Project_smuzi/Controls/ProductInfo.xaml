@@ -34,7 +34,7 @@
             <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
                 <Label  Content="Имя: " VerticalAlignment="Center"/>
                 <TextBlock Text="{Binding Prod.Name}" VerticalAlignment="Center" Width="300" TextWrapping="Wrap"/>
-                <Label Content="Обозначение:" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="15,0,0,0" Padding="0"/>
+                <Label Content="Обозначение: " VerticalAlignment="Center" HorizontalAlignment="Right" Margin="15,0,0,0" Padding="0"/>
                 <TextBlock Text="{Binding Prod.Identification}" VerticalAlignment="Center"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0">
