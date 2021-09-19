@@ -1,10 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using Newtonsoft.Json;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 #pragma warning disable CS0067
 namespace Project_smuzi.Classes
 {
     public class NpcWorker : INotifyPropertyChanged
     {
+        [JsonIgnore]
         public string GetImg
         {
             get

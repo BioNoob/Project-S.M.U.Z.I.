@@ -22,9 +22,18 @@ namespace Project_smuzi.Models
         UserControl usc = new UserControl();
         public MainViewModel()
         {
+            SharedModel.ReadDataDone += SharedModel_ReadDataDone;
             SharedModel.LoadDataBase();
             SharedModel.OpenInfoEvent += SharedModel_OpenInfoEvent;
-            usc.Show();
+
+        }
+
+        private void SharedModel_ReadDataDone()
+        {
+            if(SharedModel.IsAdminMode)
+            {
+                usc.Show();
+            }
         }
 
         private void SharedModel_OpenInfoEvent(Product product)

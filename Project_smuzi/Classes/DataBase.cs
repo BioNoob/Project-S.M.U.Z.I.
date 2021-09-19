@@ -25,6 +25,17 @@ namespace Project_smuzi.Classes
             Elementes = new ObservableCollection<Element>();
             Element.Identificator = 1;
         }
+        public DataBase Copy()
+        {
+            return new DataBase()
+            {
+                Productes = this.Productes,
+                Elementes = this.Elementes,
+                Selector = this.Selector,
+                Prefix = this.Prefix
+            };
+
+        }
         public ObservableCollection<Product> Productes { get => productes; set { productes = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Productes")); } }
         public ObservableCollection<Element> Elementes { get => elementes; set { elementes = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Elementes")); } }
 

@@ -10,6 +10,7 @@ namespace Project_smuzi.Models
 {
     static class SharedModel
     {
+        public static bool IsAdminMode { get; set; } = true;
         public static DataBase DB { get; set; }
 
         public delegate void OpenInfo(Product product);
@@ -21,6 +22,10 @@ namespace Project_smuzi.Models
         public static event JobInfo ReadDataStart;
         public static event JobInfo ReadDataDone;
         public static event JobInfo CloseEvent;
+
+        public delegate void NewUser(NpcWorker user);
+        public static event NewUser NewWorkerCreateEvent;
+
         public static void InvokeReadDataDone()
         {
             ReadDataDone?.Invoke();
@@ -41,6 +46,10 @@ namespace Project_smuzi.Models
         {
             OpenFolderEvent?.Invoke(prd);
         }
+        public static void InvokeNewWorkerCreate(NpcWorker user)
+        {
+            NewWorkerCreateEvent?.Invoke(user);
+        }
         public static void LoadDataBase()
         {
             if (!string.IsNullOrEmpty(Settings.Default.DB_json))
@@ -49,6 +58,7 @@ namespace Project_smuzi.Models
                 DB.LoadFromContaiment();
             }
             DB.Selector = DB.Productes;
+            InvokeReadDataDone();
         }
     }
 }

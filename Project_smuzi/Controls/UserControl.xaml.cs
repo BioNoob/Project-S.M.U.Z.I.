@@ -27,5 +27,11 @@ namespace Project_smuzi.Controls
             this.Closing -= UserControl_Closing;
             this.Close();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            NewUserControl nuc = new NewUserControl();
+            nuc.ShowDialog();
+        }
     }
 }

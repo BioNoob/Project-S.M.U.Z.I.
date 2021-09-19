@@ -1,0 +1,41 @@
+﻿<Window x:Class="Project_smuzi.Controls.NewUserControl"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Project_smuzi.Controls"
+        x:Name="_this"
+        mc:Ignorable="d"
+        Title="NewUserControl" Height="105" Width="360" WindowStyle="ToolWindow" MinHeight="105" MinWidth="360">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Margin="5" Grid.ColumnSpan="2">
+            <Label Content="ФИО" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0"/>
+            <TextBox Height="25" Width="300" HorizontalAlignment="Stretch" Margin="5,0,0,0" VerticalContentAlignment="Center"
+                     Text="{Binding ElementName=_this, Path=FIO, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </StackPanel>
+        <Grid Grid.Row="1" Margin="5,0,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Label  Content="Администратор" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="0" Margin="5,0,0,0"/>
+            <CheckBox Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Stretch" VerticalContentAlignment="Center"
+                      IsChecked="{Binding ElementName=_this, Path=isAdm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                <CheckBox.LayoutTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="1.1" />
+                </CheckBox.LayoutTransform>
+            </CheckBox>
+            <Button Content="Добавить" Grid.Column="2" Width="70" Padding="0" Height="25" HorizontalAlignment="Left" Margin="36,0,0,0" Click="Button_Click"/>
+        </Grid>
+
+
+    </Grid>
+</Window>
