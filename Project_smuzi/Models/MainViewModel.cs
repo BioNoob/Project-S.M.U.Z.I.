@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using UserControl = Project_smuzi.Controls.UserControl;
 
 namespace Project_smuzi.Models
@@ -30,9 +31,11 @@ namespace Project_smuzi.Models
 
         private void SharedModel_ReadDataDone()
         {
-            if(SharedModel.IsAdminMode)
+            if (SharedModel.IsAdminMode)
             {
-                usc.Show();
+                if (!usc.IsVisible)
+                    Dispatcher.CurrentDispatcher.Invoke(new Action(() => { usc.Show(); }));
+                //usc.Show();
             }
         }
 
@@ -50,7 +53,7 @@ namespace Project_smuzi.Models
         private string _prefix;
         public string Prefix
         {
-            get => _prefix; 
+            get => _prefix;
             set
             {
                 _prefix = value;

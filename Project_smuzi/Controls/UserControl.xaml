@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local_class="clr-namespace:Project_smuzi.Classes"
         xmlns:local="clr-namespace:Project_smuzi.Models"
+        x:Name="_window"
         mc:Ignorable="d"
-        Title="UserControl" Height="450" Width="800">
+        Title="UserControl" Height="450" Width="800" MinHeight="450" MinWidth="800">
     <Window.DataContext>
         <local:UserControlViewModel/>
     </Window.DataContext>
@@ -23,49 +24,89 @@
             <Label Padding="0" Content="Имя администратора" VerticalAlignment="Center"/>
             <TextBlock Background="Aquamarine" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="150" Margin="15,0,0,0"/>
         </StackPanel>
-        <TreeView Grid.Row="1" Margin="5" ItemsSource="{Binding Groups }">
-            <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type local_class:NpcSector}" ItemsSource="{Binding SectorWorkers}">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Width="16" Height="16" Source="/Resources/группа_16.png" />
-                        <TextBlock Text="{Binding SectorLabel}" Width="245" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0">
-                            <TextBlock.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Добавить пользователя в группу" Command="" />
-                                    <Separator/>
-                                    <MenuItem Header="Изменить группу" Command="" />
-                                    <MenuItem Header="Удалить группу" Command=""/>
-                                </ContextMenu>
-                            </TextBlock.ContextMenu>
-                        </TextBlock>
-                    </StackPanel>
-                </HierarchicalDataTemplate>
-                <DataTemplate DataType="{x:Type local_class:NpcWorker}" >
-                    <StackPanel Orientation="Horizontal">
-                        <Image Width="16" Height="16" Source="{Binding GetImg}" />
-                        <TextBlock Text="{Binding Name}" Width="230" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0">
-                            <TextBlock.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Header="Изменить пользователя" Command="" />
-                                    <MenuItem Header="Удалить пользователя из группы" Command=""/>
-                                </ContextMenu>
-                            </TextBlock.ContextMenu>
-                        </TextBlock>
-                    </StackPanel>
-                </DataTemplate>
-            </TreeView.Resources>
-        </TreeView>
-        <Grid Grid.Row="1" Margin="0,15,30,0" HorizontalAlignment="Right" VerticalAlignment="Top" >
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                <Button Width="24" Height="24"  Margin="5,0,5,0" HorizontalAlignment="Center" Padding="0"
+        <Grid Grid.Row="1" Grid.RowSpan="2" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="2*"/>
+            </Grid.RowDefinitions>
+            <TreeView Grid.Row="0" Margin="5" ItemsSource="{Binding Groups }">
+                <TreeView.Resources>
+                    <HierarchicalDataTemplate DataType="{x:Type local_class:NpcSector}" ItemsSource="{Binding SectorWorkers}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Width="16" Height="16" Source="/Resources/группа_16.png" />
+                            <TextBlock Text="{Binding SectorLabel}" Width="245" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0">
+                                <TextBlock.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Добавить пользователя в группу" Command="{Binding AddUserToCommand}" 
+                                                  CommandParameter="{Binding SelectedWorker}" />
+                                        <Separator/>
+                                        <MenuItem Header="Изменить группу" Command="" />
+                                        <MenuItem Header="Удалить группу" Command=""/>
+                                    </ContextMenu>
+                                </TextBlock.ContextMenu>
+                            </TextBlock>
+                        </StackPanel>
+                    </HierarchicalDataTemplate>
+                    <DataTemplate DataType="{x:Type local_class:NpcWorker}" >
+                        <StackPanel Orientation="Horizontal">
+                            <Image Width="16" Height="16" Source="{Binding GetImg}" />
+                            <TextBlock Text="{Binding Name}" Width="230" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0">
+                                <TextBlock.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Header="Изменить пользователя" Command="" />
+                                        <MenuItem Header="Удалить пользователя из группы" Command=""/>
+                                    </ContextMenu>
+                                </TextBlock.ContextMenu>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </TreeView.Resources>
+            </TreeView>
+            <Grid Grid.Row="0" Margin="0,15,30,0" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button Width="24" Height="24"  Margin="5,0,5,0" HorizontalAlignment="Center" Padding="0">
+                        <StackPanel>
+                            <Image Source="/Resources/добавить_группу_16.png" Width="16" Height="16" Stretch="Fill"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+            <ListView Grid.Row="2" Margin="5" BorderBrush="Gray" Grid.ColumnSpan="2" ItemsSource="{Binding Workers}" x:Name="Workers_list_lv"
+                      SelectedItem="{Binding SelectedWorker, Mode=OneWayToSource}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="ФИО">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Padding="0" TextTrimming="WordEllipsis" Margin="0"
+                                               VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Left"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Width="147" Header="Сектора">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ListBox Width="135" ItemsSource="{Binding Sectors}" BorderThickness="1" VerticalContentAlignment="Center" Margin="0" Padding="0"
+                                             HorizontalContentAlignment="Stretch" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
+
+            </ListView>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="5,0,5,0" HorizontalAlignment="Left">
+                <Label Padding="0" Content="Поиск пользователя" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0"/>
+                <TextBox Width="190"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding SearchUserText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Width="24" Height="24"  Margin="15,0,5,0" HorizontalAlignment="Center" Padding="0"
                         Click="Button_Click">
                     <StackPanel>
                         <Image Source="/Resources/добавить_юзера_16.png" Width="16" Height="16" Stretch="Fill"/>
-                    </StackPanel>
-                </Button>
-                <Button Width="24" Height="24"  Margin="5,0,5,0" HorizontalAlignment="Center" Padding="0">
-                    <StackPanel>
-                        <Image Source="/Resources/добавить_группу_16.png" Width="16" Height="16" Stretch="Fill"/>
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -74,12 +115,12 @@
             <Label Padding="0" Content="Выбранная группа :" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="5,0,0,0"/>
             <TextBlock Width="150"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,10,0" Background="AntiqueWhite"/>
         </StackPanel>
-        <Grid Grid.Row="1" Grid.Column="1">
+        <Grid Grid.Row="1" Grid.RowSpan="2" Grid.Column="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="3*"/>
+                <RowDefinition Height="2*"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
@@ -98,7 +139,7 @@
                         </GridView>
                     </ListView.View>
             </ListView>
-            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="5,0,5,0" HorizontalAlignment="Right">
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="5,0,5,0" HorizontalAlignment="Right" Height="24">
                 <Label Padding="0" Content="Поиск изделия в базе" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0"/>
                 <TextBox Width="150"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
@@ -106,11 +147,11 @@
                 <ListView.View>
                     <GridView>
                         <GridViewColumn DisplayMemberBinding="{Binding Identification}" Width="130" >Обозначение</GridViewColumn>
-                        <GridViewColumn Width="190" Header="Наименование">
+                        <GridViewColumn Width="175" Header="Наименование"  x:Name="DBview">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock
-                                            Text="{Binding Name}" TextWrapping="Wrap"/>
+                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" HorizontalAlignment="Stretch"
+                                               Width="{Binding ElementName=DBview, Path=Width}"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
