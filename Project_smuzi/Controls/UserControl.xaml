@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local_class="clr-namespace:Project_smuzi.Classes"
         xmlns:local="clr-namespace:Project_smuzi.Models"
+        xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
         x:Name="_window"
         mc:Ignorable="d"
         Title="UserControl" Height="450" Width="800" MinHeight="450" MinWidth="800">
@@ -33,7 +34,8 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
-            <TreeView Grid.Row="0" Margin="5" ItemsSource="{Binding Groups }">
+            <local_class:ExtendedTreeView Grid.Row="0" Margin="5" ItemsSource="{Binding Groups, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                      dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding }" SelectedItem_="{Binding SelectedGroup, Mode=TwoWay}">
                 <TreeView.Resources>
                     <HierarchicalDataTemplate DataType="{x:Type local_class:NpcSector}" ItemsSource="{Binding SectorWorkers}">
                         <StackPanel Orientation="Horizontal">
@@ -41,17 +43,14 @@
                             <TextBlock Text="{Binding SectorLabel}" Width="245" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0">
                                 <TextBlock.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Добавить пользователя в группу" Command="{Binding AddUserToCommand}" 
-                                                  CommandParameter="{Binding SelectedWorker}" />
-                                        <Separator/>
-                                        <MenuItem Header="Изменить группу" Command="" />
+                                        <MenuItem Header="Изменить группу" Command=""/>
                                         <MenuItem Header="Удалить группу" Command=""/>
                                     </ContextMenu>
                                 </TextBlock.ContextMenu>
                             </TextBlock>
                         </StackPanel>
                     </HierarchicalDataTemplate>
-                    <DataTemplate DataType="{x:Type local_class:NpcWorker}" >
+                    <DataTemplate DataType="{x:Type local_class:NpcWorker}"  >
                         <StackPanel Orientation="Horizontal">
                             <Image Width="16" Height="16" Source="{Binding GetImg}" />
                             <TextBlock Text="{Binding Name}" Width="230" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0">
@@ -65,7 +64,7 @@
                         </StackPanel>
                     </DataTemplate>
                 </TreeView.Resources>
-            </TreeView>
+            </local_class:ExtendedTreeView>
             <Grid Grid.Row="0" Margin="0,15,30,0" HorizontalAlignment="Right" VerticalAlignment="Top">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                     <Button Width="24" Height="24"  Margin="5,0,5,0" HorizontalAlignment="Center" Padding="0">
@@ -75,14 +74,14 @@
                     </Button>
                 </StackPanel>
             </Grid>
-            <ListView Grid.Row="2" Margin="5" BorderBrush="Gray" Grid.ColumnSpan="2" ItemsSource="{Binding Workers}" x:Name="Workers_list_lv"
-                      SelectedItem="{Binding SelectedWorker, Mode=OneWayToSource}">
+            <ListView Grid.Row="2" Margin="5" BorderBrush="Gray" Grid.ColumnSpan="2" ItemsSource="{Binding Workers, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      dd:DragDrop.IsDragSource="True"  >
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="ФИО">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" Padding="0" TextTrimming="WordEllipsis" Margin="0"
+                                    <TextBlock Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged }" TextWrapping="Wrap" Padding="0" TextTrimming="WordEllipsis" Margin="0"
                                                VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Left"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -90,7 +89,7 @@
                         <GridViewColumn Width="147" Header="Сектора">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <ListBox Width="135" ItemsSource="{Binding Sectors}" BorderThickness="1" VerticalContentAlignment="Center" Margin="0" Padding="0"
+                                    <ListBox Width="135" ItemsSource="{Binding Sectors, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" VerticalContentAlignment="Center" Margin="0" Padding="0"
                                              HorizontalContentAlignment="Stretch" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -113,7 +112,7 @@
         </Grid>
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1">
             <Label Padding="0" Content="Выбранная группа :" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="5,0,0,0"/>
-            <TextBlock Width="150"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,10,0" Background="AntiqueWhite"/>
+            <TextBlock Width="150" Text="{Binding SelectedGroup.SectorLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,10,0" Background="AntiqueWhite"/>
         </StackPanel>
         <Grid Grid.Row="1" Grid.RowSpan="2" Grid.Column="1">
             <Grid.ColumnDefinitions>
@@ -124,44 +123,35 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
-            <ListView Grid.Row="0" Margin="5" BorderBrush="Gray" Grid.ColumnSpan="2">
+            <ListView Grid.Row="0" Margin="5" BorderBrush="Gray" Grid.ColumnSpan="2" ItemsSource="{Binding SelectedGRProducts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
                 <ListView.View>
-                        <GridView>
-                            <GridViewColumn DisplayMemberBinding="{Binding Identification}" Width="130" >Обозначение</GridViewColumn>
-                            <GridViewColumn Width="190" Header="Наименование">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock
-                                            Text="{Binding Name}" TextWrapping="Wrap"/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
-                        </GridView>
-                    </ListView.View>
+                    <GridView>
+                        <GridViewColumn DisplayMemberBinding="{Binding Identification}" Width="130" >Обозначение</GridViewColumn>
+                        <GridViewColumn Width="195" Header="Наименование" x:Name="DBview_gr">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" HorizontalAlignment="Stretch"
+                                               Width="{Binding ElementName=DBview_gr, Path=Width}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView>
+                </ListView.View>
             </ListView>
             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="5,0,5,0" HorizontalAlignment="Right" Height="24">
                 <Label Padding="0" Content="Поиск изделия в базе" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0"/>
                 <TextBox Width="150"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
-            <ListView Grid.Row="2" Margin="5" BorderBrush="Gray" Grid.ColumnSpan="2" ItemsSource="{Binding DB.Selector}">
+            <ListView Grid.Row="2" Margin="5" BorderBrush="Gray" Grid.ColumnSpan="2" ItemsSource="{Binding DB.Selector}" 
+                      dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding }">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn DisplayMemberBinding="{Binding Identification}" Width="130" >Обозначение</GridViewColumn>
-                        <GridViewColumn Width="175" Header="Наименование"  x:Name="DBview">
+                        <GridViewColumn Width="195" Header="Наименование"  x:Name="DBview_db">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Name}" TextWrapping="Wrap" HorizontalAlignment="Stretch"
-                                               Width="{Binding ElementName=DBview, Path=Width}"/>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        
-                        <GridViewColumn Width="35">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button Name="DownloadBtn" Padding="0" Margin="0"
-                                            Width="20"
-                                            Content="+" />
+                                               Width="{Binding ElementName=DBview_db, Path=Width}"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>

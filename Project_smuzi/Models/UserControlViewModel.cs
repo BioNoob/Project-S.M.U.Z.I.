@@ -7,13 +7,38 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
 using System.Linq;
+using GongSolutions.Wpf.DragDrop;
+using System.Windows;
 
 namespace Project_smuzi.Models
 {
-    public class UserControlViewModel : INotifyPropertyChanged
+    public class UserControlViewModel : INotifyPropertyChanged, IDropTarget
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        void IDropTarget.DragOver(IDropInfo dropInfo)
+        {
+            NpcWorker sourceItem = dropInfo.Data as NpcWorker;
+            NpcSector targetItem = dropInfo.TargetItem as NpcSector;
 
+            if (sourceItem != null && targetItem != null)
+            {
+                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                dropInfo.Effects = DragDropEffects.Copy;
+            }
+        }
+
+        void IDropTarget.Drop(IDropInfo dropInfo)
+        {
+
+            NpcWorker sourceItem = dropInfo.Data as NpcWorker;
+            NpcSector targetItem = dropInfo.TargetItem as NpcSector;
+            if (targetItem.SectorWorkers.Where(t => t.Name == sourceItem.Name).Count() <= 0)
+            {
+                sourceItem.Sectors.Add(targetItem.SectorLabel);
+                targetItem.SectorWorkers.Add(sourceItem);
+            }
+
+        }
         private DataBase _db;
         public DataBase DB
         {
@@ -31,23 +56,41 @@ namespace Project_smuzi.Models
             Workers = new List<NpcWorker>();
             var tg = new NpcSector() { SectorLabel = "тест" };
             tg.SectorWorkers.Add(new NpcWorker() { Name = "STAS", IsAdmin = true });
-            tg.SectorWorkers.Add(new NpcWorker() { Name = "Дударенко Светлана николаевна", IsAdmin = false });
+            tg.SectorWorkers.Add(new NpcWorker() { Name = "Дударенко Светлана Николаевна", IsAdmin = false });
             tg.SectorWorkers.Add(new NpcWorker() { Name = "Соколенко Артем Сергеевич", IsAdmin = false });
-            tg.SectorWorkers.ForEach(t => t.Sectors.Add(tg.SectorLabel));
-            tg.SectorWorkers.Where(t => t.Name == "Соколенко Артем Сергеевич").FirstOrDefault().Sectors.Add("тест2");
+            tg.SectorWorkers.ToList().ForEach(t => t.Sectors.Add(tg.SectorLabel));
             Groups.Add(tg);
             tg = new NpcSector() { SectorLabel = "тест2" };
             tg.SectorWorkers.Add(new NpcWorker() { Name = "STAS3", IsAdmin = true });
             tg.SectorWorkers.Add(new NpcWorker() { Name = "STAS4", IsAdmin = false });
             tg.SectorWorkers.Add(new NpcWorker() { Name = "STAS5", IsAdmin = false });
-            tg.SectorWorkers.ForEach(t=>t.Sectors.Add(tg.SectorLabel));
+            tg.SectorWorkers.ToList().ForEach(t => t.Sectors.Add(tg.SectorLabel));
             Groups.Add(tg);
 
             SharedModel.NewWorkerCreateEvent += SharedModel_NewWorkerCreate;
             SearchUserText = string.Empty;
 
         }
-        public NpcWorker SelectedWorker { get; set; }
+        public NpcSector SelectedGroup 
+        { 
+            get => selectedGroup;
+            set 
+            { 
+                selectedGroup = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGroup"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGRProducts"));
+            }
+        }
+        public ObservableCollection<Product> SelectedGRProducts
+        {
+            get
+            {
+                if (DB != null)
+                    return SelectedGroup.GetProductsOf(DB);
+                else
+                    return null;
+            }
+        }
 
         private string _searchText;
         public string SearchText
@@ -73,7 +116,7 @@ namespace Project_smuzi.Models
             get => _searchUserText;
             set
             {
-                List<List<NpcWorker>> q;
+                List<ObservableCollection<NpcWorker>> q;
                 _searchUserText = value;
                 Workers.Clear();
                 q = Groups.Select(t => t.SectorWorkers).ToList();
@@ -91,7 +134,15 @@ namespace Project_smuzi.Models
         }
         private void SharedModel_ReadDataDone()
         {
-            DB =  SharedModel.DB.Copy();
+            DB = SharedModel.DB.Copy();
+
+            //GLUSHILKA
+            var z = DB.Productes.Select(t => t.BaseId).Take(20).ToList();
+            foreach (var item in z)
+            {
+                Groups[0].SectorProducts.Add(item);
+            }
+
         }
 
         private void SharedModel_NewWorkerCreate(NpcWorker user)
@@ -114,6 +165,8 @@ namespace Project_smuzi.Models
             }
         }
         private List<NpcWorker> _workers;
+        private NpcSector selectedGroup;
+
         public List<NpcWorker> Workers
         {
             get
