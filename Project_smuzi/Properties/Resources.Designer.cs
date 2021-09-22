@@ -203,6 +203,16 @@ namespace Project_smuzi.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap редактировать_16_png {
+            get {
+                object obj = ResourceManager.GetObject("редактировать_16.png", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap сборочные_16 {
             get {
                 object obj = ResourceManager.GetObject("сборочные_16", resourceCulture);

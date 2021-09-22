@@ -10,7 +10,7 @@ namespace Project_smuzi.Classes
 {
     public class NpcSector : INotifyPropertyChanged
     {
-        public string SectorLabel { get; set; }
+        public string SectorLabel { get => sectorLabel; set => SetProperty(ref sectorLabel, value); }
         public ObservableCollection<NpcWorker> SectorWorkers { get => sectorWorkers; set => SetProperty(ref sectorWorkers, value); }
         public ObservableCollection<int> SectorProducts { get => sectorProducts; set => SetProperty(ref sectorProducts, value); }
         public NpcSector()
@@ -32,6 +32,15 @@ namespace Project_smuzi.Classes
         public event PropertyChangedEventHandler PropertyChanged;
         private ObservableCollection<NpcWorker> sectorWorkers;
         private ObservableCollection<int> sectorProducts;
+        private string sectorLabel;
+
+        public delegate void ItemClick();
+        public event ItemClick ItemClickEvent;
+        public void ItemClickEventInvoke()
+        {
+            ItemClickEvent?.Invoke();
+        }
+
         protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
         {
             if (!Equals(field, newValue))

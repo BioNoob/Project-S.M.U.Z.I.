@@ -8,6 +8,8 @@ namespace Project_smuzi.Classes
 {
     public class NpcWorker : INotifyPropertyChanged
     {
+        public static int Identificator = 1;
+
         private ObservableCollection<string> sectors;
 
         [JsonIgnore]
@@ -21,16 +23,34 @@ namespace Project_smuzi.Classes
                     return "/Resources/юзер_16.png";
             }
         }
-        public bool IsAdmin { get; set; }
-        public string Name { get; set; }
+        public bool IsAdmin { get => isAdmin; set => SetProperty(ref isAdmin, value); }
+        public string Name { get => name; set => SetProperty(ref name, value); }
+        public int WorkerId { get => workerId; set => SetProperty(ref workerId, value); }
+
         public ObservableCollection<string> Sectors { get => sectors; set => SetProperty(ref sectors, value); }
         public NpcWorker()
         {
             Sectors = new ObservableCollection<string>();
+            WorkerId = Identificator++;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        [JsonIgnore]
+        private CommandHandler _deletefromgroup;
+        [JsonIgnore]
+        public CommandHandler DeleteFromGroupCommand
+        {
+            get
+            {
+                return _deletefromgroup ?? (_deletefromgroup = new CommandHandler(obj =>
+                {
+                    Models.SharedModel.InvokeWorkerDeleteFromGroup(this);
+                },
+                (obj) => true
+                ));
+            }
+        }
         [JsonIgnore]
         private CommandHandler _deletefrom;
         [JsonIgnore]
@@ -41,6 +61,26 @@ namespace Project_smuzi.Classes
                 return _deletefrom ?? (_deletefrom = new CommandHandler(obj =>
                 {
                     Models.SharedModel.InvokeWorkerDelete(this);
+                },
+                (obj) => true
+                ));
+            }
+        }
+        [JsonIgnore]
+        private CommandHandler _edituser;
+        private int id;
+        private string name;
+        private bool isAdmin;
+        private int workerId;
+
+        [JsonIgnore]
+        public CommandHandler EditUserCommand
+        {
+            get
+            {
+                return _edituser ?? (_edituser = new CommandHandler(obj =>
+                {
+                    Models.SharedModel.InvokeWorkerEdit(this);
                 },
                 (obj) => true
                 ));

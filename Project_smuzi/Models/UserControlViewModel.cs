@@ -9,6 +9,7 @@ using System.Text;
 using System.Linq;
 using GongSolutions.Wpf.DragDrop;
 using System.Windows;
+using Project_smuzi.Controls;
 
 namespace Project_smuzi.Models
 {
@@ -49,8 +50,8 @@ namespace Project_smuzi.Models
         public UserControlViewModel()
         {
             SharedModel.ReadDataDone += SharedModel_ReadDataDone;
-            Groups = new List<NpcSector>();
-            Workers = new List<NpcWorker>();
+            Groups = new ObservableCollection<NpcSector>();
+            Workers = new ObservableCollection<NpcWorker>();
             var tg = new NpcSector() { SectorLabel = "тест" };
             tg.SectorWorkers.Add(new NpcWorker() { Name = "STAS", IsAdmin = true });
             tg.SectorWorkers.Add(new NpcWorker() { Name = "Дударенко Светлана Николаевна", IsAdmin = false });
@@ -65,14 +66,51 @@ namespace Project_smuzi.Models
             Groups.Add(tg);
 
             SharedModel.NewWorkerCreateEvent += SharedModel_NewWorkerCreate;
+            SharedModel.WorkerRequesFromGrouptToDelete += SharedModel_WorkerRequesFromGrouptToDelete;
             SharedModel.WorkerRequestToDelete += SharedModel_WorkerRequestToDelete;
+            SharedModel.WorkerRequestToEdit += SharedModel_WorkerRequestToEdit;
             SearchUserText = string.Empty;
             DDHandler.SectorContentChangedEvent += DDHandler_SectorContentChangedEvent;
         }
 
+        private void SharedModel_WorkerRequestToEdit(NpcWorker user)
+        {
+            NewUserControl nuc = new NewUserControl() { Mode = true, FIO = user.Name, isAdm = user.IsAdmin};
+            if ((bool)nuc.ShowDialog())
+            {
+                var a = Workers.Where(t => t.WorkerId == user.WorkerId).FirstOrDefault();
+                if (a != null)
+                {
+                    a.IsAdmin = nuc.isAdm;
+                    a.Name = nuc.FIO;
+                }
+                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
+            }
+        }
+
         private void SharedModel_WorkerRequestToDelete(NpcWorker user)
         {
+            if (user.Sectors.Count > 0)
+            {
+                if (System.Windows.Forms.MessageBox.Show($"Данный пользователь находится в группах:\n\t{string.Join("\n\t", user.Sectors)}\nУдалить пользователя?", "Внимание!",
+                    System.Windows.Forms.MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
+                {
+                    foreach (var item in user.Sectors)
+                    {
+                        Groups.Where(t => t.SectorLabel == item).ToList().ForEach(t => t.SectorWorkers.Remove(user));
+                    }
+                }
+                else
+                    return;
+            }
+            Workers.Remove(user);
+            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
+        }
+
+        private void SharedModel_WorkerRequesFromGrouptToDelete(NpcWorker user)
+        {
             SelectedGroup.SectorWorkers.Remove(user);
+            user.Sectors.Remove(SelectedGroup.SectorLabel);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGroup"));
         }
 
@@ -117,7 +155,7 @@ namespace Project_smuzi.Models
         {
             get => selectedWorker;
             set { selectedWorker = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedWorker")); }
-            }
+        }
         private Product selectedProductFromGroup;
         public Product SelectedProductFromGroup
         {
@@ -171,12 +209,18 @@ namespace Project_smuzi.Models
                 q = Groups.Select(t => t.SectorWorkers).ToList();
                 foreach (var item in q)
                 {
-                    Workers.AddRange(item);
+                    foreach (var qq in q)
+                    {
+                        foreach (var qqq in qq)
+                        {
+                            Workers.Add(qqq);
+                        }
+                    }
                 }
-                Workers = Workers.Distinct().ToList();
+                Workers = new ObservableCollection<NpcWorker>(Workers.Distinct());
                 if (!string.IsNullOrEmpty(_searchUserText))
                 {
-                    Workers = Workers.Where(t => t.Name.Contains(_searchUserText)).ToList();
+                    Workers = new ObservableCollection<NpcWorker>(Workers.Where(t => t.Name.Contains(_searchUserText)));
                 }
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SearchText"));
             }
@@ -197,11 +241,13 @@ namespace Project_smuzi.Models
         private void SharedModel_NewWorkerCreate(NpcWorker user)
         {
             var a = Groups.Where(t => t.SectorLabel == "Без группы").FirstOrDefault();
-            a.SectorWorkers.Add(user);
+            Workers.Add(user);
+            Workers = Workers;
+            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
         }
 
-        private List<NpcSector> _groups;
-        public List<NpcSector> Groups
+        private ObservableCollection<NpcSector> _groups;
+        public ObservableCollection<NpcSector> Groups
         {
             get
             {
@@ -213,10 +259,10 @@ namespace Project_smuzi.Models
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Groups"));
             }
         }
-        private List<NpcWorker> _workers;
+        private ObservableCollection<NpcWorker> _workers;
 
 
-        public List<NpcWorker> Workers
+        public ObservableCollection<NpcWorker> Workers
         {
             get
             {

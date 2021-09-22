@@ -3,10 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Project_smuzi.Controls"
         x:Name="_this"
         mc:Ignorable="d"
-        Title="NewUserControl" Height="105" Width="360" WindowStyle="ToolWindow" MinHeight="105" MinWidth="360">
+        Title="Пользователь" Height="105" Width="360" WindowStyle="ToolWindow" MinHeight="105" MinWidth="360">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
@@ -33,7 +32,7 @@
                     <ScaleTransform ScaleX="1" ScaleY="1.1" />
                 </CheckBox.LayoutTransform>
             </CheckBox>
-            <Button Content="Добавить" Grid.Column="2" Width="70" Padding="0" Height="25" HorizontalAlignment="Left" Margin="36,0,0,0" Click="Button_Click"/>
+            <Button Content="{Binding ElementName=_this, Path=ButtonText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2" Width="70" Padding="0" Height="25" HorizontalAlignment="Left" Margin="36,0,0,0" Click="Button_Click"/>
         </Grid>
 
 

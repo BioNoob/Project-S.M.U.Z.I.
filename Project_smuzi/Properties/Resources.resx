@@ -160,6 +160,9 @@
   <data name="прочие_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\прочие_16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="редактировать_16.png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\редактировать_16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="сборочные_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\сборочные_16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

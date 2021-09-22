@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local_class="clr-namespace:Project_smuzi.Classes"
         xmlns:local="clr-namespace:Project_smuzi.Models"
         xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
@@ -35,15 +36,27 @@
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
             <local_class:ExtendedTreeView x:Name="Group_trv" Grid.Row="0" Margin="5" ItemsSource="{Binding Groups, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                      dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding }" SelectedItem_="{Binding SelectedGroup, Mode=TwoWay}">
+                      dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding }" SelectedItem_="{Binding SelectedGroup, Mode=TwoWay}" TreeViewItem.Expanded="Group_trv_Expanded"
+                                          TreeViewItem.Selected="Group_trv_Selected" >
                 <TreeView.Resources>
-                    <HierarchicalDataTemplate DataType="{x:Type local_class:NpcSector}" ItemsSource="{Binding SectorWorkers}">
+                    <HierarchicalDataTemplate DataType="{x:Type local_class:NpcSector}" ItemsSource="{Binding SectorWorkers}" >
                         <StackPanel Orientation="Horizontal">
                             <Image Width="16" Height="16" Source="/Resources/группа_16.png" />
                             <TextBlock Text="{Binding SectorLabel}" Width="245" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0">
                                 <TextBlock.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Изменить группу" Command=""/>
+                                        <MenuItem Header="Переименовать группу" Command="">
+                                            <MenuItem>
+                                                <MenuItem.Header>
+                                                    <TextBox Width="145" Text="{Binding SectorLabel, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                                                             HorizontalContentAlignment="Center"/>
+                                                </MenuItem.Header>
+                                                <MenuItem.Icon>
+                                                    <Image Source="/Resources/редактировать_16.png" Width="16" Height="16" Stretch="Fill"/>
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+
+                                        </MenuItem>
                                         <MenuItem Header="Удалить группу" Command=""/>
                                     </ContextMenu>
                                 </TextBlock.ContextMenu>
@@ -56,8 +69,7 @@
                                     <TextBlock Text="{Binding Name}" Width="230" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0">
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
-                                                <MenuItem Header="Изменить пользователя" Command="" />
-                                                <MenuItem Header="Удалить пользователя из группы" Command="{Binding DeleteFromCommand}"/>
+                                                <MenuItem Header="Удалить пользователя из группы" Command="{Binding DeleteFromGroupCommand}"/>
                                             </ContextMenu>
                                         </TextBlock.ContextMenu>
                                     </TextBlock>
@@ -81,18 +93,25 @@
                       dd:DragDrop.IsDragSource="True"  >
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="ФИО">
+                        <GridViewColumn Header="ФИО" x:Name="GCWorkers_gr" Width="190">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged }" TextWrapping="Wrap" Padding="0" TextTrimming="WordEllipsis" Margin="0"
-                                               VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Left"/>
+                                               TextAlignment="Left" Width="{Binding ElementName=GCWorkers_gr, Path=Width}">
+                                        <TextBlock.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Изменить пользователя" Command="{Binding EditUserCommand}" />
+                                                <MenuItem Header="Удалить пользователя" Command="{Binding DeleteFromCommand}"/>
+                                            </ContextMenu>
+                                        </TextBlock.ContextMenu>
+                                    </TextBlock>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
                         <GridViewColumn Width="147" Header="Сектора">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <ListBox Width="135" ItemsSource="{Binding Sectors, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" VerticalContentAlignment="Center" Margin="0" Padding="0"
+                                    <ListBox Width="135" MinHeight="25" ItemsSource="{Binding Sectors, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderThickness="1" VerticalContentAlignment="Center" Margin="0" Padding="0"
                                              HorizontalContentAlignment="Stretch" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
@@ -101,7 +120,6 @@
                 </ListView.View>
 
             </ListView>
-
             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="5,0,5,0" HorizontalAlignment="Left">
                 <Label Padding="0" Content="Поиск пользователя" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0"/>
                 <TextBox Width="190"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding SearchUserText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>

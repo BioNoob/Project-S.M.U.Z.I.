@@ -1,5 +1,8 @@
-﻿using Project_smuzi.Models;
+﻿using Project_smuzi.Classes;
+using Project_smuzi.Models;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Project_smuzi.Controls
 {
@@ -32,6 +35,38 @@ namespace Project_smuzi.Controls
         {
             NewUserControl nuc = new NewUserControl();
             nuc.ShowDialog();
+        }
+
+        private void Group_trv_Expanded(object sender, RoutedEventArgs e)
+        {
+            var b = e.OriginalSource as TreeViewItem;
+            Group_trv.SelectedItem_ = b.Header;
+
+        }
+        public ItemsControl GetSelectedTreeViewItemParent(TreeViewItem item)
+        {
+            DependencyObject parent = VisualTreeHelper.GetParent(item);
+            while (!(parent is TreeViewItem || parent is TreeView))
+            {
+                parent = VisualTreeHelper.GetParent(parent);
+            }
+            return parent as ItemsControl;
+        }
+
+        private void Group_trv_Selected(object sender, RoutedEventArgs e)
+        {
+            var a = sender;
+            var b = e;
+            TreeViewItem item = e.OriginalSource as TreeViewItem;
+            if (item != null)
+            {
+                ItemsControl parent = GetSelectedTreeViewItemParent(item);
+
+                TreeViewItem treeitem = parent as TreeViewItem;
+                if (treeitem != null)
+                    Group_trv.SelectedItem_ = treeitem.Header;
+                //var MyValue = treeitem.Header as NpcSector;//Gets you the immediate parent
+            }
         }
     }
 }
