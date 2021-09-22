@@ -123,7 +123,8 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
-            <ListView Grid.Row="0" Margin="5" BorderBrush="Gray" Grid.ColumnSpan="2" ItemsSource="{Binding SelectedGRProducts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+            <ListView Grid.Row="0" Margin="5" BorderBrush="Gray" Grid.ColumnSpan="2" ItemsSource="{Binding SelectedGRProducts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                       dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding DDHandler}">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn DisplayMemberBinding="{Binding Identification}" Width="130" >Обозначение</GridViewColumn>
@@ -143,7 +144,7 @@
                 <TextBox Width="150"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
             <ListView Grid.Row="2" Margin="5" BorderBrush="Gray" Grid.ColumnSpan="2" ItemsSource="{Binding DB.Selector}" 
-                      dd:DragDrop.IsDragSource="True" dd:DragDrop.DropHandler="{Binding }">
+                      dd:DragDrop.IsDragSource="True">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn DisplayMemberBinding="{Binding Identification}" Width="130" >Обозначение</GridViewColumn>

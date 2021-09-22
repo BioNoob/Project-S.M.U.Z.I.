@@ -22,8 +22,11 @@ namespace Project_smuzi.Models
 
             if (sourceItem != null && targetItem != null)
             {
-                dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
-                dropInfo.Effects = DragDropEffects.Copy;
+                if (targetItem.SectorWorkers.Where(t => t.Name == sourceItem.Name).Count() <= 0)
+                {
+                    dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                    dropInfo.Effects = DragDropEffects.Copy;
+                }
             }
         }
 
@@ -39,6 +42,8 @@ namespace Project_smuzi.Models
             }
 
         }
+
+        public SectorDDHandler DDHandler { get; set; } = new SectorDDHandler();
         private DataBase _db;
         public DataBase DB
         {
@@ -69,14 +74,24 @@ namespace Project_smuzi.Models
 
             SharedModel.NewWorkerCreateEvent += SharedModel_NewWorkerCreate;
             SearchUserText = string.Empty;
+            DDHandler.SectorContentChangedEvent += DDHandler_SectorContentChangedEvent;
 
         }
-        public NpcSector SelectedGroup 
-        { 
+
+        private void DDHandler_SectorContentChangedEvent()
+        {
+            //throw new NotImplementedException();
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGroup"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGRProducts"));
+        }
+
+        public NpcSector SelectedGroup
+        {
             get => selectedGroup;
-            set 
-            { 
+            set
+            {
                 selectedGroup = value;
+                DDHandler.Owner = SelectedGroup;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGroup"));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGRProducts"));
             }
