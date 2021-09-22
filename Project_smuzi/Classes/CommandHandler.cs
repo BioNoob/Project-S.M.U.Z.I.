@@ -54,7 +54,10 @@ namespace Project_smuzi.Classes
         {
             if (SelectedItem != null)
             {
+                if(SelectedItem.GetType() == Items.CurrentItem.GetType())
                 SetValue(SelectedItem_Property, SelectedItem);
+                else
+                    SetValue(SelectedItem_Property, Items.CurrentItem);
             }
         }
 

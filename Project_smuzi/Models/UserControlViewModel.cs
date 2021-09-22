@@ -15,6 +15,7 @@ namespace Project_smuzi.Models
     public class UserControlViewModel : INotifyPropertyChanged, IDropTarget
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        public SectorDDHandler DDHandler { get; set; } = new SectorDDHandler();
         void IDropTarget.DragOver(IDropInfo dropInfo)
         {
             NpcWorker sourceItem = dropInfo.Data as NpcWorker;
@@ -43,17 +44,8 @@ namespace Project_smuzi.Models
 
         }
 
-        public SectorDDHandler DDHandler { get; set; } = new SectorDDHandler();
-        private DataBase _db;
-        public DataBase DB
-        {
-            get => _db;
-            set
-            {
-                _db = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DB"));
-            }
-        }
+
+
         public UserControlViewModel()
         {
             SharedModel.ReadDataDone += SharedModel_ReadDataDone;
@@ -73,9 +65,22 @@ namespace Project_smuzi.Models
             Groups.Add(tg);
 
             SharedModel.NewWorkerCreateEvent += SharedModel_NewWorkerCreate;
+            SharedModel.WorkerRequestToDelete += SharedModel_WorkerRequestToDelete;
             SearchUserText = string.Empty;
             DDHandler.SectorContentChangedEvent += DDHandler_SectorContentChangedEvent;
+        }
 
+        private void SharedModel_WorkerRequestToDelete(NpcWorker user)
+        {
+            SelectedGroup.SectorWorkers.Remove(user);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGroup"));
+        }
+
+        private void SelectedProductFromGroup_ItemClickEvent()
+        {
+            SelectedGroup.SectorProducts.Remove(SelectedProductFromGroup.BaseId);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGroup"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGRProducts"));
         }
 
         private void DDHandler_SectorContentChangedEvent()
@@ -85,6 +90,17 @@ namespace Project_smuzi.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGRProducts"));
         }
 
+        private DataBase _db;
+        public DataBase DB
+        {
+            get => _db;
+            set
+            {
+                _db = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DB"));
+            }
+        }
+        private NpcSector selectedGroup;
         public NpcSector SelectedGroup
         {
             get => selectedGroup;
@@ -94,6 +110,24 @@ namespace Project_smuzi.Models
                 DDHandler.Owner = SelectedGroup;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGroup"));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGRProducts"));
+            }
+        }
+        private NpcWorker selectedWorker;
+        public NpcWorker SelectedWorker
+        {
+            get => selectedWorker;
+            set { selectedWorker = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedWorker")); }
+            }
+        private Product selectedProductFromGroup;
+        public Product SelectedProductFromGroup
+        {
+            get => selectedProductFromGroup;
+            set
+            {
+                selectedProductFromGroup = value;
+                if (value != null)
+                    SelectedProductFromGroup.ItemClickEvent += SelectedProductFromGroup_ItemClickEvent;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedProductFromGroup"));
             }
         }
         public ObservableCollection<Product> SelectedGRProducts
@@ -180,7 +214,7 @@ namespace Project_smuzi.Models
             }
         }
         private List<NpcWorker> _workers;
-        private NpcSector selectedGroup;
+
 
         public List<NpcWorker> Workers
         {

@@ -11,7 +11,7 @@ namespace Project_smuzi.Classes
 {
     public class Product : Element, INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        public new event PropertyChangedEventHandler PropertyChanged;
         [JsonIgnore]
         private ObservableCollection<Product> products;
         [JsonIgnore]
@@ -115,5 +115,23 @@ namespace Project_smuzi.Classes
                 ));
             }
         }
+
+        [JsonIgnore]
+        private CommandHandler _deletefrom;
+        [JsonIgnore]
+        public CommandHandler DeleteFromCommand
+        {
+            get
+            {
+                return _deletefrom ?? (_deletefrom = new CommandHandler(obj =>
+                {
+                    ItemClickEvent?.Invoke();
+                },
+                (obj) => !string.IsNullOrEmpty(FolderTo)
+                ));
+            }
+        }
+        public delegate void ItemClick();
+        public event ItemClick ItemClickEvent;
     }
 }

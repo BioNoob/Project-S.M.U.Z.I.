@@ -25,6 +25,7 @@ namespace Project_smuzi.Models
 
         public delegate void NewUser(NpcWorker user);
         public static event NewUser NewWorkerCreateEvent;
+        public static event NewUser WorkerRequestToDelete;
 
         public static void InvokeReadDataDone()
         {
@@ -49,6 +50,10 @@ namespace Project_smuzi.Models
         public static void InvokeNewWorkerCreate(NpcWorker user)
         {
             NewWorkerCreateEvent?.Invoke(user);
+        }
+        public static void InvokeWorkerDelete(NpcWorker user)
+        {
+            WorkerRequestToDelete?.Invoke(user);
         }
         public static void LoadDataBase()
         {

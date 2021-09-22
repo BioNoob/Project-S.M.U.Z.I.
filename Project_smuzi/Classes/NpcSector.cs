@@ -9,7 +9,6 @@ using System.Windows;
 namespace Project_smuzi.Classes
 {
     public class NpcSector : INotifyPropertyChanged
-
     {
         public string SectorLabel { get; set; }
         public ObservableCollection<NpcWorker> SectorWorkers { get => sectorWorkers; set => SetProperty(ref sectorWorkers, value); }

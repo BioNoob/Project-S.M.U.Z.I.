@@ -30,6 +30,23 @@ namespace Project_smuzi.Classes
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        [JsonIgnore]
+        private CommandHandler _deletefrom;
+        [JsonIgnore]
+        public CommandHandler DeleteFromCommand
+        {
+            get
+            {
+                return _deletefrom ?? (_deletefrom = new CommandHandler(obj =>
+                {
+                    Models.SharedModel.InvokeWorkerDelete(this);
+                },
+                (obj) => true
+                ));
+            }
+        }
+
         protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
         {
             if (!Equals(field, newValue))

@@ -34,7 +34,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
-            <local_class:ExtendedTreeView Grid.Row="0" Margin="5" ItemsSource="{Binding Groups, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+            <local_class:ExtendedTreeView x:Name="Group_trv" Grid.Row="0" Margin="5" ItemsSource="{Binding Groups, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                       dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding }" SelectedItem_="{Binding SelectedGroup, Mode=TwoWay}">
                 <TreeView.Resources>
                     <HierarchicalDataTemplate DataType="{x:Type local_class:NpcSector}" ItemsSource="{Binding SectorWorkers}">
@@ -49,20 +49,23 @@
                                 </TextBlock.ContextMenu>
                             </TextBlock>
                         </StackPanel>
+                        <HierarchicalDataTemplate.ItemTemplate>
+                            <DataTemplate DataType="{x:Type local_class:NpcWorker}"  >
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Width="16" Height="16" Source="{Binding GetImg}" />
+                                    <TextBlock Text="{Binding Name}" Width="230" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0">
+                                        <TextBlock.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Изменить пользователя" Command="" />
+                                                <MenuItem Header="Удалить пользователя из группы" Command="{Binding DeleteFromCommand}"/>
+                                            </ContextMenu>
+                                        </TextBlock.ContextMenu>
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </HierarchicalDataTemplate.ItemTemplate>
                     </HierarchicalDataTemplate>
-                    <DataTemplate DataType="{x:Type local_class:NpcWorker}"  >
-                        <StackPanel Orientation="Horizontal">
-                            <Image Width="16" Height="16" Source="{Binding GetImg}" />
-                            <TextBlock Text="{Binding Name}" Width="230" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0">
-                                <TextBlock.ContextMenu>
-                                    <ContextMenu>
-                                        <MenuItem Header="Изменить пользователя" Command="" />
-                                        <MenuItem Header="Удалить пользователя из группы" Command=""/>
-                                    </ContextMenu>
-                                </TextBlock.ContextMenu>
-                            </TextBlock>
-                        </StackPanel>
-                    </DataTemplate>
+
                 </TreeView.Resources>
             </local_class:ExtendedTreeView>
             <Grid Grid.Row="0" Margin="0,15,30,0" HorizontalAlignment="Right" VerticalAlignment="Top">
@@ -124,15 +127,21 @@
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
             <ListView Grid.Row="0" Margin="5" BorderBrush="Gray" Grid.ColumnSpan="2" ItemsSource="{Binding SelectedGRProducts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                       dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding DDHandler}">
+                       dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding DDHandler}" SelectedItem="{Binding SelectedProductFromGroup}">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn DisplayMemberBinding="{Binding Identification}" Width="130" >Обозначение</GridViewColumn>
+                        <GridViewColumn DisplayMemberBinding="{Binding Identification}" Width="130" Header="Обозначение"/>
                         <GridViewColumn Width="195" Header="Наименование" x:Name="DBview_gr">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Name}" TextWrapping="Wrap" HorizontalAlignment="Stretch"
-                                               Width="{Binding ElementName=DBview_gr, Path=Width}"/>
+                                               Width="{Binding ElementName=DBview_gr, Path=Width}">
+                                        <TextBlock.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Открепить изделие от группы" Command="{Binding DeleteFromCommand}"/>
+                                            </ContextMenu>
+                                        </TextBlock.ContextMenu>
+                                    </TextBlock>
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
