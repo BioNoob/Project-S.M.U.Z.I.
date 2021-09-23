@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 #pragma warning disable CS0067
 namespace Project_smuzi.Classes
@@ -9,11 +10,10 @@ namespace Project_smuzi.Classes
     public class NpcWorker : INotifyPropertyChanged
     {
         public static int Identificator = 1;
-        private int id;
-        private string name;
-        private bool isAdmin;
-        private int workerId;
-        private ObservableCollection<string> sectors;
+
+
+
+        private ObservableCollection<int> sectors;
 
         [JsonIgnore]
         public string GetImg
@@ -26,14 +26,32 @@ namespace Project_smuzi.Classes
                     return "/Resources/юзер_16.png";
             }
         }
+        private bool isAdmin;
         public bool IsAdmin { get => isAdmin; set => SetProperty(ref isAdmin, value); }
+        private string name;
         public string Name { get => name; set => SetProperty(ref name, value); }
+        private int workerId;
         public int WorkerId { get => workerId; set => SetProperty(ref workerId, value); }
 
-        public ObservableCollection<string> Sectors { get => sectors; set => SetProperty(ref sectors, value); }
+        public ObservableCollection<int> Sectors { get => sectors; set => SetProperty(ref sectors, value); }
+        [JsonIgnore]
+        private NpcBase owner;
+        [JsonIgnore]
+        public NpcBase Owner { get => owner; set => SetProperty(ref owner, value); }
+
+        [JsonIgnore]
+        public ObservableCollection<NpcSector> WorkerGroups
+        {
+            get
+            {
+                return new ObservableCollection<NpcSector>(Owner.Groups.Where(t => t.SectorWorkers.Contains(WorkerId)));
+            }
+        }
+
+
         public NpcWorker()
         {
-            Sectors = new ObservableCollection<string>();
+            Sectors = new ObservableCollection<int>();
             WorkerId = Identificator++;
         }
 
@@ -46,12 +64,12 @@ namespace Project_smuzi.Classes
         {
             get
             {
-                return _deletefromgroup ?? (_deletefromgroup = new CommandHandler(obj =>
+                return _deletefromgroup ??= new CommandHandler(obj =>
                 {
                     Models.SharedModel.InvokeWorkerDeleteFromGroup(this);
                 },
                 (obj) => true
-                ));
+                );
             }
         }
         [JsonIgnore]
@@ -61,12 +79,12 @@ namespace Project_smuzi.Classes
         {
             get
             {
-                return _deletefrom ?? (_deletefrom = new CommandHandler(obj =>
+                return _deletefrom ??= new CommandHandler(obj =>
                 {
                     Models.SharedModel.InvokeWorkerDelete(this);
                 },
                 (obj) => true
-                ));
+                );
             }
         }
         [JsonIgnore]
@@ -78,13 +96,21 @@ namespace Project_smuzi.Classes
         {
             get
             {
-                return _edituser ?? (_edituser = new CommandHandler(obj =>
+                return _edituser ??= new CommandHandler(obj =>
                 {
                     Models.SharedModel.InvokeWorkerEdit(this);
                 },
                 (obj) => true
-                ));
+                );
             }
+        }
+
+        public void SetWorkerSectors(NpcSector sector)
+        {
+            this.Sectors.Add(sector.SectorId);
+            sector.SectorWorkers.Add(this.WorkerId);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WorkerGroups"));
+            
         }
 
         protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)

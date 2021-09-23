@@ -215,8 +215,7 @@ namespace Project_smuzi.Classes
             oboznachenie = naimenovanie.Replace("\n", " ");
             if (string.IsNullOrEmpty(naimenovanie) & string.IsNullOrEmpty(oboznachenie))
                 return;
-            double kolichestvo = 0;
-            double.TryParse(iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnCount, 1, 0].Text.Str, out kolichestvo);//  # кол-во   
+            double.TryParse(iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnCount, 1, 0].Text.Str, out double kolichestvo);//  # кол-во   
             Placer(base_product, sect_num, naimenovanie, oboznachenie, kolichestvo, true);
         }
         private void Placer(Product base_product, int sect_num, string naimenovanie, string oboznachenie, double kolichestvo, bool isadditional)

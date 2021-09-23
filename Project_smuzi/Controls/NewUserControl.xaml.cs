@@ -10,7 +10,7 @@ namespace Project_smuzi.Controls
     public partial class NewUserControl : Window, INotifyPropertyChanged
     {
         private bool mode;
-        private bool isAdm1;
+        private bool isAdm;
         private string btntext;
         private string fIO;
 
@@ -32,7 +32,7 @@ namespace Project_smuzi.Controls
 
         private bool btn_enabled;
         public bool Btn_enabled { get => btn_enabled; set => SetProperty(ref btn_enabled, value); }
-        public bool isAdm { get => isAdm1; set => SetProperty(ref isAdm1, value); }
+        public bool IsAdm { get => isAdm; set => SetProperty(ref isAdm, value); }
 
         public string ButtonText { get => btntext; set => SetProperty(ref btntext, value); }
         /// <summary>

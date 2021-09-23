@@ -30,37 +30,18 @@ namespace Project_smuzi.Classes
         {
             get
             {
-                string TheImageYouWantToShow = "";
-                switch (Section_id)
+                string TheImageYouWantToShow = Section_id switch
                 {
-                    case 5:
-                        TheImageYouWantToShow = "/Resources/документ_16.png";
-                        break;
-                    case 10:
-                        TheImageYouWantToShow = "/Resources/icons8-электроника-16.png";
-                        break;
-                    case 15:
-                        TheImageYouWantToShow = "/Resources/сборочные_16.png";
-                        break;
-                    case 20:
-                        TheImageYouWantToShow = "/Resources/деталь_16.png";
-                        break;
-                    case 25:
-                        TheImageYouWantToShow = "/Resources/стандарт_16.png";
-                        break;
-                    case 30:
-                        TheImageYouWantToShow = "/Resources/прочие_16.png";
-                        break;
-                    case 35:
-                        TheImageYouWantToShow = "/Resources/материал_16.png";
-                        break;
-                    case 40:
-                        TheImageYouWantToShow = "/Resources/комплект_16.png";
-                        break;
-                    default:
-                        TheImageYouWantToShow = "/Resources/ico_refresh_48.png";
-                        break;
-                }
+                    5 => "/Resources/документ_16.png",
+                    10 => "/Resources/icons8-электроника-16.png",
+                    15 => "/Resources/сборочные_16.png",
+                    20 => "/Resources/деталь_16.png",
+                    25 => "/Resources/стандарт_16.png",
+                    30 => "/Resources/прочие_16.png",
+                    35 => "/Resources/материал_16.png",
+                    40 => "/Resources/комплект_16.png",
+                    _ => "/Resources/ico_refresh_48.png",
+                };
                 return TheImageYouWantToShow;
             }
         }

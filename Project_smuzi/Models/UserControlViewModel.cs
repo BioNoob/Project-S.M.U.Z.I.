@@ -10,6 +10,7 @@ using System.Linq;
 using GongSolutions.Wpf.DragDrop;
 using System.Windows;
 using Project_smuzi.Controls;
+using System.Collections;
 
 namespace Project_smuzi.Models
 {
@@ -24,7 +25,7 @@ namespace Project_smuzi.Models
 
             if (sourceItem != null && targetItem != null)
             {
-                if (targetItem.SectorWorkers.Where(t => t.Name == sourceItem.Name).Count() <= 0)
+                if (targetItem.SectorWorkers.Where(t => t == sourceItem.WorkerId).Count() <= 0)
                 {
                     dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
                     dropInfo.Effects = DragDropEffects.Copy;
@@ -37,10 +38,12 @@ namespace Project_smuzi.Models
 
             NpcWorker sourceItem = dropInfo.Data as NpcWorker;
             NpcSector targetItem = dropInfo.TargetItem as NpcSector;
-            if (targetItem.SectorWorkers.Where(t => t.Name == sourceItem.Name).Count() <= 0)
+            if (targetItem.SectorWorkers.Where(t => t == sourceItem.WorkerId).Count() <= 0)
             {
-                sourceItem.Sectors.Add(targetItem.SectorLabel);
-                targetItem.SectorWorkers.Add(sourceItem);
+                sourceItem.SetWorkerSectors(targetItem);
+                targetItem.SetWorkerGroupByThis(sourceItem);
+                //sourceItem.Sectors.Add(targetItem.SectorLabel);
+                //targetItem.SectorWorkers.Add(sourceItem);
             }
 
         }
@@ -50,90 +53,29 @@ namespace Project_smuzi.Models
         public UserControlViewModel()
         {
             SharedModel.ReadDataDone += SharedModel_ReadDataDone;
-            Groups = new ObservableCollection<NpcSector>();
-            Workers = new ObservableCollection<NpcWorker>();
-            Workers.Add(new NpcWorker() { Name = "STAS", IsAdmin = true });
-            Workers.Add(new NpcWorker() { Name = "Дударенко Светлана Николаевна", IsAdmin = false });
-            Workers.Add(new NpcWorker() { Name = "Соколенко Артем Сергеевич", IsAdmin = false });
-            Workers.Add(new NpcWorker() { Name = "STAS3", IsAdmin = true });
-            Workers.Add(new NpcWorker() { Name = "STAS4", IsAdmin = false });
+            Npc_base = new NpcBase();
+            FilteredWorkers = new ObservableCollection<NpcWorker>();
+            Npc_base.AddWorker(new NpcWorker() { Name = "STAS0", IsAdmin = true });
+            Npc_base.AddWorker(new NpcWorker() { Name = "Дударенко Светлана Николаевна", IsAdmin = false });
+            Npc_base.AddWorker(new NpcWorker() { Name = "Соколенко Артем Сергеевич", IsAdmin = false });
+            Npc_base.AddWorker(new NpcWorker() { Name = "STAS3", IsAdmin = true });
+            Npc_base.AddWorker(new NpcWorker() { Name = "STAS4", IsAdmin = false });
 
 
-            var tg = new NpcSector() { SectorLabel = "тест" };
-            tg.SectorWorkers.Add(.WorkerId);
-            tg.SectorWorkers.Add(.WorkerId);
-            tg.SectorWorkers.Add(.WorkerId);
-            tg.SectorWorkers.ToList().ForEach(t => t.Sectors.Add(tg.SectorLabel));
-            Groups.Add(tg);
-            tg = new NpcSector() { SectorLabel = "тест2" };
-            tg.SectorWorkers.Add(.WorkerId);
-            tg.SectorWorkers.Add(.WorkerId);
-            tg.SectorWorkers.Add(.WorkerId);
-            tg.SectorWorkers.ToList().ForEach(t => t.Sectors.Add(tg.SectorLabel));
-            Groups.Add(tg);
+            var tg = new NpcSector(Npc_base) { SectorLabel = "тест" };
+            tg.SetWorkerGroupByThis(Npc_base.Workers.Take(3));
+            Npc_base.Groups.Add(tg);
 
-            SharedModel.NewWorkerCreateEvent += SharedModel_NewWorkerCreate;
+            tg = new NpcSector(Npc_base) { SectorLabel = "тест2" };
+            Npc_base.Workers.ElementAt(2).SetWorkerSectors(tg);
+            Npc_base.Workers.ElementAt(3).SetWorkerSectors(tg);
+            Npc_base.Workers.ElementAt(4).SetWorkerSectors(tg);
+
+            Npc_base.Groups.Add(tg);
+
             SharedModel.WorkerRequesFromGrouptToDelete += SharedModel_WorkerRequesFromGrouptToDelete;
-            SharedModel.WorkerRequestToDelete += SharedModel_WorkerRequestToDelete;
-            SharedModel.WorkerRequestToEdit += SharedModel_WorkerRequestToEdit;
-            SharedModel.GroupRequestToDelete += SharedModel_GroupRequestToDelete;
             SearchUserText = string.Empty;
             DDHandler.SectorContentChangedEvent += DDHandler_SectorContentChangedEvent;
-        }
-
-        private void SharedModel_GroupRequestToDelete(NpcSector sector)
-        {
-
-            if (System.Windows.Forms.MessageBox.Show($"Действительно удалить группу {sector.SectorLabel} ?", "Подтверждение удаления",
-                System.Windows.Forms.MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
-            {
-                foreach (var item in sector.SectorWorkers)
-                {
-                    Workers.Where(t => t.Sectors.Contains(sector.SectorLabel)).ToList().ForEach(t => t.Sectors.Remove(sector.SectorLabel));
-                }
-            }
-            Groups.Remove(sector);
-        }
-
-        private void SharedModel_WorkerRequestToEdit(NpcWorker user)
-        {
-            NewUserControl nuc = new NewUserControl() { Mode = true, FIO = user.Name, isAdm = user.IsAdmin };
-            if ((bool)nuc.ShowDialog())
-            {
-                var a = Workers.Where(t => t.WorkerId == user.WorkerId).FirstOrDefault();
-                if (a != null)
-                {
-                    a.IsAdmin = nuc.isAdm;
-                    a.Name = nuc.FIO;
-                }
-                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
-            }
-        }
-
-        private void SharedModel_WorkerRequestToDelete(NpcWorker user)
-        {
-            if (user.Sectors.Count > 0)
-            {
-                if (System.Windows.Forms.MessageBox.Show($"Данный пользователь находится в группах:\n\t{string.Join("\n\t", user.Sectors)}\nУдалить пользователя?", "Внимание!",
-                    System.Windows.Forms.MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
-                {
-                    foreach (var item in user.Sectors)
-                    {
-                        Groups.Where(t => t.SectorLabel == item).ToList().ForEach(t => t.SectorWorkers.Remove(user));
-                    }
-                }
-                else
-                    return;
-            }
-            Workers.Remove(user);
-            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
-        }
-
-        private void SharedModel_WorkerRequesFromGrouptToDelete(NpcWorker user)
-        {
-            SelectedGroup.SectorWorkers.Remove(user);
-            user.Sectors.Remove(SelectedGroup.SectorLabel);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGroup"));
         }
 
         private void SelectedProductFromGroup_ItemClickEvent()
@@ -160,6 +102,17 @@ namespace Project_smuzi.Models
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DB"));
             }
         }
+        private NpcBase _npc_db;
+        public NpcBase Npc_base
+        {
+            get => _npc_db;
+            set
+            {
+                _npc_db = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("NPC_base"));
+            }
+        }
+
         private NpcSector selectedGroup;
         public NpcSector SelectedGroup
         {
@@ -236,24 +189,25 @@ namespace Project_smuzi.Models
             get => _searchUserText;
             set
             {
-                List<ObservableCollection<NpcWorker>> q;
+                List<ObservableCollection<int>> q;
                 _searchUserText = value;
-                Workers.Clear();
-                q = Groups.Select(t => t.SectorWorkers).ToList();
+                FilteredWorkers.Clear();
+                q = Npc_base.Groups.Select(t => t.SectorWorkers).ToList();
                 foreach (var item in q)
                 {
                     foreach (var qq in q)
                     {
                         foreach (var qqq in qq)
                         {
-                            Workers.Add(qqq);
+                            var buf = Npc_base.Workers.Where(t => t.WorkerId == qqq).FirstOrDefault();
+                            FilteredWorkers.Add(buf);
                         }
                     }
                 }
-                Workers = new ObservableCollection<NpcWorker>(Workers.Distinct());
+                FilteredWorkers = new ObservableCollection<NpcWorker>(FilteredWorkers.Distinct());
                 if (!string.IsNullOrEmpty(_searchUserText))
                 {
-                    Workers = new ObservableCollection<NpcWorker>(Workers.Where(t => t.Name.Contains(_searchUserText)));
+                    FilteredWorkers = new ObservableCollection<NpcWorker>(FilteredWorkers.Where(t => t.Name.Contains(_searchUserText)));
                 }
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SearchText"));
             }
@@ -266,72 +220,52 @@ namespace Project_smuzi.Models
             var z = DB.Productes.Select(t => t.BaseId).Take(20).ToList();
             foreach (var item in z)
             {
-                Groups[0].SectorProducts.Add(item);
+                Npc_base.Groups[0].SectorProducts.Add(item);
             }
 
         }
 
-        private void SharedModel_NewWorkerCreate(NpcWorker user)
+        private void SharedModel_WorkerRequesFromGrouptToDelete(NpcWorker user)
         {
-            var a = Groups.Where(t => t.SectorLabel == "Без группы").FirstOrDefault();
-            Workers.Add(user);
-            Workers = Workers;
-            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
+            SelectedGroup.SectorWorkers.Remove(user.WorkerId);
+            user.Sectors.Remove(SelectedGroup.SectorId);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGroup"));
         }
 
-        private ObservableCollection<NpcSector> _groups;
-        public ObservableCollection<NpcSector> Groups
-        {
-            get
-            {
-                return _groups;
-            }
-            set
-            {
-                _groups = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Groups"));
-            }
-        }
-        private ObservableCollection<NpcWorker> _workers;
-
-
-        public ObservableCollection<NpcWorker> Workers
+        private ObservableCollection<NpcWorker> _filteredworkers;
+        public ObservableCollection<NpcWorker> FilteredWorkers
         {
             get
             {
-                return _workers;
+                return _filteredworkers;
             }
             set
             {
-                _workers = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
+                _filteredworkers = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FilteredWorkers"));
             }
         }
-
         private CommandHandler _newgroupadd;
         public CommandHandler NewGroupAddCommand
         {
             get
             {
-                return _newgroupadd ?? (_newgroupadd = new CommandHandler(obj =>
+                return _newgroupadd ??= new CommandHandler(obj =>
                 {
                     var a = obj as Window;
-                    NewGroupControl ngc = new NewGroupControl();
-                    ngc.Owner = a;
-                    ngc.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    NewGroupControl ngc = new NewGroupControl
+                    {
+                        Owner = a,
+                        WindowStartupLocation = WindowStartupLocation.CenterOwner
+                    };
                     if ((bool)ngc.ShowDialog())
-                        Groups.Add(new NpcSector() { SectorLabel = ngc.GroupName });
+                        Npc_base.Groups.Add(new NpcSector(Npc_base) { SectorLabel = ngc.GroupName });
                 },
                 (obj) => true
-                ));
+                );
             }
         }
 
-        public void SaveJson()
-        {
-            string t = JsonConvert.SerializeObject(this, Formatting.Indented);
-            Settings.Default.NPC_DB_json = t;
-            Settings.Default.Save();
-        }
+
     }
 }

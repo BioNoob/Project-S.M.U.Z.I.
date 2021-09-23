@@ -27,7 +27,7 @@
             </Grid.ColumnDefinitions>
             <Label  Content="Администратор" HorizontalAlignment="Left" VerticalAlignment="Center" Padding="0" Margin="5,0,0,0"/>
             <CheckBox Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Stretch" VerticalContentAlignment="Center"
-                      IsChecked="{Binding ElementName=_this, Path=isAdm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                      IsChecked="{Binding ElementName=_this, Path=IsAdm, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 <CheckBox.LayoutTransform>
                     <ScaleTransform ScaleX="1" ScaleY="1.1" />
                 </CheckBox.LayoutTransform>

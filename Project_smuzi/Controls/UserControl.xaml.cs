@@ -33,7 +33,11 @@ namespace Project_smuzi.Controls
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            NewUserControl nuc = new NewUserControl();
+            NewUserControl nuc = new NewUserControl()
+            {
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
             nuc.ShowDialog();
         }
 
@@ -55,8 +59,6 @@ namespace Project_smuzi.Controls
 
         private void Group_trv_Selected(object sender, RoutedEventArgs e)
         {
-            var a = sender;
-            var b = e;
             TreeViewItem item = e.OriginalSource as TreeViewItem;
             if (item != null)
             {
