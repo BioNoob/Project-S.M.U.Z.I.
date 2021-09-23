@@ -23,11 +23,14 @@ namespace Project_smuzi.Models
         public static event JobInfo ReadDataDone;
         public static event JobInfo CloseEvent;
 
-        public delegate void NewUser(NpcWorker user);
-        public static event NewUser NewWorkerCreateEvent;
-        public static event NewUser WorkerRequesFromGrouptToDelete;
-        public static event NewUser WorkerRequestToDelete;
-        public static event NewUser WorkerRequestToEdit;
+        public delegate void UserEvents(NpcWorker user);
+        public static event UserEvents NewWorkerCreateEvent;
+        public static event UserEvents WorkerRequesFromGrouptToDelete;
+        public static event UserEvents WorkerRequestToDelete;
+        public static event UserEvents WorkerRequestToEdit;
+
+        public delegate void GroupEvents(NpcSector user);
+        public static event GroupEvents GroupRequestToDelete;
 
         public static void InvokeReadDataDone()
         {
@@ -64,6 +67,10 @@ namespace Project_smuzi.Models
         public static void InvokeWorkerDeleteFromGroup(NpcWorker user)
         {
             WorkerRequesFromGrouptToDelete?.Invoke(user);
+        }
+        public static void InvokeGroupDelete(NpcSector sector)
+        {
+            GroupRequestToDelete?.Invoke(sector);
         }
         public static void LoadDataBase()
         {

@@ -28,7 +28,10 @@ namespace Project_smuzi.Controls
                 ButtonText = "Добавить";
         }
 
-        public string FIO { get => fIO; set => SetProperty(ref fIO, value); }
+        public string FIO { get => fIO; set { SetProperty(ref fIO, value);if (string.IsNullOrWhiteSpace(value)) Btn_enabled = false; else Btn_enabled = true; } }
+
+        private bool btn_enabled;
+        public bool Btn_enabled { get => btn_enabled; set => SetProperty(ref btn_enabled, value); }
         public bool isAdm { get => isAdm1; set => SetProperty(ref isAdm1, value); }
 
         public string ButtonText { get => btntext; set => SetProperty(ref btntext, value); }

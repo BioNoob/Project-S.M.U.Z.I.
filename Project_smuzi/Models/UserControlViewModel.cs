@@ -52,16 +52,23 @@ namespace Project_smuzi.Models
             SharedModel.ReadDataDone += SharedModel_ReadDataDone;
             Groups = new ObservableCollection<NpcSector>();
             Workers = new ObservableCollection<NpcWorker>();
+            Workers.Add(new NpcWorker() { Name = "STAS", IsAdmin = true });
+            Workers.Add(new NpcWorker() { Name = "Дударенко Светлана Николаевна", IsAdmin = false });
+            Workers.Add(new NpcWorker() { Name = "Соколенко Артем Сергеевич", IsAdmin = false });
+            Workers.Add(new NpcWorker() { Name = "STAS3", IsAdmin = true });
+            Workers.Add(new NpcWorker() { Name = "STAS4", IsAdmin = false });
+
+
             var tg = new NpcSector() { SectorLabel = "тест" };
-            tg.SectorWorkers.Add(new NpcWorker() { Name = "STAS", IsAdmin = true });
-            tg.SectorWorkers.Add(new NpcWorker() { Name = "Дударенко Светлана Николаевна", IsAdmin = false });
-            tg.SectorWorkers.Add(new NpcWorker() { Name = "Соколенко Артем Сергеевич", IsAdmin = false });
+            tg.SectorWorkers.Add(.WorkerId);
+            tg.SectorWorkers.Add(.WorkerId);
+            tg.SectorWorkers.Add(.WorkerId);
             tg.SectorWorkers.ToList().ForEach(t => t.Sectors.Add(tg.SectorLabel));
             Groups.Add(tg);
             tg = new NpcSector() { SectorLabel = "тест2" };
-            tg.SectorWorkers.Add(new NpcWorker() { Name = "STAS3", IsAdmin = true });
-            tg.SectorWorkers.Add(new NpcWorker() { Name = "STAS4", IsAdmin = false });
-            tg.SectorWorkers.Add(new NpcWorker() { Name = "STAS5", IsAdmin = false });
+            tg.SectorWorkers.Add(.WorkerId);
+            tg.SectorWorkers.Add(.WorkerId);
+            tg.SectorWorkers.Add(.WorkerId);
             tg.SectorWorkers.ToList().ForEach(t => t.Sectors.Add(tg.SectorLabel));
             Groups.Add(tg);
 
@@ -69,13 +76,28 @@ namespace Project_smuzi.Models
             SharedModel.WorkerRequesFromGrouptToDelete += SharedModel_WorkerRequesFromGrouptToDelete;
             SharedModel.WorkerRequestToDelete += SharedModel_WorkerRequestToDelete;
             SharedModel.WorkerRequestToEdit += SharedModel_WorkerRequestToEdit;
+            SharedModel.GroupRequestToDelete += SharedModel_GroupRequestToDelete;
             SearchUserText = string.Empty;
             DDHandler.SectorContentChangedEvent += DDHandler_SectorContentChangedEvent;
         }
 
+        private void SharedModel_GroupRequestToDelete(NpcSector sector)
+        {
+
+            if (System.Windows.Forms.MessageBox.Show($"Действительно удалить группу {sector.SectorLabel} ?", "Подтверждение удаления",
+                System.Windows.Forms.MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
+            {
+                foreach (var item in sector.SectorWorkers)
+                {
+                    Workers.Where(t => t.Sectors.Contains(sector.SectorLabel)).ToList().ForEach(t => t.Sectors.Remove(sector.SectorLabel));
+                }
+            }
+            Groups.Remove(sector);
+        }
+
         private void SharedModel_WorkerRequestToEdit(NpcWorker user)
         {
-            NewUserControl nuc = new NewUserControl() { Mode = true, FIO = user.Name, isAdm = user.IsAdmin};
+            NewUserControl nuc = new NewUserControl() { Mode = true, FIO = user.Name, isAdm = user.IsAdmin };
             if ((bool)nuc.ShowDialog())
             {
                 var a = Workers.Where(t => t.WorkerId == user.WorkerId).FirstOrDefault();
@@ -179,6 +201,17 @@ namespace Project_smuzi.Models
             }
         }
 
+        private string _currentAdmin;
+        public string CurrentAdmin
+        {
+            get => _currentAdmin;
+            set
+            {
+                _currentAdmin = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentAdmin"));
+            }
+        }
+
         private string _searchText;
         public string SearchText
         {
@@ -274,6 +307,26 @@ namespace Project_smuzi.Models
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
             }
         }
+
+        private CommandHandler _newgroupadd;
+        public CommandHandler NewGroupAddCommand
+        {
+            get
+            {
+                return _newgroupadd ?? (_newgroupadd = new CommandHandler(obj =>
+                {
+                    var a = obj as Window;
+                    NewGroupControl ngc = new NewGroupControl();
+                    ngc.Owner = a;
+                    ngc.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                    if ((bool)ngc.ShowDialog())
+                        Groups.Add(new NpcSector() { SectorLabel = ngc.GroupName });
+                },
+                (obj) => true
+                ));
+            }
+        }
+
         public void SaveJson()
         {
             string t = JsonConvert.SerializeObject(this, Formatting.Indented);

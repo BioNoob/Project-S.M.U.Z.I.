@@ -9,7 +9,10 @@ namespace Project_smuzi.Classes
     public class NpcWorker : INotifyPropertyChanged
     {
         public static int Identificator = 1;
-
+        private int id;
+        private string name;
+        private bool isAdmin;
+        private int workerId;
         private ObservableCollection<string> sectors;
 
         [JsonIgnore]
@@ -68,10 +71,7 @@ namespace Project_smuzi.Classes
         }
         [JsonIgnore]
         private CommandHandler _edituser;
-        private int id;
-        private string name;
-        private bool isAdmin;
-        private int workerId;
+
 
         [JsonIgnore]
         public CommandHandler EditUserCommand

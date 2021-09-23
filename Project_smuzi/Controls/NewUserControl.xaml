@@ -32,7 +32,8 @@
                     <ScaleTransform ScaleX="1" ScaleY="1.1" />
                 </CheckBox.LayoutTransform>
             </CheckBox>
-            <Button Content="{Binding ElementName=_this, Path=ButtonText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2" Width="70" Padding="0" Height="25" HorizontalAlignment="Left" Margin="36,0,0,0" Click="Button_Click"/>
+            <Button Content="{Binding ElementName=_this, Path=ButtonText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2" Width="70" Padding="0" Height="25" 
+                    HorizontalAlignment="Left" Margin="36,0,0,0" Click="Button_Click" IsDefault="True" IsEnabled="{Binding ElementName=_this, Path=Btn_enabled}"/>
         </Grid>
 
 

@@ -24,7 +24,7 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Margin="10,10,0,10">
             <Label Padding="0" Content="Имя администратора" VerticalAlignment="Center"/>
-            <TextBlock Background="Aquamarine" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="150" Margin="15,0,0,0"/>
+            <TextBlock Text="{Binding CurrentAdmin, Mode=OneTime}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="150" Margin="15,0,0,0"/>
         </StackPanel>
         <Grid Grid.Row="1" Grid.RowSpan="2" Grid.Column="0">
             <Grid.ColumnDefinitions>
@@ -45,7 +45,7 @@
                             <TextBlock Text="{Binding SectorLabel}" Width="245" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0">
                                 <TextBlock.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="Переименовать группу" Command="">
+                                        <MenuItem Header="Переименовать группу">
                                             <MenuItem>
                                                 <MenuItem.Header>
                                                     <TextBox Width="145" Text="{Binding SectorLabel, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Stretch"
@@ -57,7 +57,7 @@
                                             </MenuItem>
 
                                         </MenuItem>
-                                        <MenuItem Header="Удалить группу" Command=""/>
+                                        <MenuItem Header="Удалить группу" Command="{Binding DeleteGroupCommand}"/>
                                     </ContextMenu>
                                 </TextBlock.ContextMenu>
                             </TextBlock>
@@ -82,7 +82,8 @@
             </local_class:ExtendedTreeView>
             <Grid Grid.Row="0" Margin="0,15,30,0" HorizontalAlignment="Right" VerticalAlignment="Top">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Width="24" Height="24"  Margin="5,0,5,0" HorizontalAlignment="Center" Padding="0">
+                    <Button Width="24" Height="24" x:Name="NewGRButton" Margin="5,0,5,0" HorizontalAlignment="Center" Padding="0" Command="{Binding NewGroupAddCommand}"
+                            CommandParameter="{Binding ElementName=_window}">
                         <StackPanel>
                             <Image Source="/Resources/добавить_группу_16.png" Width="16" Height="16" Stretch="Fill"/>
                         </StackPanel>
