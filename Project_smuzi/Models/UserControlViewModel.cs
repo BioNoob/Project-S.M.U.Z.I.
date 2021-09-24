@@ -174,14 +174,14 @@ namespace Project_smuzi.Models
             set
             {
                 _searchText = value;
-                if (!string.IsNullOrEmpty(_searchText))
-                {
-                    var q = DB.Productes.Where(t => t.Name.Contains(_searchText) || t.Identification.Contains(_searchText));
-                    DB.Selector = new ObservableCollection<Product>(q);
-                }
-                else
-                    DB.Selector = DB.Productes;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SearchText"));
+                //if (!string.IsNullOrEmpty(_searchText))
+                //{
+                //    var q = DB.Productes.Where(t => t.Name.Contains(_searchText) || t.Identification.Contains(_searchText));
+                //    DB.Selector = new ObservableCollection<Product>(q);
+                //}
+                //else
+                //    DB.Selector = DB.Productes;
+                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SearchText"));
             }
         }
 
@@ -283,5 +283,12 @@ namespace Project_smuzi.Models
             }
         }
 
+        private CommandHandler saveNpcBaseCommand;
+        public ICommand SaveNpcBaseCommand => saveNpcBaseCommand ??= new CommandHandler(SaveNpcBase);
+
+        private void SaveNpcBase(object commandParameter)
+        {
+            Npc_base.SaveJson();
+        }
     }
 }

@@ -64,8 +64,7 @@
             <TextBox x:Name="TB"  Height="20" Width="150"  Grid.Column="1" Margin="10,0,0,0" 
                      Text="{Binding Prefix, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" Background="#FFF1B6B6"/>
             <Button x:Name="Start_btn" Content="Запуск" Grid.Column="2" HorizontalAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Center" Width="65"
-                    Command="{Binding StartReadCommand}"/>
-            <!-- Click="Button_Click"/> -->
+                    Command="{Binding StartReadCommand}" Visibility="{Binding IsAdmin,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
         </Grid>
         <Grid Grid.ColumnSpan="2" Grid.Row="1" Margin="0,2,0,0">
             <Grid.ColumnDefinitions>
@@ -76,15 +75,14 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Label Content="Поиск"  Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Padding="0"/>
-            <TextBox x:Name="Search_tb"  Height="20" Width="150"  Grid.Column="1" Margin="10,0,0,0" Background="#FFB4F5FF" TextChanged="Search_tb_TextChanged"/>
+            <TextBox x:Name="Search_tb"  Height="20" Width="150"  Grid.Column="1" Margin="10,0,0,0" Background="#FFB4F5FF" Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <Label Content="Глубина поиска"  Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
             <ComboBox  x:Name="Deeb_cmb" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Width="50" 
-                       ItemsSource="{Binding DB.DeepList}" SelectedIndex="0" SelectionChanged="ComboBox_SelectionChanged"/>
-            <TextBlock Text="{Binding DB.Selector.Count}" Grid.Column="4" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                       ItemsSource="{Binding DB.DeepList}" SelectedIndex="{Binding DeepLvl}"/>
         </Grid>
         
         <TreeView x:Name="treeView1" Grid.Row="2" Grid.Column="0" 
-                  ItemsSource="{Binding DB.Selector }"
+                  ItemsSource="{Binding Selector }"
                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5,2,5,5">
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type local_class:Product}" ItemsSource="{Binding Items}">
@@ -96,7 +94,6 @@
                                     <MenuItem Header="Открыть информацию по документу" Command="{Binding OpenInfoCommand}"/>
                                     <Separator />
                                     <MenuItem Header="Открыть папку документа" Command="{Binding OpenFolderCommand}"/>
-                                    <!--Click="MenuItem_Folder_Click"/> --> 
                                 </ContextMenu>
                             </TextBlock.ContextMenu>
                         </TextBlock>

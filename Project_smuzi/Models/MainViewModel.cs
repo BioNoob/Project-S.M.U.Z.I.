@@ -1,16 +1,11 @@
-﻿using Kompas6Constants;
-using KompasAPI7;
-using Newtonsoft.Json;
-using Project_smuzi.Classes;
+﻿using Project_smuzi.Classes;
 using Project_smuzi.Controls;
-using Project_smuzi.Properties;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using UserControl = Project_smuzi.Controls.UserControl;
@@ -21,16 +16,37 @@ namespace Project_smuzi.Models
     {
         ProductInfo pi = new ProductInfo();
         UserControl usc = new UserControl();
+
+        private ObservableCollection<Product> selector;
+        public ObservableCollection<Product> Selector
+        {
+            get => selector;
+            set
+            {
+                selector = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Selector"));
+            }
+        }
         public MainViewModel()
         {
+            Selector = new ObservableCollection<Product>();
+            if (SharedModel.IsAdminMode)
+                IsAdmin = Visibility.Visible;
+            else
+                IsAdmin = Visibility.Collapsed;
             SharedModel.ReadDataDone += SharedModel_ReadDataDone;
             SharedModel.LoadDataBase();
+
             SharedModel.OpenInfoEvent += SharedModel_OpenInfoEvent;
 
         }
 
         private void SharedModel_ReadDataDone()
         {
+            Selector = SharedModel.DB.Productes;
+            DeepLvl = 0;
+            SearchText = "";
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Selector"));
             if (SharedModel.IsAdminMode)
             {
                 if (!usc.IsVisible)
@@ -45,11 +61,45 @@ namespace Project_smuzi.Models
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
         public DataBase DB
         {
-            get { return SharedModel.DB; }
-            //set { _db = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DB")); }
+            get => SharedModel.DB;
         }
+        private int deepLvl;
+        public int DeepLvl
+        {
+            get => deepLvl;
+            set
+            {
+                deepLvl = value;
+                SearchText = SearchText;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DeepLvl"));
+            }
+        }
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                var o = DeepLvl;
+                if (DB != null)
+                    if (string.IsNullOrWhiteSpace(value))
+                    {
+                        Selector = new ObservableCollection<Product>(DB.Productes.Where(t => t.DeepLevel <= o));
+                    }
+                    else
+                    {
+                        ObservableCollection<Product> a = new ObservableCollection<Product>(DB.Productes.Where(t => t.ToXString.Contains(value) & t.DeepLevel <= o));
+                        Selector = a;
+                    }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Selector"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SearchText"));
+            }
+        }
+
         private string _prefix;
         public string Prefix
         {
@@ -58,14 +108,24 @@ namespace Project_smuzi.Models
             {
                 _prefix = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Prefix"));
-                SharedModel.DB.Prefix = _prefix;
+                SharedModel.DB.Prefix = value;
             }
         }
 
-        //Вынести в статическую модель? или в датабейз вообще
+        public System.Windows.Visibility IsAdmin
+        {
+            get => isAdmin;
+            set
+            {
+                isAdmin = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("IsAdmin"));
+            }
+        }
 
 
         private CommandHandler _startread;
+        private Visibility isAdmin;
+
         public CommandHandler StartReadCommand
         {
             get

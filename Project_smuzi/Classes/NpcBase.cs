@@ -1,14 +1,10 @@
 ﻿using Newtonsoft.Json;
-using Project_smuzi.Controls;
-using Project_smuzi.Models;
 using Project_smuzi.Properties;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Windows;
 
 namespace Project_smuzi.Classes
 {
@@ -23,10 +19,6 @@ namespace Project_smuzi.Classes
             Workers = new ObservableCollection<NpcWorker>();
             NpcSector.Identificator = 1;
             NpcWorker.Identificator = 1;
-            //SharedModel.NewWorkerCreateEvent += SharedModel_NewWorkerCreate;
-            //SharedModel.WorkerRequestToDelete += SharedModel_WorkerRequestToDelete;
-            //SharedModel.WorkerRequestToEdit += SharedModel_WorkerRequestToEdit;
-            //SharedModel.GroupRequestToDelete += SharedModel_GroupRequestToDelete;
         }
 
         public delegate void UserEvents();//(NpcWorker user);

@@ -31,7 +31,6 @@ namespace Project_smuzi.Classes
             {
                 Productes = this.Productes,
                 Elementes = this.Elementes,
-                Selector = this.Selector,
                 Prefix = this.Prefix
             };
 
@@ -43,10 +42,6 @@ namespace Project_smuzi.Classes
         public ObservableCollection<Product> HeavyProducts => new ObservableCollection<Product>(Productes.Where(t => t.Elements.Count > 0 && t.Products.Count > 0));
         [JsonIgnore]
         public ObservableCollection<int> DeepList => new ObservableCollection<int>(Productes.Select(t => t.DeepLevel).Distinct().OrderBy(t => t));
-        [JsonIgnore]
-        public ObservableCollection<Product> Selector { get => selector; set { selector = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Selector")); } }
-        [JsonIgnore]
-        private ObservableCollection<Product> selector;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -77,7 +72,6 @@ namespace Project_smuzi.Classes
         {
             Productes = new ObservableCollection<Product>();
             Elementes = new ObservableCollection<Element>();
-            Selector = new ObservableCollection<Product>();
             Element.Identificator = 1;
         }
 
@@ -98,7 +92,7 @@ namespace Project_smuzi.Classes
                 return;
             }
             kmpsApp.HideMessage = ksHideMessageEnum.ksHideMessageYes;
-
+            
             var all_dir = Directory.GetFiles(FolderPath, "*sp.spw*", SearchOption.AllDirectories).ToList();
             foreach (var item in all_dir)
             {
@@ -169,7 +163,7 @@ namespace Project_smuzi.Classes
                     }
                     kmpsdoc.Close(DocumentCloseOptions.kdDoNotSaveChanges);
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DB"));
-                    Selector = HeavyProducts;
+                    //Selector = HeavyProducts;
                     Debug.WriteLine($"doc {ident} is {name} work done");
                 }
                 catch (Exception ex)
@@ -181,9 +175,9 @@ namespace Project_smuzi.Classes
             Settings.Default.Save();
             Settings.Default.Reload();
             Debug.WriteLine($"Save and done {all_dir.Count} documents");
-            SharedModel.InvokeReadDataDone();
             GC.Collect();
             kmpsApp.Quit();
+            SharedModel.InvokeReadDataDone();
         }
         private void InnerVorker_Base(ISpecificationBaseObject iSepcObj, Product base_product)
         {
@@ -197,7 +191,7 @@ namespace Project_smuzi.Classes
             var naimenovanie = iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnName, 1, 0].Text.Str.Trim();//   # 5 - колонка "Наименование"
             var oboznachenie = iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnMark, 1, 0].Text.Str.Trim();//   # Обозначение
             naimenovanie = naimenovanie.Replace("\n", " ");
-            oboznachenie = naimenovanie.Replace("\n", " ");
+            oboznachenie = oboznachenie.Replace("\n", " ");
             if (string.IsNullOrEmpty(naimenovanie) & string.IsNullOrEmpty(oboznachenie))
                 return;
             double kolichestvo = 0;
@@ -212,7 +206,7 @@ namespace Project_smuzi.Classes
             var naimenovanie = iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnName, 1, 0].Text.Str.Trim();//        # Наименование
             var oboznachenie = iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnMark, 1, 0].Text.Str.Trim();//        # Обозначение
             naimenovanie = naimenovanie.Replace("\n", " ");
-            oboznachenie = naimenovanie.Replace("\n", " ");
+            oboznachenie = oboznachenie.Replace("\n", " ");
             if (string.IsNullOrEmpty(naimenovanie) & string.IsNullOrEmpty(oboznachenie))
                 return;
             double.TryParse(iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnCount, 1, 0].Text.Str, out double kolichestvo);//  # кол-во   
@@ -275,7 +269,13 @@ namespace Project_smuzi.Classes
                 Productes.Add(product_in); //добавляем изделие
             }
 
-            product_in.DeepLevel = product_in.DeepLevel < (base_product.DeepLevel + 1) ? base_product.DeepLevel + 1 : product_in.DeepLevel;
+            var a = product_in.DeepLevel < (base_product.DeepLevel + 1) ? (base_product.DeepLevel + 1) : product_in.DeepLevel;
+            if (a != product_in.DeepLevel)
+            {
+                product_in.GoingDeeper();
+                product_in.DeepLevel = a;
+            }
+                
 
             product_in.Contaiments_in.Add(base_product.BaseId);
             //Если есть такое изделие внутри издеия, то увеличиваем кол-во, если нет добавляем
@@ -290,18 +290,18 @@ namespace Project_smuzi.Classes
             else //потом посчитать кол-во общее вдруг где то используется много какой нибудь херни
                 in_in.Count += kolichestvo;
         }
-        public void SelectorSwitch(string text, int DeepLvl)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                Selector = new ObservableCollection<Product>(Productes.Where(t => t.DeepLevel <= (int)DeepLvl));
-            }
-            else
-            {
-                ObservableCollection<Product> a = new ObservableCollection<Product>(Productes.Where(t => t.ToXString.Contains(text) & t.DeepLevel <= (int)DeepLvl));
-                Selector = a;
-            }
-        }
+        //public void SelectorSwitch(string text, int DeepLvl)
+        //{
+        //    if (string.IsNullOrWhiteSpace(text))
+        //    {
+        //        Selector = new ObservableCollection<Product>(Productes.Where(t => t.DeepLevel <= (int)DeepLvl));
+        //    }
+        //    else
+        //    {
+        //        ObservableCollection<Product> a = new ObservableCollection<Product>(Productes.Where(t => t.ToXString.Contains(text) & t.DeepLevel <= (int)DeepLvl));
+        //        Selector = a;
+        //    }
+        //}
         #endregion
 
     }

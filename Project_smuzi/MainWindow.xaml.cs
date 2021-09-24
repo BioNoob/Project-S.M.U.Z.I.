@@ -15,17 +15,11 @@ namespace Project_smuzi
         public event PropertyChangedEventHandler PropertyChanged;
 
         public string FolderPath = string.Empty;
-        private MainViewModel MVM => (MainViewModel)DataContext;
         public MainWindow()
         {
             InitializeComponent();
             TB.Text = "ТСЮИ";
-
-            //DB = new DataBase();
-            //Productes = new List<Product>();
-            //Elementes = new List<Element>();
-
-            ComboBox_SelectionChanged(null, null);
+            SharedModel.IsAdminMode = true;
             SharedModel.ReadDataDone += MVM_ReadDataDone;
             SharedModel.ReadDataStart += MVM_ReadDataStart;
             Closing += MainWindow_Closing;
@@ -37,16 +31,6 @@ namespace Project_smuzi
             SharedModel.InvokeCloseApp();
             e.Cancel = false;
         }
-
-        public (string s, int i) SwitchRepresentParameter
-        {
-            get => switchRepresentParameter;
-            set
-            {
-                switchRepresentParameter = value;
-            }
-        }
-        private (string s, int i) switchRepresentParameter;
 
         private void MVM_ReadDataStart()
         {
@@ -69,22 +53,6 @@ namespace Project_smuzi
                 Deeb_cmb.SelectedIndex = Deeb_cmb.Items.Count - 1;
                 Img_refresh.Visibility = Visibility.Collapsed;
             }));
-        }
-
-        private void Search_tb_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            if (Deeb_cmb.SelectedIndex < 0)
-            {
-                Deeb_cmb.SelectionChanged -= ComboBox_SelectionChanged;
-                Deeb_cmb.SelectedIndex = 0;
-                Deeb_cmb.SelectionChanged += ComboBox_SelectionChanged;
-            }
-            MVM.DB.SelectorSwitch(Search_tb.Text, (int)Deeb_cmb.SelectedItem); // По идее тут должна быть комманда в привязке
-        }
-
-        private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            Search_tb_TextChanged(null, null);
         }
     }
 }

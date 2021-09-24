@@ -56,9 +56,8 @@ namespace Project_smuzi.Models
             if (!string.IsNullOrEmpty(Settings.Default.DB_json))
             {
                 DB = JsonConvert.DeserializeObject<DataBase>(Settings.Default.DB_json);
-                DB.LoadFromContaiment();
+                //DB.LoadFromContaiment();
             }
-            DB.Selector = DB.Productes;
             InvokeReadDataDone();
         }
     }

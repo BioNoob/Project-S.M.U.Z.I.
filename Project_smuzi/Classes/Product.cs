@@ -12,17 +12,59 @@ namespace Project_smuzi.Classes
     public class Product : Element, INotifyPropertyChanged
     {
         public new event PropertyChangedEventHandler PropertyChanged;
-        [JsonIgnore]
-        private ObservableCollection<Product> products;
-        [JsonIgnore]
-        private ObservableCollection<Element> elements;
+        //[JsonIgnore]
+        //private ObservableCollection<Product> products;
+        //[JsonIgnore]
+        //private ObservableCollection<Element> elements;
         [JsonIgnore]
         private Dictionary<int, double> contaiment;
 
         [JsonIgnore]
-        public ObservableCollection<Product> Products { get => products; set { products = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Productes")); } }
+        public ObservableCollection<Product> Products 
+        { 
+            get
+            {
+                ObservableCollection<Product> p = new ObservableCollection<Product>();
+                foreach (var item in contaiment.Keys)
+                {
+                    var a = SharedModel.DB.Productes.FirstOrDefault(t => t.BaseId == item);
+                    if (a != null)
+                    {
+                        a.Count = contaiment[item];
+                        p.Add(a);
+                    }
+                }
+                return p;
+
+            }
+        }
         [JsonIgnore]
-        public ObservableCollection<Element> Elements { get => elements; set { elements = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Elementes")); } }
+        public ObservableCollection<Element> Elements 
+        { 
+            get 
+            {
+                ObservableCollection<Element> p = new ObservableCollection<Element>();
+                foreach (var item in contaiment.Keys)
+                {
+                    var a = SharedModel.DB.Elementes.FirstOrDefault(t => t.BaseId == item);
+                    if(a != null)
+                    {
+                        a.Count = contaiment[item];
+                        p.Add(a);
+                    }
+                }
+                return p;
+            } 
+        }
+
+        public void GoingDeeper()
+        {
+            foreach (var item in Products)
+            {
+                item.DeepLevel++;
+            }
+        }
+
         /// <summary>
         /// ID element based, count
         /// </summary>
@@ -47,8 +89,6 @@ namespace Project_smuzi.Classes
         }
         private void InitializeComponent()
         {
-            Elements = new ObservableCollection<Element>();
-            Products = new ObservableCollection<Product>();
             Contaiment = new Dictionary<int, double>();
             DeepLevel = 0;
         }
@@ -61,11 +101,11 @@ namespace Project_smuzi.Classes
                 Contaiment = this.Contaiment,
                 Count = this.Count,
                 Section_id = this.Section_id,
-                Products = this.Products,
+                //Products = this.Products,
                 Name = this.Name,
                 PathTo = this.PathTo,
                 Identification = this.Identification,
-                Elements = this.Elements,
+                //Elements = this.Elements,
                 DeepLevel = this.DeepLevel,
                 Contaiments_in = this.Contaiments_in
             };

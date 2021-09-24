@@ -4,9 +4,11 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
+    <StartupObject>Project_smuzi.App</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Controls\anchor.ico" />
     <None Remove="Resources\icons8-электроника-16.png" />
     <None Remove="Resources\ico_refresh_48.png" />
     <None Remove="Resources\админ_16.png" />
@@ -23,6 +25,7 @@
     <None Remove="Resources\прочие_16.png" />
     <None Remove="Resources\редактировать_16.png" />
     <None Remove="Resources\сборочные_16.png" />
+    <None Remove="Resources\сохранить_24.png" />
     <None Remove="Resources\стандарт_16.png" />
     <None Remove="Resources\удалить_группу_16.png" />
     <None Remove="Resources\удалить_юзера_16.png" />
@@ -30,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Controls\anchor.ico" />
     <Resource Include="Resources\редактировать_16.png" />
   </ItemGroup>
 
@@ -67,6 +71,7 @@
     <Resource Include="Resources\папка_48.png" />
     <Resource Include="Resources\прочие_16.png" />
     <Resource Include="Resources\сборочные_16.png" />
+    <Resource Include="Resources\сохранить_24.png" />
     <Resource Include="Resources\стандарт_16.png" />
     <Resource Include="Resources\удалить_группу_16.png" />
     <Resource Include="Resources\удалить_юзера_16.png" />
