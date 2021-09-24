@@ -1,9 +1,14 @@
 ﻿using Newtonsoft.Json;
+using Project_smuzi.Classes;
+using Project_smuzi.Controls;
+using Project_smuzi.Models;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Windows.Input;
 #pragma warning disable CS0067
 namespace Project_smuzi.Classes
 {
@@ -12,8 +17,6 @@ namespace Project_smuzi.Classes
         public static int Identificator = 1;
 
 
-
-        private ObservableCollection<int> sectors;
 
         [JsonIgnore]
         public string GetImg
@@ -33,85 +36,31 @@ namespace Project_smuzi.Classes
         private int workerId;
         public int WorkerId { get => workerId; set => SetProperty(ref workerId, value); }
 
+        private ObservableCollection<int> sectors;
         public ObservableCollection<int> Sectors { get => sectors; set => SetProperty(ref sectors, value); }
-        [JsonIgnore]
-        private NpcBase owner;
-        [JsonIgnore]
-        public NpcBase Owner { get => owner; set => SetProperty(ref owner, value); }
 
         [JsonIgnore]
         public ObservableCollection<NpcSector> WorkerGroups
         {
             get
             {
-                return new ObservableCollection<NpcSector>(Owner.Groups.Where(t => t.SectorWorkers.Contains(WorkerId)));
+                return new ObservableCollection<NpcSector>(SharedModel.DB_Workers.Groups.Where(t => t.SectorWorkers.Contains(WorkerId)));
             }
         }
-
-
         public NpcWorker()
         {
             Sectors = new ObservableCollection<int>();
             WorkerId = Identificator++;
+            SharedModel.DB_Workers.PropertyChanged += DB_Workers_PropertyChanged;
+        }
+
+        private void DB_Workers_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Workers")
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WorkerGroups"));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        [JsonIgnore]
-        private CommandHandler _deletefromgroup;
-        [JsonIgnore]
-        public CommandHandler DeleteFromGroupCommand
-        {
-            get
-            {
-                return _deletefromgroup ??= new CommandHandler(obj =>
-                {
-                    Models.SharedModel.InvokeWorkerDeleteFromGroup(this);
-                },
-                (obj) => true
-                );
-            }
-        }
-        [JsonIgnore]
-        private CommandHandler _deletefrom;
-        [JsonIgnore]
-        public CommandHandler DeleteFromCommand
-        {
-            get
-            {
-                return _deletefrom ??= new CommandHandler(obj =>
-                {
-                    Models.SharedModel.InvokeWorkerDelete(this);
-                },
-                (obj) => true
-                );
-            }
-        }
-        [JsonIgnore]
-        private CommandHandler _edituser;
-
-
-        [JsonIgnore]
-        public CommandHandler EditUserCommand
-        {
-            get
-            {
-                return _edituser ??= new CommandHandler(obj =>
-                {
-                    Models.SharedModel.InvokeWorkerEdit(this);
-                },
-                (obj) => true
-                );
-            }
-        }
-
-        public void SetWorkerSectors(NpcSector sector)
-        {
-            this.Sectors.Add(sector.SectorId);
-            sector.SectorWorkers.Add(this.WorkerId);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("WorkerGroups"));
-            
-        }
 
         protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
         {
@@ -122,6 +71,47 @@ namespace Project_smuzi.Classes
                 return true;
             }
             return false;
+        }
+
+        private CommandHandler deleteFromGroupCommand;
+        public ICommand DeleteFromGroupCommand => deleteFromGroupCommand ??= new CommandHandler(DeleteFromGroup);
+
+        private void DeleteFromGroup(object commandParameter)
+        {
+            SharedModel.DB_Workers.RemoveWorkerFromGroup(this, commandParameter as NpcSector);
+        }
+
+        private CommandHandler changeWorkerCommand;
+        public ICommand ChangeWorkerCommand => changeWorkerCommand ??= new CommandHandler(ChangeWorker);
+
+        private void ChangeWorker(object commandParameter)
+        {
+
+            var a = commandParameter as Window;
+            NewUserControl nuc = new NewUserControl
+            {
+                Owner = a,
+                Mode = true,
+                FIO = this.Name,
+                IsAdm = this.IsAdmin,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            if ((bool)nuc.ShowDialog())
+            {
+                this.IsAdmin = nuc.IsAdm;
+                this.Name = nuc.FIO;
+                SharedModel.DB_Workers.ChangeWorker(this);
+            }
+
+            //
+        }
+        private CommandHandler deleteWorkerCommand;
+        public ICommand DeleteWorkerCommand => deleteWorkerCommand ??= new CommandHandler(DeleteWorker);
+
+        private void DeleteWorker(object commandParameter)
+        {
+            if (System.Windows.Forms.MessageBox.Show($"Удалить пользователя \"{Name}\"?", "Удаление пользователя", System.Windows.Forms.MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
+                SharedModel.DB_Workers.RemoveWorker(this);
         }
     }
 }

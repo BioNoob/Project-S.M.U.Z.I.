@@ -44,8 +44,8 @@ namespace Project_smuzi.Controls
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (!Mode)
-                Models.SharedModel.InvokeNewWorkerCreate(new Classes.NpcWorker() { Name = FIO, IsAdmin = isAdm });
+            //if (!Mode)
+            //    Models.SharedModel.InvokeNewWorkerCreate(new Classes.NpcWorker() { Name = FIO, IsAdmin = isAdm });
             //else
             this.DialogResult = true;
             Close();

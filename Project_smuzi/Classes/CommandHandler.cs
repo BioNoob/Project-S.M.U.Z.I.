@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Project_smuzi.Classes 
@@ -65,5 +67,27 @@ namespace Project_smuzi.Classes
             set { SetValue(SelectedItem_Property, value); }
         }
         public static readonly DependencyProperty SelectedItem_Property = DependencyProperty.Register("SelectedItem_", typeof(object), typeof(ExtendedTreeView), new UIPropertyMetadata(null));
+    }
+    public class MathConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            object result = value;
+            double parameterValue;
+
+            if (value != null && targetType == typeof(double) &&
+                double.TryParse((string)parameter,
+                NumberStyles.Float, culture, out parameterValue))
+            {
+                result = (double)value + parameterValue;
+            }
+
+            return result;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

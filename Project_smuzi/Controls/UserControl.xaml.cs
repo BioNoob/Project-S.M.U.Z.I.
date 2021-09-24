@@ -31,16 +31,6 @@ namespace Project_smuzi.Controls
             this.Close();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            NewUserControl nuc = new NewUserControl()
-            {
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-            nuc.ShowDialog();
-        }
-
         private void Group_trv_Expanded(object sender, RoutedEventArgs e)
         {
             var b = e.OriginalSource as TreeViewItem;

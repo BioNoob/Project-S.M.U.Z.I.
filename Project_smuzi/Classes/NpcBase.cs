@@ -20,108 +20,91 @@ namespace Project_smuzi.Classes
         public NpcBase()
         {
             Groups = new ObservableCollection<NpcSector>();
-            _Workers = new ObservableCollection<NpcWorker>();
+            Workers = new ObservableCollection<NpcWorker>();
             NpcSector.Identificator = 1;
             NpcWorker.Identificator = 1;
-            SharedModel.NewWorkerCreateEvent += SharedModel_NewWorkerCreate;
-            SharedModel.WorkerRequestToDelete += SharedModel_WorkerRequestToDelete;
-            SharedModel.WorkerRequestToEdit += SharedModel_WorkerRequestToEdit;
-            SharedModel.GroupRequestToDelete += SharedModel_GroupRequestToDelete;
+            //SharedModel.NewWorkerCreateEvent += SharedModel_NewWorkerCreate;
+            //SharedModel.WorkerRequestToDelete += SharedModel_WorkerRequestToDelete;
+            //SharedModel.WorkerRequestToEdit += SharedModel_WorkerRequestToEdit;
+            //SharedModel.GroupRequestToDelete += SharedModel_GroupRequestToDelete;
         }
 
-        private void SharedModel_GroupRequestToDelete(NpcSector sector)
-        {
+        public delegate void UserEvents();//(NpcWorker user);
+        //public delegate void GroupEvents();//(NpcSector sector);
+        //public event GroupEvents GroupRequestUpdate;
+        public event UserEvents UserWasDeleteEvent;
 
-            if (System.Windows.Forms.MessageBox.Show($"Действительно удалить группу {sector.SectorLabel} ?", "Подтверждение удаления",
-                System.Windows.Forms.MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
+        public void AddWorker(NpcWorker nw)
+        {
+            Workers.Add(nw);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
+        }
+        public void AddGroup(NpcSector nw)
+        {
+            Groups.Add(nw);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Groups"));
+        }
+        public void AddWorkerToGroup(NpcWorker nw, NpcSector nc)
+        {
+            Groups.FirstOrDefault(t => t.SectorId == nc.SectorId).SectorWorkers.Add(nw.WorkerId);
+            Workers.FirstOrDefault(t => t.WorkerId == nw.WorkerId).Sectors.Add(nc.SectorId);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Groups"));
+        }
+        public void AddWorkersToGroup(IEnumerable<NpcWorker> nw, NpcSector nc)
+        {
+            foreach (var item in nw)
             {
-                foreach (var item in sector.SectorWorkers)
-                {
-                    Workers.Where(t => t.Sectors.Contains(sector.SectorId)).ToList().ForEach(t => t.Sectors.Remove(sector.SectorId));
-                }
+                Groups.FirstOrDefault(t => t.SectorId == nc.SectorId).SectorWorkers.Add(item.WorkerId);
+                Workers.FirstOrDefault(t => t.WorkerId == item.WorkerId).Sectors.Add(nc.SectorId);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
             }
-            Groups.Remove(sector);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Groups"));
         }
-
-        private void SharedModel_WorkerRequestToEdit(NpcWorker user)
+        public void RemoveWorkerFromGroup(NpcWorker nw, NpcSector nc)
         {
-            NewUserControl nuc = new NewUserControl() { Mode = true, FIO = user.Name, IsAdm = user.IsAdmin, WindowStartupLocation = WindowStartupLocation.CenterScreen };
-            if ((bool)nuc.ShowDialog())
+            Groups.FirstOrDefault(t => t.SectorId == nc.SectorId).SectorWorkers.Remove(nw.WorkerId);
+            Workers.FirstOrDefault(t => t.WorkerId == nw.WorkerId).Sectors.Remove(nc.SectorId);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Groups"));
+        }
+        public void RemoveGroup(NpcSector nc)
+        {
+            Groups.Remove(nc);
+            Workers.Where(t => t.Sectors.Contains(nc.SectorId)).ToList().ForEach(t => t.Sectors.Remove(nc.SectorId));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Groups"));
+        }
+        public void RenameGroup(NpcSector nc)
+        {
+            var z = Groups.FirstOrDefault(t => t.SectorId == nc.SectorId);
+            if (z != null)
             {
-                var a = Workers.Where(t => t.WorkerId == user.WorkerId).FirstOrDefault();
-                if (a != null)
-                {
-                    a.IsAdmin = nuc.IsAdm;
-                    a.Name = nuc.FIO;
-                }
-                //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
+                z.SectorLabel = nc.SectorLabel;
             }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Groups"));
         }
-
-        private void SharedModel_WorkerRequestToDelete(NpcWorker user)
+        public void ChangeWorker(NpcWorker nw)
         {
-            if (user.Sectors.Count > 0)
-            {
-                if (System.Windows.Forms.MessageBox.Show($"Данный пользователь находится в группах:\n\t{string.Join("\n\t", user.Sectors)}\nУдалить пользователя?", "Внимание!",
-                    System.Windows.Forms.MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
-                {
-                    foreach (var item in user.Sectors)
-                    {
-                        Groups.Where(t => t.SectorId == item).ToList().ForEach(t => t.SectorWorkers.Remove(user.WorkerId));
-                    }
-                }
-                else
-                    return;
-            }
-            _Workers.Remove(user);
-            //PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Groups"));
         }
-
-        private void SharedModel_NewWorkerCreate(NpcWorker user)
+        public void RemoveWorker(NpcWorker nw)
         {
-            var a = Groups.Where(t => t.SectorLabel == "Без группы").FirstOrDefault();
-            _Workers.Add(user);
+            Workers.Remove(nw);
+            Groups.Where(t => t.SectorWorkers.Contains(nw.WorkerId)).ToList().ForEach(t => t.SectorWorkers.Remove(nw.WorkerId));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Workers"));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Groups"));
+            UserWasDeleteEvent?.Invoke();
         }
-
 
         private ObservableCollection<NpcSector> _groups;
-        public ObservableCollection<NpcSector> Groups { get => _groups; set { SetProperty(ref _groups, value); } }
+        public ObservableCollection<NpcSector> Groups { get => _groups; set => SetProperty(ref _groups, value); } 
 
         private ObservableCollection<NpcWorker> _workers;
 
-        private ObservableCollection<NpcWorker> _Workers { get => _workers; set => SetProperty(ref _workers, value); }
-        //public IEnumerable<NpcWorker> Workers
-        //{
-        //    get
-        //    {
-        //        // Using an iterator so that client code can't access the underlying list
-        //        foreach (var child in _Workers)
-        //        {
-        //            yield return child;
-        //        }
-        //    }
-        //}
-        [JsonIgnore]
-        public ObservableCollection<NpcWorker> Workers
-        {
-            get
-            {
-                return _Workers;
-            }
-            set
-            {
-                _Workers = value;
-            }
-        }
-        public void AddWorker(NpcWorker worker)
-        {
-            worker.Owner = this;
-            _Workers.Add(worker);
-        }
-        public void RemoveWorker(NpcWorker worker)
-        {
-            _Workers.Remove(worker);
-        }
+        public ObservableCollection<NpcWorker> Workers { get => _workers; set => SetProperty(ref _workers, value); }
 
         public void SaveJson()
         {

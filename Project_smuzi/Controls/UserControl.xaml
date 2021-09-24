@@ -11,8 +11,11 @@
         mc:Ignorable="d"
         Title="UserControl" Height="450" Width="800" MinHeight="450" MinWidth="800">
     <Window.DataContext>
-        <local:UserControlViewModel/>
+        <local:UserControlViewModel x:Name="ThisModel"/>
     </Window.DataContext>
+    <Window.Resources>
+        <local_class:MathConverter x:Key="MathConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -46,7 +49,7 @@
                                 <TextBlock.ContextMenu>
                                     <ContextMenu>
                                         <MenuItem Header="Переименовать группу">
-                                            <MenuItem>
+                                            <MenuItem Command="{Binding RenameGropCommand}">
                                                 <MenuItem.Header>
                                                     <TextBox Width="145" Text="{Binding SectorLabel, Mode=TwoWay}" VerticalAlignment="Center" HorizontalAlignment="Stretch"
                                                              HorizontalContentAlignment="Center"/>
@@ -69,7 +72,8 @@
                                     <TextBlock Text="{Binding Name}" Width="230" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0">
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
-                                                <MenuItem Header="Удалить пользователя из группы" Command="{Binding DeleteFromGroupCommand}"/>
+                                                <MenuItem Header="Удалить пользователя из группы" Command="{Binding DeleteFromGroupCommand}" 
+                                                          CommandParameter="{Binding Path=SelectedItem_, Source={x:Reference Group_trv}}"/>
                                             </ContextMenu>
                                         </TextBlock.ContextMenu>
                                     </TextBlock>
@@ -98,11 +102,13 @@
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged }" TextWrapping="Wrap" Padding="0" TextTrimming="WordEllipsis" Margin="0"
-                                               TextAlignment="Left" Width="{Binding ElementName=GCWorkers_gr, Path=Width}">
+                                               TextAlignment="Left" Width="{Binding ElementName=GCWorkers_gr, Path=Width, Converter={StaticResource ResourceKey=MathConverter}, ConverterParameter=-8}">
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
-                                                <MenuItem Header="Изменить пользователя" Command="{Binding EditUserCommand}" />
-                                                <MenuItem Header="Удалить пользователя" Command="{Binding DeleteFromCommand}"/>
+                                                <MenuItem Header="Изменить пользователя" Command="{Binding ChangeWorkerCommand}" 
+                                                          CommandParameter="{Binding Source={x:Reference _window}}"/>
+                                                <MenuItem Header="Удалить пользователя" Command="{Binding DeleteWorkerCommand}"
+                                                          CommandParameter="{Binding Source={x:Reference _window}}"/>
                                             </ContextMenu>
                                         </TextBlock.ContextMenu>
                                     </TextBlock>
@@ -124,8 +130,8 @@
             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="5,0,5,0" HorizontalAlignment="Left">
                 <Label Padding="0" Content="Поиск пользователя" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="0,0,0,0"/>
                 <TextBox Width="190"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,0,0" Text="{Binding SearchUserText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <Button Width="24" Height="24"  Margin="15,0,5,0" HorizontalAlignment="Center" Padding="0"
-                        Click="Button_Click">
+                <Button Width="24" Height="24"  Margin="15,0,5,0" HorizontalAlignment="Center" Padding="0" Command="{Binding NewUserAddCommand}"
+                            CommandParameter="{Binding ElementName=_window}">
                     <StackPanel>
                         <Image Source="/Resources/добавить_юзера_16.png" Width="16" Height="16" Stretch="Fill"/>
                     </StackPanel>
@@ -149,15 +155,29 @@
                        dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding DDHandler}" SelectedItem="{Binding SelectedProductFromGroup}">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn DisplayMemberBinding="{Binding Identification}" Width="130" Header="Обозначение"/>
+                        <GridViewColumn Width="130" Header="Обозначение">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Identification}" TextWrapping="Wrap" TextTrimming="WordEllipsis" HorizontalAlignment="Stretch">
+                                        <TextBlock.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Открепить от группы" Command="{Binding DeleteFromCommand}"/>
+                                                <MenuItem Header="Показать информацию" Command="{Binding OpenInfoCommand}"/>
+                                            </ContextMenu>
+                                        </TextBlock.ContextMenu>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
                         <GridViewColumn Width="195" Header="Наименование" x:Name="DBview_gr">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" HorizontalAlignment="Stretch"
-                                               Width="{Binding ElementName=DBview_gr, Path=Width}">
+                                    <TextBlock Text="{Binding Name}" TextWrapping="Wrap" TextTrimming="WordEllipsis" HorizontalAlignment="Stretch"
+                                               Width="{Binding ElementName=DBview_gr, Path=Width, Converter={StaticResource ResourceKey=MathConverter}, ConverterParameter=-10}">
                                         <TextBlock.ContextMenu>
                                             <ContextMenu>
-                                                <MenuItem Header="Открепить изделие от группы" Command="{Binding DeleteFromCommand}"/>
+                                                <MenuItem Header="Открепить изделие" Command="{Binding DeleteFromCommand}"/>
+                                                <MenuItem Header="Показать информацию" Command="{Binding OpenInfoCommand}"/>
                                             </ContextMenu>
                                         </TextBlock.ContextMenu>
                                     </TextBlock>
@@ -175,12 +195,31 @@
                       dd:DragDrop.IsDragSource="True">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn DisplayMemberBinding="{Binding Identification}" Width="130" >Обозначение</GridViewColumn>
+                        <GridViewColumn Width="130" Header="Обозначение">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Identification}" TextWrapping="Wrap" TextTrimming="WordEllipsis" HorizontalAlignment="Stretch">
+                                        <TextBlock.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Показать информацию" Command="{Binding OpenInfoCommand}"/>
+                                            </ContextMenu>
+                                        </TextBlock.ContextMenu>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
                         <GridViewColumn Width="195" Header="Наименование"  x:Name="DBview_db">
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Name}" TextWrapping="Wrap" HorizontalAlignment="Stretch"
-                                               Width="{Binding ElementName=DBview_db, Path=Width}"/>
+                                               Width="{Binding ElementName=DBview_db, Path=Width, Converter={StaticResource ResourceKey=MathConverter}, ConverterParameter=-10}">
+                                        <TextBlock.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Показать информацию" Command="{Binding OpenInfoCommand}"/>
+                                            </ContextMenu>
+                                        </TextBlock.ContextMenu>
+                                    </TextBlock>
+
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>

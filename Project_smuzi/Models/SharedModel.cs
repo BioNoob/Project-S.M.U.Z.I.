@@ -12,6 +12,8 @@ namespace Project_smuzi.Models
     {
         public static bool IsAdminMode { get; set; } = true;
         public static DataBase DB { get; set; }
+        public static NpcBase DB_Workers { get; set; }
+
 
         public delegate void OpenInfo(Product product);
         public static event OpenInfo OpenInfoEvent;
@@ -23,14 +25,11 @@ namespace Project_smuzi.Models
         public static event JobInfo ReadDataDone;
         public static event JobInfo CloseEvent;
 
-        public delegate void UserEvents(NpcWorker user);
-        public static event UserEvents NewWorkerCreateEvent;
-        public static event UserEvents WorkerRequesFromGrouptToDelete;
-        public static event UserEvents WorkerRequestToDelete;
-        public static event UserEvents WorkerRequestToEdit;
+        //public delegate void UserEvents(NpcWorker user);
 
-        public delegate void GroupEvents(NpcSector user);
-        public static event GroupEvents GroupRequestToDelete;
+
+        //public delegate void GroupEvents(NpcSector user);
+
 
         public static void InvokeReadDataDone()
         {
@@ -51,26 +50,6 @@ namespace Project_smuzi.Models
         public static void InvokeOpenFolderEvent(Product prd)
         {
             OpenFolderEvent?.Invoke(prd);
-        }
-        public static void InvokeNewWorkerCreate(NpcWorker user)
-        {
-            NewWorkerCreateEvent?.Invoke(user);
-        }
-        public static void InvokeWorkerDelete(NpcWorker user)
-        {
-            WorkerRequestToDelete?.Invoke(user);
-        }
-        public static void InvokeWorkerEdit(NpcWorker user)
-        {
-            WorkerRequestToEdit?.Invoke(user);
-        }
-        public static void InvokeWorkerDeleteFromGroup(NpcWorker user)
-        {
-            WorkerRequesFromGrouptToDelete?.Invoke(user);
-        }
-        public static void InvokeGroupDelete(NpcSector sector)
-        {
-            GroupRequestToDelete?.Invoke(sector);
         }
         public static void LoadDataBase()
         {
