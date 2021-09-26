@@ -1,7 +1,8 @@
-﻿using Project_smuzi.Classes;
-using Project_smuzi.Models;
+﻿using Project_smuzi.Models;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Project_smuzi.Controls
@@ -40,7 +41,7 @@ namespace Project_smuzi.Controls
         public ItemsControl GetSelectedTreeViewItemParent(TreeViewItem item)
         {
             DependencyObject parent = VisualTreeHelper.GetParent(item);
-            while (!(parent is TreeViewItem || parent is TreeView))
+            while (!(parent is TreeViewItem || parent is System.Windows.Controls.TreeView))
             {
                 parent = VisualTreeHelper.GetParent(parent);
             }
@@ -58,6 +59,14 @@ namespace Project_smuzi.Controls
                 if (treeitem != null)
                     Group_trv.SelectedItem_ = treeitem.Header;
                 //var MyValue = treeitem.Header as NpcSector;//Gets you the immediate parent
+            }
+        }
+
+        private void _window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key == Key.S && Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                SharedModel.DB_Workers.SaveJson();
             }
         }
     }

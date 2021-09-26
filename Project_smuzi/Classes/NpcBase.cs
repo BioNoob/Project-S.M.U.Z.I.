@@ -100,9 +100,26 @@ namespace Project_smuzi.Classes
 
         public void SaveJson()
         {
-            string t = JsonConvert.SerializeObject(this, Formatting.Indented);
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.Formatting = Formatting.Indented;
+            settings.ContractResolver = new EncryptedStringPropertyResolver("My-Sup3r-Secr3t-Key");
+
+            string t = JsonConvert.SerializeObject(this, Formatting.Indented, settings);
             Settings.Default.NPC_DB_json = t;
             Settings.Default.Save();
+        }
+        public static NpcBase LoadFromJson()
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.Formatting = Formatting.Indented;
+            settings.ContractResolver = new EncryptedStringPropertyResolver("My-Sup3r-Secr3t-Key");
+
+
+
+            if (!string.IsNullOrEmpty(Settings.Default.NPC_DB_json))
+                return JsonConvert.DeserializeObject<NpcBase>(Settings.Default.NPC_DB_json, settings);
+            else
+                return new NpcBase();
         }
         protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
         {

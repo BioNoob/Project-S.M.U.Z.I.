@@ -13,6 +13,7 @@ namespace Project_smuzi.Controls
         private bool isAdm;
         private string btntext;
         private string fIO;
+        private string pass;
 
         public NewUserControl()
         {
@@ -29,6 +30,7 @@ namespace Project_smuzi.Controls
         }
 
         public string FIO { get => fIO; set { SetProperty(ref fIO, value);if (string.IsNullOrWhiteSpace(value)) Btn_enabled = false; else Btn_enabled = true; } }
+        public string Password { get => pass; set { SetProperty(ref pass, value); } }
 
         private bool btn_enabled;
         public bool Btn_enabled { get => btn_enabled; set => SetProperty(ref btn_enabled, value); }
@@ -59,6 +61,14 @@ namespace Project_smuzi.Controls
                 return true;
             }
             return false;
+        }
+
+        private void Pass_tb_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if(!string.IsNullOrWhiteSpace(Pass_tb.Password))
+            {
+                Password = Pass_tb.Password;
+            }
         }
     }
 }

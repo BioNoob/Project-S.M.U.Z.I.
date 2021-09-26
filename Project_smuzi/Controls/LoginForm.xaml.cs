@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Project_smuzi.Classes;
+using Project_smuzi.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
@@ -10,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Linq;
 
 namespace Project_smuzi.Controls
 {
@@ -25,6 +28,9 @@ namespace Project_smuzi.Controls
         public LoginForm()
         {
             InitializeComponent();
+            UserControl w = new UserControl();
+            w.Show();
+            SharedModel.DB_Workers = NpcBase.LoadFromJson();
         }
 
         public string Login { get => login; set { login = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Login")); } }
@@ -34,7 +40,10 @@ namespace Project_smuzi.Controls
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            //if(SharedModel.DB_Workers.Workers.FirstOrDefault())
+            //{
 
+            //}
         }
     }
 }

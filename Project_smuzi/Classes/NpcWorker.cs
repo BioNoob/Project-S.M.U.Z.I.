@@ -31,6 +31,11 @@ namespace Project_smuzi.Classes
         public bool IsAdmin { get => isAdmin; set => SetProperty(ref isAdmin, value); }
         private string name;
         public string Name { get => name; set => SetProperty(ref name, value); }
+        private string pass;
+        [JsonEncrypt]
+        public string Password { get => pass; set => SetProperty(ref pass, value); }
+
+
         private int workerId;
         public int WorkerId { get => workerId; set => SetProperty(ref workerId, value); }
 
@@ -91,6 +96,7 @@ namespace Project_smuzi.Classes
                 Owner = a,
                 Mode = true,
                 FIO = this.Name,
+                Password = this.Password,
                 IsAdm = this.IsAdmin,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
@@ -98,6 +104,7 @@ namespace Project_smuzi.Classes
             {
                 this.IsAdmin = nuc.IsAdm;
                 this.Name = nuc.FIO;
+                this.Password = nuc.Password;
                 SharedModel.DB_Workers.ChangeWorker(this);
             }
 

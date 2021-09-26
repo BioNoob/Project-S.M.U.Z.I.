@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         x:Name="_this"
         mc:Ignorable="d"
-        Title="Пользователь" Height="105" Width="360" WindowStyle="ToolWindow" MinHeight="105" MinWidth="360">
+        Title="Пользователь" Height="135" Width="360" WindowStyle="ToolWindow" MinHeight="135" MinWidth="360">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
@@ -13,13 +13,27 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Margin="5" Grid.ColumnSpan="2">
-            <Label Content="ФИО" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0"/>
-            <TextBox Height="25" Width="300" HorizontalAlignment="Stretch" Margin="5,0,0,0" VerticalContentAlignment="Center"
+        <Grid Margin="5" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="45"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="ФИО" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0"/>
+            <TextBox Grid.Column="1" Height="25" Width="280" HorizontalAlignment="Stretch" Margin="5,0,0,0" VerticalContentAlignment="Center"
                      Text="{Binding ElementName=_this, Path=FIO, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        </StackPanel>
-        <Grid Grid.Row="1" Margin="5,0,0,0">
+        </Grid>
+        <Grid Margin="5" Grid.ColumnSpan="2" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="45"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Column="0" Content="Пароль" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0"/>
+            <PasswordBox x:Name="Pass_tb" Grid.Column="1" Height="25" Width="280" HorizontalAlignment="Stretch" Margin="5,0,0,0" VerticalContentAlignment="Center"
+                         PasswordChanged="Pass_tb_PasswordChanged"/>
+        </Grid>
+        <Grid Grid.Row="2" Margin="5,0,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
@@ -33,7 +47,7 @@
                 </CheckBox.LayoutTransform>
             </CheckBox>
             <Button Content="{Binding ElementName=_this, Path=ButtonText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Column="2" Width="70" Padding="0" Height="25" 
-                    HorizontalAlignment="Left" Margin="36,0,0,0" Click="Button_Click" IsDefault="True" IsEnabled="{Binding ElementName=_this, Path=Btn_enabled}"/>
+                    HorizontalAlignment="Left" Margin="34,0,0,0" Click="Button_Click" IsDefault="True" IsEnabled="{Binding ElementName=_this, Path=Btn_enabled}"/>
         </Grid>
 
 
