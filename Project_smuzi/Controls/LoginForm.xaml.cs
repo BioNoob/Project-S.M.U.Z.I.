@@ -1,18 +1,8 @@
 ﻿using Project_smuzi.Classes;
 using Project_smuzi.Models;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Linq;
+using System.Windows;
 
 namespace Project_smuzi.Controls
 {
@@ -28,9 +18,15 @@ namespace Project_smuzi.Controls
         public LoginForm()
         {
             InitializeComponent();
-            UserControl w = new UserControl();
-            w.Show();
+            //UserControl w = new UserControl();
+            //w.Show();
             SharedModel.DB_Workers = NpcBase.LoadFromJson();
+            SharedModel.CloseEvent += SharedModel_CloseEvent;
+        }
+
+        private void SharedModel_CloseEvent()
+        {
+            this.Close();
         }
 
         public string Login { get => login; set { login = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Login")); } }
@@ -40,10 +36,52 @@ namespace Project_smuzi.Controls
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            //if(SharedModel.DB_Workers.Workers.FirstOrDefault())
-            //{
+            var a = SharedModel.DB_Workers.Workers.Where(t => t.Name == Login).ToList();
+            //login ok
+            if (a.Count > 0)
+            {
+                var s = a.FirstOrDefault(t => t.Password == PassWord);
+                //pass ok
+                if (s != null)
+                {
+                    SharedModel.CurrentUser = s;
+                    if (s.IsAdmin)
+                    {
+                        UserControl uc = new UserControl();
+                        ScladControl sc = new ScladControl();
+                        MainWindow mw = new MainWindow();
+                        uc.Show();
+                        sc.Show();
+                        mw.Show();
+                        this.Hide();
+                    }
+                    else
+                    {
+                        if (s.WorkerGroups.FirstOrDefault(t => t.SectorLabel.Contains("Склад")) != null)
+                        {
+                            ScladControl sc = new ScladControl();
+                            sc.Show();
+                            this.Hide();
+                        }
+                        else
+                        {
+                            MainWindow mw = new MainWindow();
+                            mw.Show();
+                            this.Hide();
+                        }
+                    }
+                }
+                else
+                    System.Windows.Forms.MessageBox.Show("Пароль не верен!");
+            }
+            else
+                System.Windows.Forms.MessageBox.Show("Логин не найден!");
+        }
 
-            //}
+        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(PassBx.Password))
+                PassWord = PassBx.Password;
         }
     }
 }

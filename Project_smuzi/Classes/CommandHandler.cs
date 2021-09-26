@@ -13,7 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace Project_smuzi.Classes 
+namespace Project_smuzi.Classes
 {
     public class CommandHandler : ICommand
     {

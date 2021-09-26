@@ -13,9 +13,6 @@ namespace Project_smuzi.Classes
     public class NpcWorker : INotifyPropertyChanged
     {
         public static int Identificator = 1;
-
-
-
         [JsonIgnore]
         public string GetImg
         {
@@ -54,7 +51,8 @@ namespace Project_smuzi.Classes
         {
             Sectors = new ObservableCollection<int>();
             WorkerId = Identificator++;
-            SharedModel.DB_Workers.PropertyChanged += DB_Workers_PropertyChanged;
+            if (SharedModel.DB_Workers != null)
+                SharedModel.DB_Workers.PropertyChanged += DB_Workers_PropertyChanged;
         }
 
         private void DB_Workers_PropertyChanged(object sender, PropertyChangedEventArgs e)

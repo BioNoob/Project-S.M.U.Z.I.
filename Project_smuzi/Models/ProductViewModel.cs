@@ -1,11 +1,5 @@
 ﻿using Project_smuzi.Classes;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
-using System.Linq;
-using System.Collections.ObjectModel;
-using Project_smuzi.Properties;
 
 namespace Project_smuzi.Models
 {

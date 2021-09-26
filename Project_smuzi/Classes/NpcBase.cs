@@ -119,7 +119,16 @@ namespace Project_smuzi.Classes
             if (!string.IsNullOrEmpty(Settings.Default.NPC_DB_json))
                 return JsonConvert.DeserializeObject<NpcBase>(Settings.Default.NPC_DB_json, settings);
             else
-                return new NpcBase();
+            {
+                var b = new NpcBase();
+                var a = new NpcWorker();
+                a.Name = "Admin";
+                a.Password = "2012";
+                a.IsAdmin = true;
+                b.AddWorker(a);
+                return b;
+            }
+
         }
         protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName] string propertyName = null)
         {

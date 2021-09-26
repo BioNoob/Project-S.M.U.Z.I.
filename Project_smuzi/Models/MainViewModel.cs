@@ -1,22 +1,17 @@
 ﻿using Project_smuzi.Classes;
 using Project_smuzi.Controls;
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
-using System.Windows.Threading;
-using UserControl = Project_smuzi.Controls.UserControl;
 
 namespace Project_smuzi.Models
 {
     public class MainViewModel : INotifyPropertyChanged
     {
         ProductInfo pi = new ProductInfo();
-        UserControl usc = new UserControl();
-
         private ObservableCollection<Product> selector;
         public ObservableCollection<Product> Selector
         {
@@ -30,7 +25,7 @@ namespace Project_smuzi.Models
         public MainViewModel()
         {
             Selector = new ObservableCollection<Product>();
-            if (SharedModel.IsAdminMode)
+            if (SharedModel.CurrentUser.IsAdmin)
                 IsAdmin = Visibility.Visible;
             else
                 IsAdmin = Visibility.Collapsed;
@@ -47,12 +42,12 @@ namespace Project_smuzi.Models
             DeepLvl = 0;
             SearchText = "";
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Selector"));
-            if (SharedModel.IsAdminMode)
-            {
-                if (!usc.IsVisible)
-                    Dispatcher.CurrentDispatcher.Invoke(new Action(() => { usc.Show(); }));
-                //usc.Show();
-            }
+            //if (SharedModel.IsAdminMode)
+            //{
+            //    if (!usc.IsVisible)
+            //        Dispatcher.CurrentDispatcher.Invoke(new Action(() => { usc.Show(); }));
+            //    //usc.Show();
+            //}
         }
 
         private void SharedModel_OpenInfoEvent(Product product)

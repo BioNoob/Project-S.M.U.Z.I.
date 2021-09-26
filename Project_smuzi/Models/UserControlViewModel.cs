@@ -1,16 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using GongSolutions.Wpf.DragDrop;
 using Project_smuzi.Classes;
-using Project_smuzi.Properties;
-using System;
-using System.Collections.Generic;
+using Project_smuzi.Controls;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Text;
 using System.Linq;
-using GongSolutions.Wpf.DragDrop;
 using System.Windows;
-using Project_smuzi.Controls;
-using System.Collections;
 using System.Windows.Input;
 
 namespace Project_smuzi.Models
@@ -51,28 +45,26 @@ namespace Project_smuzi.Models
 
         }
 
-
-
         public UserControlViewModel()
         {
             SharedModel.ReadDataDone += SharedModel_ReadDataDone;
             SharedModel.DB_Workers = new NpcBase();
             FilteredWorkers = new ObservableCollection<NpcWorker>();
 
-            Npc_base.Workers.Add(new NpcWorker() { Name = "STAS0", IsAdmin = true });
-            Npc_base.Workers.Add(new NpcWorker() { Name = "Дударенко Светлана Николаевна", IsAdmin = false });
-            Npc_base.Workers.Add(new NpcWorker() { Name = "Соколенко Артем Сергеевич", IsAdmin = false });
-            Npc_base.Workers.Add(new NpcWorker() { Name = "STAS3", IsAdmin = true });
-            Npc_base.Workers.Add(new NpcWorker() { Name = "STAS4", IsAdmin = false });
+            //Npc_base.Workers.Add(new NpcWorker() { Name = "STAS0", IsAdmin = true });
+            //Npc_base.Workers.Add(new NpcWorker() { Name = "Дударенко Светлана Николаевна", IsAdmin = false });
+            //Npc_base.Workers.Add(new NpcWorker() { Name = "Соколенко Артем Сергеевич", IsAdmin = false });
+            //Npc_base.Workers.Add(new NpcWorker() { Name = "STAS3", IsAdmin = true });
+            //Npc_base.Workers.Add(new NpcWorker() { Name = "STAS4", IsAdmin = false });
 
 
-            var tg = new NpcSector() { SectorLabel = "тест" };
-            Npc_base.Groups.Add(tg);
-            SharedModel.DB_Workers.AddWorkersToGroup(Npc_base.Workers.Take(3), tg);
+            //var tg = new NpcSector() { SectorLabel = "тест" };
+            //Npc_base.Groups.Add(tg);
+            //SharedModel.DB_Workers.AddWorkersToGroup(Npc_base.Workers.Take(3), tg);
 
-            tg = new NpcSector() { SectorLabel = "тест2" };
-            Npc_base.Groups.Add(tg);
-            SharedModel.DB_Workers.AddWorkersToGroup(Npc_base.Workers.TakeLast(3), tg);
+            //tg = new NpcSector() { SectorLabel = "тест2" };
+            //Npc_base.Groups.Add(tg);
+            //SharedModel.DB_Workers.AddWorkersToGroup(Npc_base.Workers.TakeLast(3), tg);
 
             //SharedModel.WorkerRequesFromGrouptToDelete += SharedModel_WorkerRequesFromGrouptToDelete;
             SearchUserText = string.Empty;
@@ -159,12 +151,7 @@ namespace Project_smuzi.Models
         private string _currentAdmin;
         public string CurrentAdmin
         {
-            get => _currentAdmin;
-            set
-            {
-                _currentAdmin = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CurrentAdmin"));
-            }
+            get => SharedModel.CurrentUser.Name;
         }
 
         private string _searchText;
@@ -221,11 +208,11 @@ namespace Project_smuzi.Models
             DB = SharedModel.DB.Copy();
 
             //GLUSHILKA
-            var z = DB.Productes.Select(t => t.BaseId).Take(20).ToList();
-            foreach (var item in z)
-            {
-                Npc_base.Groups[0].SectorProducts.Add(item);
-            }
+            //var z = DB.Productes.Select(t => t.BaseId).Take(20).ToList();
+            //foreach (var item in z)
+            //{
+            //    Npc_base.Groups[0].SectorProducts.Add(item);
+            //}
 
         }
 
@@ -278,7 +265,7 @@ namespace Project_smuzi.Models
             };
             if ((bool)nuc.ShowDialog())
             {
-                Npc_base.AddWorker(new NpcWorker() { Name = nuc.FIO, IsAdmin = nuc.IsAdm });
+                Npc_base.AddWorker(new NpcWorker() { Name = nuc.FIO, IsAdmin = nuc.IsAdm, Password = nuc.Password });
                 SearchUserText = SearchUserText;
             }
         }

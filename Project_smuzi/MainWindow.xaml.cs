@@ -19,7 +19,6 @@ namespace Project_smuzi
         {
             InitializeComponent();
             TB.Text = "ТСЮИ";
-            SharedModel.IsAdminMode = true;
             SharedModel.ReadDataDone += MVM_ReadDataDone;
             SharedModel.ReadDataStart += MVM_ReadDataStart;
             Closing += MainWindow_Closing;

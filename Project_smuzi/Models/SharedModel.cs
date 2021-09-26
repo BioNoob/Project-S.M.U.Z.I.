@@ -1,10 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Project_smuzi.Classes;
 using Project_smuzi.Properties;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
 
 namespace Project_smuzi.Models
 {
@@ -14,6 +10,7 @@ namespace Project_smuzi.Models
         public static DataBase DB { get; set; }
         public static NpcBase DB_Workers { get; set; }
 
+        public static NpcWorker CurrentUser { get; set; }
 
         public delegate void OpenInfo(Product product);
         public static event OpenInfo OpenInfoEvent;

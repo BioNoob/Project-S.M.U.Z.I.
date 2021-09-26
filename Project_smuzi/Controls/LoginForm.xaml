@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Project_smuzi.Controls"
         mc:Ignorable="d"
+        x:Name="LoginFrm"
         Title="Вход" Height="175" Width="250" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Window.Icon>
         <ImageSource>/Controls/anchor.ico</ImageSource>
@@ -22,10 +23,11 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Content="Логин" Padding="0" VerticalContentAlignment="Center" Margin="0,5" VerticalAlignment="Center"/>
-        <TextBox Grid.Row="1" Grid.ColumnSpan="2" Height="25" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" VerticalAlignment="Center"/>
+        <TextBox Grid.Row="1" Grid.ColumnSpan="2" Height="25" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" VerticalAlignment="Center"
+                 Text="{Binding ElementName=LoginFrm, Path=Login}"/>
         <Label Grid.Row="2" Content="Пароль" Padding="0" Margin="0,5" VerticalContentAlignment="Center" VerticalAlignment="Center"/>
         <PasswordBox Grid.Row="3" Grid.ColumnSpan="2" Height="25" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" VerticalAlignment="Stretch"
-                     Margin="0" Padding="0"/>
+                     Margin="0" Padding="0" PasswordChanged="PasswordBox_PasswordChanged" x:Name="PassBx"/>
         <Button Grid.Row="4" Grid.Column="1" Margin="0,5" IsDefault="True" Content="Вход" Height="25" Click="Button_Click"/>
     </Grid>
 </Window>

@@ -2,7 +2,6 @@
 using Project_smuzi.Models;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace Project_smuzi.Controls
 {
