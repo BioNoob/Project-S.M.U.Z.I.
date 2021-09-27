@@ -1,15 +1,120 @@
-﻿<Window x:Class="Project_smuzi.Controls.ScladControl"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Project_smuzi.Models"
+        xmlns:Classes="clr-namespace:Project_smuzi.Classes" x:Class="Project_smuzi.Controls.ScladControl"
         mc:Ignorable="d"
-        Title="ScladControl" Height="450" Width="800">
+        Title="ScladControl" Height="850" Width="800">
     <Window.DataContext>
         <local:ScladControlViewModel/>
     </Window.DataContext>
-    <Grid>
-        
+    <Grid Margin="5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TabControl Grid.Row="0" Grid.Column="0" Margin="5">
+            <TabItem x:Name="smartphonesTab">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="3" Text="Все изделия"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <TabItem.Content>
+                    <Classes:ExtendedTreeView ItemsSource="{Binding DB.Productes}">
+                        <TreeView.Resources>
+                            <HierarchicalDataTemplate DataType="{x:Type Classes:Product}" ItemsSource="{Binding Items}">
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Width="16" Height="16" Source="{Binding GetUriImg}" />
+                                    <TextBlock Text="{Binding ToXString}" Width="350" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0">
+                                        <TextBlock.ContextMenu>
+                                            <ContextMenu>
+                                                <MenuItem Header="Открыть информацию по документу" Command="{Binding OpenInfoCommand}"/>
+                                                <Separator />
+                                                <MenuItem Header="Открыть папку документа" Command="{Binding OpenFolderCommand}"/>
+                                            </ContextMenu>
+                                        </TextBlock.ContextMenu>
+                                    </TextBlock>
+                                </StackPanel>
+                            </HierarchicalDataTemplate>
+                            <DataTemplate DataType="{x:Type Classes:Element}" >
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Width="16" Height="16" Source="{Binding GetUriImg}" />
+                                    <TextBlock Text="{Binding ToXString}" Width="350" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </TreeView.Resources>
+                    </Classes:ExtendedTreeView>
+                </TabItem.Content>
+            </TabItem>
+            <TabItem x:Name="tabletsTab">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="3" Text="Заказ"/>
+                    </StackPanel>
+                </TabItem.Header>
+                <TabItem.Content>
+                    <StackPanel>
+                        <Classes:ExtendedTreeView>
+
+                        </Classes:ExtendedTreeView>
+                    </StackPanel>
+                </TabItem.Content>
+            </TabItem>
+        </TabControl>
+        <DataGrid Grid.Row="0" Grid.Column="1" Background="Crimson" Margin="5">
+
+        </DataGrid>
+        <DataGrid Grid.Row="1" Grid.ColumnSpan="2" Margin="5" ItemsSource="{Binding DB.Elementes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn  Header="Id" Width="30" CanUserSort="True" SortMemberPath="BaseId">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding BaseId}" TextWrapping="Wrap" TextTrimming="WordEllipsis" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Width="Auto"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn  Header="Обозначение" Width="150" CanUserSort="True" SortMemberPath="Identification">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Identification}" TextWrapping="Wrap" TextTrimming="WordEllipsis" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                       Width="Auto" TextAlignment="Center"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn  Header="Имя" Width="150" CanUserSort="True" SortMemberPath="Name">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" TextWrapping="Wrap" TextTrimming="WordEllipsis" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                       Width="Auto"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn  Header="Секция" Width="150" CanUserSort="True" SortMemberPath="Section">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Section}" TextWrapping="Wrap" TextTrimming="WordEllipsis" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Width="Auto"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn  Header="Кол-во" Width="50" CanUserSort="True" SortMemberPath="Count">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Count}" TextWrapping="Wrap" TextTrimming="WordEllipsis" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Width="Auto"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>

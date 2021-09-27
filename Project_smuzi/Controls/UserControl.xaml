@@ -141,7 +141,7 @@
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1">
             <Label Padding="0" Content="Выбранная группа :" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="5,0,0,0"/>
             <TextBlock Width="150" Text="{Binding SelectedGroup.SectorLabel}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,10,0" Background="AntiqueWhite"/>
-            <Button Width="24" Height="24" Margin="80,0,0,0" Padding="0" Command="{Binding SaveNpcBaseCommand}">
+            <Button Width="24" Height="24" Margin="80,0,0,0" Padding="0" Command="{Binding SaveNpcBaseCommand}" ToolTip="Ctrl + S">
                 <StackPanel>
                     <Image Source="/Resources/сохранить_24.png" Width="16" Height="16" Stretch="Fill"/>
                 </StackPanel>
