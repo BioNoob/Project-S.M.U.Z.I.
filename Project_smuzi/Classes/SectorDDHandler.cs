@@ -1,4 +1,6 @@
 ﻿using GongSolutions.Wpf.DragDrop;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -37,6 +39,21 @@ namespace Project_smuzi.Classes
             // Call default DragOver method, cause most stuff should work by default
             //GongSolutions.Wpf.DragDrop.DragDrop.DefaultDropHandler.DragOver(dropInfo);
             ObservableCollection<Product> targetItem = dropInfo.TargetCollection as ObservableCollection<Product>;
+
+            var b = dropInfo.Data.GetType();
+            if (b.IsGenericType)
+            {
+                List<object> prd_list = (List<object>)dropInfo.Data;
+                if (prd_list != null)
+                {
+                    if (prd_list.Count > 0)
+                    {
+                        dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+                        dropInfo.Effects = DragDropEffects.Copy;
+                        return;
+                    }
+                }
+            }
             Product prd = dropInfo.Data as Product;
             if (targetItem != null && prd != null)
             {
@@ -57,13 +74,37 @@ namespace Project_smuzi.Classes
 
             //// Now extract the dragged group items and set the new group (target)
             //ObservableCollection<Product> targetItem = dropInfo.TargetCollection as ObservableCollection<Product>;
-            Product prd = dropInfo.Data as Product;
-            if (prd != null)
+            var b = dropInfo.Data.GetType();
+            if (b.IsGenericType)
+            {
+                List<object> prd_list = (List<object>)dropInfo.Data;
+                if (prd_list != null)
+                {
+                    if (prd_list.Count > 0)
+                    {
+                        foreach (var item in prd_list)
+                        {
+                            Product prd_ = item as Product;
+                            if (prd_ != null)
+                            {
+                                if (!Owner.SectorProducts.Contains(prd_.BaseId))
+                                {
+                                    Owner.SectorProducts.Add(prd_.BaseId);
+                                    SectorContentChangedEvent?.Invoke();
+
+                                }
+                            }
+                        }
+                        return;
+                    }
+                }
+            }
+            if (dropInfo.Data is Product prd)
             {
                 Owner.SectorProducts.Add(prd.BaseId);
                 SectorContentChangedEvent?.Invoke();
             }
-                
+
 
             //targetItem.SectorProducts.Add(prd.BaseId);
 
@@ -76,10 +117,10 @@ namespace Project_smuzi.Classes
             // Changing group data at runtime isn't handled well: force a refresh on the collection view.
             //if (dropInfo.TargetCollection is ICollectionView)
             //{
-                //((ICollectionView)targetItem).Refresh();
+            //((ICollectionView)targetItem).Refresh();
             //}
         }
 
-        
+
     }
 }

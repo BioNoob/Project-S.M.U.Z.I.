@@ -108,7 +108,7 @@ namespace Project_smuzi.Classes
             Settings.Default.NPC_DB_json = t;
             Settings.Default.Save();
         }
-        public static NpcBase LoadFromJson()
+        public void LoadFromJson()
         {
             JsonSerializerSettings settings = new JsonSerializerSettings();
             settings.Formatting = Formatting.Indented;
@@ -117,16 +117,21 @@ namespace Project_smuzi.Classes
 
 
             if (!string.IsNullOrEmpty(Settings.Default.NPC_DB_json))
-                return JsonConvert.DeserializeObject<NpcBase>(Settings.Default.NPC_DB_json, settings);
+            {
+                var a = JsonConvert.DeserializeObject<NpcBase>(Settings.Default.NPC_DB_json, settings);
+                Workers = a.Workers;
+                Groups = a.Groups;
+            }
             else
             {
-                var b = new NpcBase();
                 var a = new NpcWorker();
                 a.Name = "Admin";
                 a.Password = "2012";
                 a.IsAdmin = true;
-                b.AddWorker(a);
-                return b;
+                AddWorker(a);
+                var d = new NpcSector() { SectorLabel = "Склад" };
+                AddGroup(d);
+                //return b;
             }
 
         }

@@ -30,8 +30,8 @@ namespace Project_smuzi.Classes
             SectorWorkers = new ObservableCollection<int>();
             SectorProducts = new ObservableCollection<int>();
             SectorId = Identificator++;
-            //SharedModel.DB_Workers.GroupRequestUpdate += DB_Workers_GroupRequestUpdate;
-            SharedModel.DB_Workers.PropertyChanged += DB_Workers_PropertyChanged;
+            if (SharedModel.DB_Workers != null)
+                SharedModel.DB_Workers.PropertyChanged += DB_Workers_PropertyChanged;
         }
 
         private void DB_Workers_PropertyChanged(object sender, PropertyChangedEventArgs e)

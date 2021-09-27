@@ -158,6 +158,11 @@
             </Grid.RowDefinitions>
             <ListView Grid.Row="0" Margin="5" BorderBrush="Gray" Grid.ColumnSpan="2" ItemsSource="{Binding SelectedGRProducts, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                        dd:DragDrop.IsDropTarget="True" dd:DragDrop.DropHandler="{Binding DDHandler}" SelectedItem="{Binding SelectedProductFromGroup}">
+                <ListView.Resources>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Setter Property="IsSelected" Value="{Binding SomeItemSelected, Mode=TwoWay}" />
+                    </Style>
+                </ListView.Resources>
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Width="130" Header="Обозначение">

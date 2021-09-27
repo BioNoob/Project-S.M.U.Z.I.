@@ -20,7 +20,8 @@ namespace Project_smuzi.Controls
             InitializeComponent();
             //UserControl w = new UserControl();
             //w.Show();
-            SharedModel.DB_Workers = NpcBase.LoadFromJson();
+            SharedModel.DB_Workers = new NpcBase();
+            SharedModel.DB_Workers.LoadFromJson();
             SharedModel.CloseEvent += SharedModel_CloseEvent;
         }
 

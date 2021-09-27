@@ -38,16 +38,24 @@ namespace Project_smuzi.Models
 
         private void SharedModel_ReadDataDone()
         {
-            Selector = SharedModel.DB.Productes;
+            //Selector = SharedModel.DB.Productes;
+            DB = SharedModel.DB.Copy();
+            if(!SharedModel.CurrentUser.IsAdmin)
+            {
+                DB.Productes.Clear();
+                foreach (var item in SharedModel.CurrentUser.WorkerGroups)
+                {
+                    foreach (var prod in item.SectorProducts)
+                    {
+                        DB.Productes.Add(SharedModel.DB.Productes.FirstOrDefault(t=>t.BaseId == prod));
+                    }   
+                }
+            }
+
+            Selector = DB.Productes;
             DeepLvl = 0;
             SearchText = "";
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Selector"));
-            //if (SharedModel.IsAdminMode)
-            //{
-            //    if (!usc.IsVisible)
-            //        Dispatcher.CurrentDispatcher.Invoke(new Action(() => { usc.Show(); }));
-            //    //usc.Show();
-            //}
         }
 
         private void SharedModel_OpenInfoEvent(Product product)
@@ -57,10 +65,7 @@ namespace Project_smuzi.Models
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public DataBase DB
-        {
-            get => SharedModel.DB;
-        }
+        public DataBase DB { get; set; }
         private int deepLvl;
         public int DeepLvl
         {

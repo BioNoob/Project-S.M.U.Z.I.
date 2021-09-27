@@ -48,7 +48,7 @@ namespace Project_smuzi.Models
         public UserControlViewModel()
         {
             SharedModel.ReadDataDone += SharedModel_ReadDataDone;
-            SharedModel.DB_Workers = new NpcBase();
+            //SharedModel.DB_Workers = new NpcBase();
             FilteredWorkers = new ObservableCollection<NpcWorker>();
 
             //Npc_base.Workers.Add(new NpcWorker() { Name = "STAS0", IsAdmin = true });
@@ -80,7 +80,11 @@ namespace Project_smuzi.Models
 
         private void SelectedProductFromGroup_ItemClickEvent()
         {
-            SelectedGroup.SectorProducts.Remove(SelectedProductFromGroup.BaseId);
+            foreach (var item in SelectedGRProducts.Where(t=>t.SomeItemSelected))
+            {
+                SelectedGroup.SectorProducts.Remove(item.BaseId);
+            }
+            //SelectedGroup.SectorProducts.Remove(SelectedProductFromGroup.BaseId);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGroup"));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedGRProducts"));
         }
@@ -132,8 +136,8 @@ namespace Project_smuzi.Models
             set
             {
                 selectedProductFromGroup = value;
-                if (value != null)
-                    SelectedProductFromGroup.ItemClickEvent += SelectedProductFromGroup_ItemClickEvent;
+                //if (value != null)
+                //    selectedProductFromGroup.ItemClickEvent += SelectedProductFromGroup_ItemClickEvent;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SelectedProductFromGroup"));
             }
         }
@@ -142,7 +146,15 @@ namespace Project_smuzi.Models
             get
             {
                 if (DB != null)
-                    return SelectedGroup.GetProductsOf(DB);
+                {
+                    var a = SelectedGroup.GetProductsOf(DB);
+                    foreach (var item in a)
+                    {
+                        item.ItemClickEvent += SelectedProductFromGroup_ItemClickEvent;
+                    }
+                    return a;
+
+                }
                 else
                     return null;
             }

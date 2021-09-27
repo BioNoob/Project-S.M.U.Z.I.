@@ -76,6 +76,8 @@ namespace Project_smuzi.Classes
         public string PathTo { get; set; }
         [JsonIgnore]
         public string FolderTo => Path.GetDirectoryName(PathTo);
+        [JsonIgnore]
+        public bool SomeItemSelected { get; set; }
         public int DeepLevel { get; set; }
 
         public Product(string ident) : base(ident)
@@ -166,7 +168,7 @@ namespace Project_smuzi.Classes
                 {
                     ItemClickEvent?.Invoke();
                 },
-                (obj) => !string.IsNullOrEmpty(FolderTo)
+                (obj) => true
                 ));
             }
         }
