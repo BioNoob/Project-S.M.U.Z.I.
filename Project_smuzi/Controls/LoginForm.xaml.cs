@@ -23,6 +23,8 @@ namespace Project_smuzi.Controls
             SharedModel.DB_Workers = new NpcBase();
             SharedModel.DB_Workers.LoadFromJson();
             SharedModel.CloseEvent += SharedModel_CloseEvent;
+            Login = "Admin";
+            PassBx.Password = "2012";
         }
 
         private void SharedModel_CloseEvent()

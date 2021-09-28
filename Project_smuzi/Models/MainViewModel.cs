@@ -1,11 +1,13 @@
 ﻿using Project_smuzi.Classes;
 using Project_smuzi.Controls;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using Application = System.Windows.Application;
 
 namespace Project_smuzi.Models
 {
@@ -31,7 +33,6 @@ namespace Project_smuzi.Models
                 IsAdmin = Visibility.Collapsed;
             SharedModel.ReadDataDone += SharedModel_ReadDataDone;
             SharedModel.LoadDataBase();
-
             SharedModel.OpenInfoEvent += SharedModel_OpenInfoEvent;
 
         }
@@ -39,16 +40,17 @@ namespace Project_smuzi.Models
         private void SharedModel_ReadDataDone()
         {
             //Selector = SharedModel.DB.Productes;
-            DB = SharedModel.DB.Copy();
-            if(!SharedModel.CurrentUser.IsAdmin)
+            DB.WorkProcStep += DB_WorkProcStep;
+            //SharedModel.DB.WorkProcStep += DB_WorkProcStep;
+            if (!SharedModel.CurrentUser.IsAdmin)
             {
                 DB.Productes.Clear();
                 foreach (var item in SharedModel.CurrentUser.WorkerGroups)
                 {
                     foreach (var prod in item.SectorProducts)
                     {
-                        DB.Productes.Add(SharedModel.DB.Productes.FirstOrDefault(t=>t.BaseId == prod));
-                    }   
+                        DB.Productes.Add(SharedModel.DB.Productes.FirstOrDefault(t => t.BaseId == prod));
+                    }
                 }
             }
 
@@ -58,14 +60,23 @@ namespace Project_smuzi.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Selector"));
         }
 
+        private void DB_WorkProcStep()
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            { /* Your code here */
+                SharedModel.DB = DB;
+                Selector = DB.Productes;
+            }));
+
+        }
+
         private void SharedModel_OpenInfoEvent(Product product)
         {
             pi.Show();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        public DataBase DB { get; set; }
+        public DataBase DB { get => SharedModel.DB; }
         private int deepLvl;
         public int DeepLvl
         {
@@ -136,7 +147,10 @@ namespace Project_smuzi.Models
                     if (ofd.ShowDialog() == DialogResult.OK)
                     {
                         SharedModel.InvokeReadDataStart();
-                        await Task.Run(() => DB.TestSpwReader(ofd.SelectedPath));
+                        //SharedModel.DB.Clear();
+                        DB.Clear();
+                        Selector.Clear();
+                        await Task.Run(() => DataBase.TestSpwReader(ofd.SelectedPath,DB));
                     }
                 }//,
                  //(obj) => string.IsNullOrEmpty(obj.ToString())

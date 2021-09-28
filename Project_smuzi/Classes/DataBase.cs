@@ -78,22 +78,36 @@ namespace Project_smuzi.Classes
 
         public string Prefix { get; set; }
 
+        public delegate void WorkProcess();
+        public event WorkProcess WorkProcStep;
+
+
         #region DataBaseLoader
-        public void TestSpwReader(string FolderPath)
+        public static void TestSpwReader(string FolderPath, DataBase db)
         {
-            this.Clear();
+
             //ReadDataDone += DB_ReadDataDone;
             IApplication kmpsApp = null;
             Type t7 = Type.GetTypeFromProgID("KOMPAS.Application.7");
-            kmpsApp = (IApplication)Activator.CreateInstance(t7);
+            try
+            {
+                kmpsApp = (IApplication)Activator.CreateInstance(t7);
+            }
+            catch (Exception)
+            {
+                System.Windows.Forms.MessageBox.Show("ERROR open KOMPASS");
+                SharedModel.InvokeReadDataDone();
+            }
             if (kmpsApp == null)
             {
                 System.Windows.Forms.MessageBox.Show("ERROR open KOMPASS");
-                return;
             }
+            //ЕСЛИ БУДЕТ ДОПОЛНЕНИЕ БАЗЫ, то удалить
+            db.Clear();
+
             kmpsApp.HideMessage = ksHideMessageEnum.ksHideMessageYes;
-            
-            var all_dir = Directory.GetFiles(FolderPath, "*sp.spw*", SearchOption.AllDirectories).ToList();
+
+            var all_dir = Directory.GetFiles(FolderPath, "*sp.spw", SearchOption.AllDirectories).ToList();
             foreach (var item in all_dir)
             {
 
@@ -111,21 +125,21 @@ namespace Project_smuzi.Classes
                         ident = ident.Replace("\n", " ");
                     }
                     //
-                    if (!ident.Contains(Prefix))
+                    if (!ident.Contains(db.Prefix))
                     {
                         var st = kmpsdoc.LayoutSheets[0].Stamp.Text[2].Str.Trim();
-                        if (st.Contains(Prefix))
+                        if (st.Contains(db.Prefix))
                             ident = st;
                         else
                             ident = Path.GetFileNameWithoutExtension(item);//ТСЮИ.466225.006sp
                     }
 
                     Product product = null;
-                    var buf = Productes.Where(t => t.Identification == ident).FirstOrDefault();
+                    var buf = db.Productes.Where(t => t.Identification == ident).FirstOrDefault();
                     if (buf == null) //если нет в спсике изделий
                     {
                         product = new Product(ident) { Name = name, Count = 1, Section_id = 15, DeepLevel = 0, PathTo = item };
-                        Productes.Add(product); //добавляем изделие
+                        db.Productes.Add(product); //добавляем изделие
                     }
                     else
                     {
@@ -134,9 +148,29 @@ namespace Project_smuzi.Classes
                         {
                             product.PathTo = item;
                             var l = product.Contaiments_in.ToList();
-                            foreach (var prd in l)
+                            foreach (int prd in l)
                             {
-                                Productes.Where(t => t.BaseId == prd).FirstOrDefault().Products.Where(t => t.BaseId == product.BaseId).FirstOrDefault().PathTo = item;
+                                var a = db.Productes.FirstOrDefault(t => t.BaseId == prd);
+                                if (a != null)
+                                    foreach (var asdf in a.Contaiments_in)
+                                    {
+                                        var b = db.Productes.FirstOrDefault(t => t.BaseId == asdf);
+                                        if (b != null)
+                                        {
+                                            a.PathTo = item;
+                                        }
+                                    }
+                                //db.Productes.ToList().ForEach(t=>t.)
+
+                                ///ХЗ НАДО ПОМЕНЯТЬ пути у всех продуктов ниже по цепочке где содержится тот который сейчас обрабатывается.
+                                ///
+
+                                //var a = db.Productes.FirstOrDefault(t => t.BaseId == prd);
+                                //var b = db.Productes.FirstOrDefault(t => t.BaseId == product.BaseId).PathTo = item;
+
+
+                                //if (a != null)
+                                //    a.Products.Where(t => t.BaseId == product.BaseId).FirstOrDefault().PathTo = item;
                             }
                         }
                     }
@@ -146,7 +180,7 @@ namespace Project_smuzi.Classes
                     {
                         try
                         {
-                            InnerVorker_Base(iSpecificationBaseObjects[i], product);
+                            db.InnerVorker_Base(iSpecificationBaseObjects[i], product);
                         }
                         catch (Exception ex)
                         {
@@ -159,19 +193,21 @@ namespace Project_smuzi.Classes
                     var iSpecificationCommentObjects = spec_descript.Active.CommentObjects;
                     for (int i = 0; i < iSpecificationCommentObjects.Count; i++)
                     {
-                        InnerVorker_Additioanl(iSpecificationCommentObjects[i], product);
+                        db.InnerVorker_Additioanl(iSpecificationCommentObjects[i], product);
                     }
                     kmpsdoc.Close(DocumentCloseOptions.kdDoNotSaveChanges);
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DB"));
+                    db.PropertyChanged?.Invoke(db, new PropertyChangedEventArgs("DB"));
                     //Selector = HeavyProducts;
                     Debug.WriteLine($"doc {ident} is {name} work done");
+                    db.WorkProcStep?.Invoke();
                 }
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"{ex.Message}\ndoc {item} open error");
                 }
+
             }
-            Settings.Default.DB_json = JsonConvert.SerializeObject(this, Formatting.Indented);
+            Settings.Default.DB_json = JsonConvert.SerializeObject(db, Formatting.Indented);
             Settings.Default.Save();
             Settings.Default.Reload();
             Debug.WriteLine($"Save and done {all_dir.Count} documents");
@@ -232,36 +268,36 @@ namespace Project_smuzi.Classes
             //если нет в спсике елементов
             if (buf_in != null)
             {
-                    element_in = buf_in;
-                    element_in.Count += kolichestvo;
+                element_in = buf_in;
+                element_in.Count += kolichestvo;
             }
             else
             {
                 element_in = new Element(oboznachenie) { Name = naimenovanie, Count = kolichestvo, Section_id = section_num, IsAdditional = isAdd };
                 Elementes.Add(element_in); //добавляем елемент
             }
-            element_in.Contaiments_in.Add(base_product.BaseId);
+            if (!element_in.Contaiments_in.Contains(base_product.BaseId))
+                element_in.Contaiments_in.Add(base_product.BaseId);
             //Если есть такой элемент внутри издеия, то увеличиваем кол-во, если нет добавляем
-            var in_in = base_product.Elements.Where(t => t.Name == naimenovanie).FirstOrDefault();
-            if (in_in == null)
+            //var in_in = base_product.Elements.Where(t => t.Name == naimenovanie).FirstOrDefault();
+            if (base_product.Contaiment.ContainsKey(element_in.BaseId))
             {
-                var buf_el = element_in.Copy();
-                buf_el.Count = kolichestvo;
-                base_product.Elements.Add(buf_el);
-                base_product.Contaiment.Add(buf_el.BaseId, buf_el.Count);
+                base_product.Contaiment[element_in.BaseId] += kolichestvo;
             }
             else
-                in_in.Count += kolichestvo;
+            {
+                base_product.Contaiment.Add(element_in.BaseId, element_in.Count);
+            }
         }
         private void AddProduct(string oboznachenie, string naimenovanie, int section_num, double kolichestvo, Product base_product, bool isAdd)
         {
             Product product_in = null;
             var buf_in = Productes.Where(t => t.Identification == oboznachenie).FirstOrDefault();
-            if(buf_in != null)
+            if (buf_in != null)
             {
-                    product_in = buf_in;
-                    if (product_in.BaseId == base_product.BaseId)
-                        throw new Exception("Ошибка чтения строки спецификации") { HResult = 101 };
+                product_in = buf_in;
+                if (product_in.BaseId == base_product.BaseId)
+                    throw new Exception("Ошибка чтения строки спецификации") { HResult = 101 };
             }
             else
             {
@@ -275,20 +311,29 @@ namespace Project_smuzi.Classes
                 product_in.GoingDeeper();
                 product_in.DeepLevel = a;
             }
-                
+
 
             product_in.Contaiments_in.Add(base_product.BaseId);
-            //Если есть такое изделие внутри издеия, то увеличиваем кол-во, если нет добавляем
-            var in_in = base_product.Products.Where(t => t.Identification == oboznachenie).FirstOrDefault();
-            if (in_in == null)
+
+            if (base_product.Contaiment.ContainsKey(product_in.BaseId))
             {
-                var buf_prd = product_in.Copy();
-                buf_prd.Count = kolichestvo;
-                base_product.Products.Add(buf_prd);
-                base_product.Contaiment.Add(buf_prd.BaseId, buf_prd.Count);
+                base_product.Contaiment[product_in.BaseId] += kolichestvo;
             }
-            else //потом посчитать кол-во общее вдруг где то используется много какой нибудь херни
-                in_in.Count += kolichestvo;
+            else
+            {
+                base_product.Contaiment.Add(product_in.BaseId, product_in.Count);
+            }
+            //Если есть такое изделие внутри издеия, то увеличиваем кол-во, если нет добавляем
+            //var in_in = base_product.Products.Where(t => t.Identification == oboznachenie).FirstOrDefault();
+            //if (in_in == null)
+            //{
+            //    var buf_prd = product_in.Copy();
+            //    buf_prd.Count = kolichestvo;
+            //    //base_product.Products.Add(buf_prd);
+            //    base_product.Contaiment.Add(buf_prd.BaseId, buf_prd.Count);
+            //}
+            //else //потом посчитать кол-во общее вдруг где то используется много какой нибудь херни
+            //    in_in.Count += kolichestvo;
         }
         //public void SelectorSwitch(string text, int DeepLvl)
         //{
