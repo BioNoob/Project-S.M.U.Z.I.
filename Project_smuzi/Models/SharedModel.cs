@@ -19,18 +19,18 @@ namespace Project_smuzi.Models
 
         public delegate void JobInfo();
         public static event JobInfo ReadDataStart;
-        public static event JobInfo ReadDataDone;
         public static event JobInfo CloseEvent;
-
+        public delegate void JobInfo_base(DataBase db);
+        public static event JobInfo_base ReadDataDone;
         //public delegate void UserEvents(NpcWorker user);
 
 
         //public delegate void GroupEvents(NpcSector user);
 
 
-        public static void InvokeReadDataDone()
+        public static void InvokeReadDataDone(DataBase db)
         {
-            ReadDataDone?.Invoke();
+            ReadDataDone?.Invoke(db);
         }
         public static void InvokeCloseApp()
         {
@@ -38,6 +38,7 @@ namespace Project_smuzi.Models
         }
         public static void InvokeReadDataStart()
         {
+            DB.Clear();
             ReadDataStart?.Invoke();
         }
         public static void InvokeOpenInfoEvent(Product prd)
@@ -55,7 +56,9 @@ namespace Project_smuzi.Models
                 DB = JsonConvert.DeserializeObject<DataBase>(Settings.Default.DB_json);
                 //DB.LoadFromContaiment();
             }
-            InvokeReadDataDone();
+            else
+                DB = new DataBase();
+            InvokeReadDataDone(DB);
         }
     }
 }

@@ -215,9 +215,9 @@ namespace Project_smuzi.Models
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SearchText"));
             }
         }
-        private void SharedModel_ReadDataDone()
+        private void SharedModel_ReadDataDone(DataBase dataBase)
         {
-            DB = SharedModel.DB.Copy();
+            DB = dataBase.Copy();
 
             //GLUSHILKA
             //var z = DB.Productes.Select(t => t.BaseId).Take(20).ToList();

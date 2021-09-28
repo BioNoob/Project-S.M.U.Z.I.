@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Forms;
 using Application = System.Windows.Application;
 
@@ -34,39 +35,42 @@ namespace Project_smuzi.Models
             SharedModel.ReadDataDone += SharedModel_ReadDataDone;
             SharedModel.LoadDataBase();
             SharedModel.OpenInfoEvent += SharedModel_OpenInfoEvent;
+            DataBase.WorkProcStep += DB_WorkProcStep;
+            //Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            //{ BindingOperations.EnableCollectionSynchronization(Selector, _collectionOfObjectsSync); }));
 
         }
 
-        private void SharedModel_ReadDataDone()
-        {
-            //Selector = SharedModel.DB.Productes;
-            DB.WorkProcStep += DB_WorkProcStep;
-            //SharedModel.DB.WorkProcStep += DB_WorkProcStep;
-            if (!SharedModel.CurrentUser.IsAdmin)
-            {
-                DB.Productes.Clear();
-                foreach (var item in SharedModel.CurrentUser.WorkerGroups)
-                {
-                    foreach (var prod in item.SectorProducts)
-                    {
-                        DB.Productes.Add(SharedModel.DB.Productes.FirstOrDefault(t => t.BaseId == prod));
-                    }
-                }
-            }
-
-            Selector = DB.Productes;
-            DeepLvl = 0;
-            SearchText = "";
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Selector"));
-        }
-
-        private void DB_WorkProcStep()
+        private void SharedModel_ReadDataDone(DataBase db)
         {
             Application.Current.Dispatcher.Invoke(new Action(() =>
-            { /* Your code here */
-                SharedModel.DB = DB;
+            {
+                SharedModel.DB = db;
                 Selector = DB.Productes;
+                if (!SharedModel.CurrentUser.IsAdmin)
+                {
+                    DB.Productes.Clear();
+                    foreach (var item in SharedModel.CurrentUser.WorkerGroups)
+                    {
+                        foreach (var prod in item.SectorProducts)
+                        {
+                            DB.Productes.Add(SharedModel.DB.Productes.FirstOrDefault(t => t.BaseId == prod));
+                        }
+                    }
+                }
+                Selector = DB.Productes;
+                DeepLvl = 0;
+                SearchText = "";
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Selector"));
             }));
+        }
+
+        private void DB_WorkProcStep(DataBase db)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                Selector = db.Productes;
+            });
 
         }
 
@@ -148,9 +152,11 @@ namespace Project_smuzi.Models
                     {
                         SharedModel.InvokeReadDataStart();
                         //SharedModel.DB.Clear();
-                        DB.Clear();
+                        //DB.Clear();
                         Selector.Clear();
-                        await Task.Run(() => DataBase.TestSpwReader(ofd.SelectedPath,DB));
+                        if (string.IsNullOrWhiteSpace(Prefix))
+                            System.Windows.Forms.MessageBox.Show("Префикс изделий не установлен!");
+                        await Task.Run(() => DataBase.TestSpwReader(ofd.SelectedPath, Prefix));
                     }
                 }//,
                  //(obj) => string.IsNullOrEmpty(obj.ToString())

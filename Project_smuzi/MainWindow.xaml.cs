@@ -1,4 +1,5 @@
-﻿using Project_smuzi.Models;
+﻿using Project_smuzi.Classes;
+using Project_smuzi.Models;
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -40,7 +41,7 @@ namespace Project_smuzi
             Img_refresh.Visibility = Visibility.Visible;
         }
 
-        private void MVM_ReadDataDone()
+        private void MVM_ReadDataDone(DataBase db)
         {
             this.Dispatcher.Invoke(new Action(() =>
             {

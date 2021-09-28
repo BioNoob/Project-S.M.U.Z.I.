@@ -19,9 +19,9 @@ namespace Project_smuzi.Models
 
         }
 
-        private void SharedModel_ReadDataDone()
+        private void SharedModel_ReadDataDone(DataBase db)
         {
-            DB = SharedModel.DB.Copy();
+            DB = db.Copy();
             DB.Elementes = new ObservableCollection<Element>(DB.Elementes.Where(t => t.Section_id != 5));
         }
 
