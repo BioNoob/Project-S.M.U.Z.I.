@@ -33,11 +33,8 @@ namespace Project_smuzi.Models
             else
                 IsAdmin = Visibility.Collapsed;
             SharedModel.ReadDataDone += SharedModel_ReadDataDone;
-            SharedModel.LoadDataBase();
+
             SharedModel.OpenInfoEvent += SharedModel_OpenInfoEvent;
-            DataBase.WorkProcStep += DB_WorkProcStep;
-            //Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-            //{ BindingOperations.EnableCollectionSynchronization(Selector, _collectionOfObjectsSync); }));
 
         }
 
@@ -45,33 +42,24 @@ namespace Project_smuzi.Models
         {
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
-                SharedModel.DB = db;
-                Selector = DB.Productes;
+                SharedModel.DB = db.Copy();
+                DB_local = db.Copy();
                 if (!SharedModel.CurrentUser.IsAdmin)
                 {
-                    DB.Productes.Clear();
+                    DB_local.Productes.Clear();
                     foreach (var item in SharedModel.CurrentUser.WorkerGroups)
                     {
                         foreach (var prod in item.SectorProducts)
                         {
-                            DB.Productes.Add(SharedModel.DB.Productes.FirstOrDefault(t => t.BaseId == prod));
+                            DB_local.Productes.Add(SharedModel.DB.Productes.FirstOrDefault(t => t.BaseId == prod));
                         }
                     }
                 }
-                Selector = DB.Productes;
+                Selector = DB_local.Productes;
                 DeepLvl = 0;
                 SearchText = "";
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Selector"));
             }));
-        }
-
-        private void DB_WorkProcStep(DataBase db)
-        {
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                Selector = db.Productes;
-            });
-
         }
 
         private void SharedModel_OpenInfoEvent(Product product)
@@ -80,7 +68,8 @@ namespace Project_smuzi.Models
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public DataBase DB { get => SharedModel.DB; }
+        private DataBase _db;
+        public DataBase DB_local { get => _db; set { _db = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DB_local")); } }
         private int deepLvl;
         public int DeepLvl
         {
@@ -100,14 +89,14 @@ namespace Project_smuzi.Models
             {
                 _searchText = value;
                 var o = DeepLvl;
-                if (DB != null)
+                if (DB_local != null)
                     if (string.IsNullOrWhiteSpace(value))
                     {
-                        Selector = new ObservableCollection<Product>(DB.Productes.Where(t => t.DeepLevel <= o));
+                        Selector = new ObservableCollection<Product>(DB_local.Productes.Where(t => t.DeepLevel <= o));
                     }
                     else
                     {
-                        ObservableCollection<Product> a = new ObservableCollection<Product>(DB.Productes.Where(t => t.ToXString.Contains(value) & t.DeepLevel <= o));
+                        ObservableCollection<Product> a = new ObservableCollection<Product>(DB_local.Productes.Where(t => t.ToXString.Contains(value) & t.DeepLevel <= o));
                         Selector = a;
                     }
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Selector"));
@@ -123,7 +112,6 @@ namespace Project_smuzi.Models
             {
                 _prefix = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Prefix"));
-                SharedModel.DB.Prefix = value;
             }
         }
 
@@ -156,12 +144,38 @@ namespace Project_smuzi.Models
                         Selector.Clear();
                         if (string.IsNullOrWhiteSpace(Prefix))
                             System.Windows.Forms.MessageBox.Show("Префикс изделий не установлен!");
-                        await Task.Run(() => DataBase.TestSpwReader(ofd.SelectedPath, Prefix));
+
+                        DataBase.worker.DoWork += worker_DoWork;
+                        DataBase.worker.ProgressChanged += worker_ProgressChanged;
+                        DataBase.worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+                        DataBase.worker.RunWorkerAsync(ofd.SelectedPath);
                     }
                 }//,
                  //(obj) => string.IsNullOrEmpty(obj.ToString())
                 ));
             }
+        }
+
+        void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            //await Task.Run(() => DataBase.TestSpwReader((string)e.Argument, Prefix));
+            DataBase.TestSpwReader((string)e.Argument, Prefix);
+            e.Result = 0;
+        }
+
+        void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                DB_local = new DataBase(SharedModel.DB);
+                //Selector = DB_local.Productes; ИМЕННО ЭТА ХЕРНЯ ВСЕ ЛОМАЕТ
+            }
+            ));
+        }
+
+        void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            //System.Windows.MessageBox.Show("Numbers between 0 and 10000 divisible by 7: " + e.Result);
         }
     }
 }

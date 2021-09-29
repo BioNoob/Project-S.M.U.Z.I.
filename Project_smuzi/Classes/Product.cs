@@ -18,56 +18,57 @@ namespace Project_smuzi.Classes
         [JsonIgnore]
         private Dictionary<int, double> contaiment;
 
-        [JsonIgnore]
-        public ObservableCollection<Product> Products 
-        { 
-            get
-            {
-                ObservableCollection<Product> p = new ObservableCollection<Product>();
-                foreach (var item in contaiment.Keys)
-                {
-                    var a = SharedModel.DB.Productes.FirstOrDefault(t => t.BaseId == item);
-                    if (a != null)
-                    {
-                        a.Count = contaiment[item];
-                        p.Add(a);
-                    }
-                }
-                return p;
-
-            }
-        }
-        [JsonIgnore]
-        public ObservableCollection<Element> Elements 
-        { 
-            get 
-            {
-                ObservableCollection<Element> p = new ObservableCollection<Element>();
-                foreach (var item in contaiment.Keys)
-                {
-                    var a = SharedModel.DB.Elementes.FirstOrDefault(t => t.BaseId == item);
-                    if(a != null)
-                    {
-                        a.Count = contaiment[item];
-                        p.Add(a);
-                    }
-                }
-                return p;
-            } 
-        }
+        //[JsonIgnore]
+        //public ObservableCollection<Product> Products
+        //{ 
+        //    get
+        //    {
+        //        ObservableCollection<Product> p = new ObservableCollection<Product>();
+        //        foreach (var item in contaiment.Keys)
+        //        {
+        //            var a = SharedModel.DB.Productes.FirstOrDefault(t => t.BaseId == item);
+        //            if (a != null)
+        //            {
+        //                a.Count = contaiment[item];
+        //                p.Add(a);
+        //            }
+        //        }
+        //        return p;
+        //    }
+        //}
+        //[JsonIgnore]
+        //public ObservableCollection<Element> Elements
+        //{
+        //    get
+        //    {
+        //        ObservableCollection<Element> p = new ObservableCollection<Element>();
+        //        foreach (var item in contaiment.Keys)
+        //        {
+        //            var a = SharedModel.DB.Elementes.FirstOrDefault(t => t.BaseId == item);
+        //            if(a != null)
+        //            {
+        //                a.Count = contaiment[item];
+        //                p.Add(a);
+        //            }
+        //        }
+        //        return p;
+        //    }
+        //}
 
         public void GoingDeeper()
         {
-            foreach (var item in Products)
+            foreach (var item in contaiment.Keys)
             {
-                item.DeepLevel++;
+                var a = SharedModel.DB.Productes.FirstOrDefault(t => t.BaseId == item);
+                if (a != null)
+                    a.DeepLevel++;
             }
         }
 
         /// <summary>
         /// ID element based, count
         /// </summary>
-        public Dictionary<int,double> Contaiment
+        public Dictionary<int, double> Contaiment
         {
             get { return contaiment; } //return new ObservableCollection<int>(Products.Select(t => t.BaseId).Concat(elements.Select(t => t.BaseId)));
             set { contaiment = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Contaiment")); }
@@ -119,10 +120,22 @@ namespace Project_smuzi.Classes
             get
             {
                 IList<object> childNodes = new ObservableCollection<object>();
-                foreach (var group in this.Products.OrderByDescending(t=>t.Products.Count))
-                    childNodes.Add(group);
-                foreach (var entry in this.Elements)
-                    childNodes.Add(entry);
+                foreach (var prd in Contaiment.Keys)
+                {
+                    var t = SharedModel.DB.Productes.FirstOrDefault(t => t.BaseId == prd);
+                    if (t != null)
+                        childNodes.Add(t);
+                    else
+                    {
+                        var s = SharedModel.DB.Elementes.FirstOrDefault(t => t.BaseId == prd);
+                        if (s != null)
+                            childNodes.Add(s);
+                    }
+                }
+                //foreach (var group in this.Products.OrderByDescending(t => t.Products.Count))
+                //    childNodes.Add(group);
+                //foreach (var entry in this.Elements)
+                //    childNodes.Add(entry);
                 return childNodes;
             }
         }
@@ -137,7 +150,7 @@ namespace Project_smuzi.Classes
                 {
                     SharedModel.InvokeOpenInfoEvent(this);
                 },
-                (obj) => true    
+                (obj) => true
                 ));
             }
         }

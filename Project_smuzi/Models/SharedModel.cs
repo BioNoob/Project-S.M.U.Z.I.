@@ -38,7 +38,6 @@ namespace Project_smuzi.Models
         }
         public static void InvokeReadDataStart()
         {
-            DB.Clear();
             ReadDataStart?.Invoke();
         }
         public static void InvokeOpenInfoEvent(Product prd)

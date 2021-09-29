@@ -25,6 +25,12 @@ namespace Project_smuzi.Classes
             Elementes = new ObservableCollection<Element>();
             Element.Identificator = 1;
         }
+        public DataBase(DataBase db)
+        {
+            Productes = db.Productes;
+            Elementes = db.Elementes;
+            Prefix = db.Prefix;
+        }
         public DataBase Copy()
         {
             return new DataBase()
@@ -37,37 +43,11 @@ namespace Project_smuzi.Classes
         }
         public ObservableCollection<Product> Productes { get => productes; set { productes = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Productes")); } }
         public ObservableCollection<Element> Elementes { get => elementes; set { elementes = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Elementes")); } }
-
-        [JsonIgnore]
-        public ObservableCollection<Product> HeavyProducts => new ObservableCollection<Product>(Productes.Where(t => t.Elements.Count > 0 && t.Products.Count > 0));
         [JsonIgnore]
         public ObservableCollection<int> DeepList => new ObservableCollection<int>(Productes.Select(t => t.DeepLevel).Distinct().OrderBy(t => t));
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public void LoadFromContaiment()
-        {
-            foreach (var prd in Productes)
-            {
-                foreach (var item in prd.Contaiment)
-                {
-                    var q = Productes.Where(t => t.BaseId == item.Key).FirstOrDefault();
-                    if (q == null)
-                    {
-                        var z = Elementes.Where(t => t.BaseId == item.Key).FirstOrDefault();
-                        z = z.Copy();
-                        z.Count = item.Value;
-                        prd.Elements.Add(z);
-                    }
-                    else
-                    {
-                        q = q.Copy();
-                        q.Count = item.Value;
-                        prd.Products.Add(q);
-                    }
-                }
-            }
-        }
         public void Clear()
         {
             Productes = new ObservableCollection<Product>();
@@ -78,14 +58,14 @@ namespace Project_smuzi.Classes
 
         public string Prefix { get; set; }
 
-        public delegate void WorkProcess(DataBase db);
-        public static event WorkProcess WorkProcStep;
-
 
         #region DataBaseLoader
-        public static async void TestSpwReader(string FolderPath, string Prefix)
+        public static BackgroundWorker worker = new BackgroundWorker() { WorkerReportsProgress = true };
+
+        public static void TestSpwReader(string FolderPath, string Prefix)
         {
-            DataBase db = new DataBase();
+            DataBase db = SharedModel.DB;
+            db.Clear();
             db.Prefix = Prefix;
             //ReadDataDone += DB_ReadDataDone;
             IApplication kmpsApp = null;
@@ -110,9 +90,10 @@ namespace Project_smuzi.Classes
             kmpsApp.HideMessage = ksHideMessageEnum.ksHideMessageYes;
 
             var all_dir = Directory.GetFiles(FolderPath, "*sp.spw", SearchOption.AllDirectories).ToList();
+            int progerss = 0;
+            int iter = all_dir.Count / 100;
             foreach (var item in all_dir)
             {
-
                 try
                 {
                     IKompasDocument kmpsdoc = kmpsApp.Documents.Open(item);
@@ -177,9 +158,10 @@ namespace Project_smuzi.Classes
                     //Selector = HeavyProducts;
                     Debug.WriteLine($"doc {ident} is {name} work done");
                     //await Task.Run(() => DataBase.WorkProcStep?.//Invoke(db)); 
-                    WorkProcStep?.Invoke(db);
-
-
+                    //WorkProcStep?.Invoke(db);
+                    //SharedModel.DB = db.Copy();
+                    progerss += iter;
+                    worker.ReportProgress(progerss, db);
 
                 }
                 catch (Exception ex)
@@ -317,18 +299,6 @@ namespace Project_smuzi.Classes
             //else //потом посчитать кол-во общее вдруг где то используется много какой нибудь херни
             //    in_in.Count += kolichestvo;
         }
-        //public void SelectorSwitch(string text, int DeepLvl)
-        //{
-        //    if (string.IsNullOrWhiteSpace(text))
-        //    {
-        //        Selector = new ObservableCollection<Product>(Productes.Where(t => t.DeepLevel <= (int)DeepLvl));
-        //    }
-        //    else
-        //    {
-        //        ObservableCollection<Product> a = new ObservableCollection<Product>(Productes.Where(t => t.ToXString.Contains(text) & t.DeepLevel <= (int)DeepLvl));
-        //        Selector = a;
-        //    }
-        //}
         #endregion
 
     }

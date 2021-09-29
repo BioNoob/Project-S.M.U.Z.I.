@@ -53,6 +53,7 @@ namespace Project_smuzi.Controls
                         UserControl uc = new UserControl();
                         ScladControl sc = new ScladControl();
                         MainWindow mw = new MainWindow();
+                        SharedModel.LoadDataBase();
                         uc.Show();
                         sc.Show();
                         mw.Show();
@@ -63,12 +64,14 @@ namespace Project_smuzi.Controls
                         if (s.WorkerGroups.FirstOrDefault(t => t.SectorLabel.Contains("Склад")) != null)
                         {
                             ScladControl sc = new ScladControl();
+                            SharedModel.LoadDataBase();
                             sc.Show();
                             this.Hide();
                         }
                         else
                         {
                             MainWindow mw = new MainWindow();
+                            SharedModel.LoadDataBase();
                             mw.Show();
                             this.Hide();
                         }

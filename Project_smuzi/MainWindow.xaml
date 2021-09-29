@@ -3,6 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:cm="clr-namespace:System.ComponentModel;assembly=System"
         xmlns:local_class="clr-namespace:Project_smuzi.Classes"
         xmlns:local="clr-namespace:Project_smuzi.Models"
         x:Name="_window"
@@ -78,11 +79,11 @@
             <TextBox x:Name="Search_tb"  Height="20" Width="150"  Grid.Column="1" Margin="10,0,0,0" Background="#FFB4F5FF" Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <Label Content="Глубина поиска"  Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
             <ComboBox  x:Name="Deeb_cmb" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0" Width="50" 
-                       ItemsSource="{Binding DB.DeepList}" SelectedIndex="{Binding DeepLvl}"/>
+                       ItemsSource="{Binding DB_local.DeepList}" SelectedIndex="{Binding DeepLvl}"/>
         </Grid>
-        
+
         <TreeView x:Name="treeView1" Grid.Row="2" Grid.Column="0" 
-                  ItemsSource="{Binding Selector }"
+                  ItemsSource="{Binding Selector, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5,2,5,5">
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type local_class:Product}" ItemsSource="{Binding Items}">
@@ -127,9 +128,9 @@
             </Grid.RowDefinitions>
 
             <Label Content="Кол-во изделий"  Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-            <TextBlock Text="{Binding DB.Productes.Count}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <TextBlock Text="{Binding DB_local.Productes.Count}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
             <Label Content="Кол-во элемемнтов"  Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-            <TextBlock Text="{Binding DB.Elementes.Count}" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <TextBlock Text="{Binding DB_local.Elementes.Count}" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
             <!--кол-во изделий. кол-во сложных изделий 
             кол-во элементов.  -->
         </Grid>
