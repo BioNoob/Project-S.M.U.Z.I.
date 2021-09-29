@@ -55,7 +55,7 @@ namespace Project_smuzi.Models
                         }
                     }
                 }
-                Selector = DB_local.Productes;
+                Selector = new ObservableCollection<Product>(DB_local.Productes);
                 DeepLvl = 0;
                 SearchText = "";
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Selector"));
@@ -96,8 +96,7 @@ namespace Project_smuzi.Models
                     }
                     else
                     {
-                        ObservableCollection<Product> a = new ObservableCollection<Product>(DB_local.Productes.Where(t => t.ToXString.Contains(value) & t.DeepLevel <= o));
-                        Selector = a;
+                        Selector = new ObservableCollection<Product>(DB_local.Productes.Where(t => t.ToXString.Contains(value) & t.DeepLevel <= o));
                     }
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Selector"));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("SearchText"));
@@ -141,7 +140,7 @@ namespace Project_smuzi.Models
                         SharedModel.InvokeReadDataStart();
                         //SharedModel.DB.Clear();
                         //DB.Clear();
-                        Selector.Clear();
+                        Selector = new ObservableCollection<Product>();
                         if (string.IsNullOrWhiteSpace(Prefix))
                             System.Windows.Forms.MessageBox.Show("Префикс изделий не установлен!");
 
@@ -168,7 +167,7 @@ namespace Project_smuzi.Models
             Application.Current.Dispatcher.Invoke(new Action(() =>
             {
                 DB_local = new DataBase(SharedModel.DB);
-                //Selector = DB_local.Productes; ИМЕННО ЭТА ХЕРНЯ ВСЕ ЛОМАЕТ
+                Selector = new ObservableCollection<Product>(DB_local.Productes); //ИМЕННО ЭТА ХЕРНЯ ВСЕ ЛОМАЕТ
             }
             ));
         }
