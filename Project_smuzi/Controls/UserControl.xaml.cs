@@ -1,5 +1,4 @@
 ﻿using Project_smuzi.Models;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -67,7 +66,7 @@ namespace Project_smuzi.Controls
             if (e.Key == Key.S && Keyboard.IsKeyDown(Key.LeftCtrl))
             {
                 SharedModel.DB_Workers.SaveJson();
-                Debug.WriteLine("Save Workers");
+                SharedModel.InvokeLogSend("Save Workers");
             }
         }
     }

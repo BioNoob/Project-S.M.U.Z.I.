@@ -143,7 +143,7 @@ namespace Project_smuzi.Classes
                         catch (Exception ex)
                         {
                             if (ex.HResult == 101)
-                                Debug.WriteLine($"{ex.Message}\n{product.Identification}\nБазовый объект спецификации. Строка № {i}");
+                                SharedModel.InvokeLogSend($"{ex.Message}\n{product.Identification}\nБазовый объект спецификации. Строка № {i}");
                             else
                                 throw ex;
                         }
@@ -156,7 +156,7 @@ namespace Project_smuzi.Classes
                     kmpsdoc.Close(DocumentCloseOptions.kdDoNotSaveChanges);
                     db.PropertyChanged?.Invoke(db, new PropertyChangedEventArgs("DB"));
                     //Selector = HeavyProducts;
-                    Debug.WriteLine($"doc {ident} is {name} work done");
+                    SharedModel.InvokeLogSend($"doc {ident} is {name} work done");
                     //await Task.Run(() => DataBase.WorkProcStep?.//Invoke(db)); 
                     //WorkProcStep?.Invoke(db);
                     //SharedModel.DB = db.Copy();
@@ -166,14 +166,14 @@ namespace Project_smuzi.Classes
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"{ex.Message}\ndoc {item} open error");
+                    SharedModel.InvokeLogSend($"{ex.Message}\ndoc {item} open error");
                 }
 
             }
             Settings.Default.DB_json = JsonConvert.SerializeObject(db, Formatting.Indented);
             Settings.Default.Save();
             Settings.Default.Reload();
-            Debug.WriteLine($"Save and done {all_dir.Count} documents");
+            SharedModel.InvokeLogSend($"Save and done {all_dir.Count} documents");
             GC.Collect();
             kmpsApp.Quit();
             SharedModel.InvokeReadDataDone(db);
@@ -261,7 +261,8 @@ namespace Project_smuzi.Classes
             {
                 product_in = buf_in;
                 if (product_in.BaseId == base_product.BaseId)
-                    throw new Exception("Ошибка чтения строки спецификации") { HResult = 101 };
+                    throw new Exception($"Ошибка чтения строки спецификации\n" +
+                        $"Обозначение {oboznachenie} | Наименование {naimenovanie} | Кол. {kolichestvo} | Раздел {product_in.Section}") { HResult = 101 };
             }
             else
             {

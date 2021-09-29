@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Project_smuzi.Classes;
 using Project_smuzi.Properties;
+using System.Diagnostics;
 
 namespace Project_smuzi.Models
 {
@@ -22,11 +23,18 @@ namespace Project_smuzi.Models
         public static event JobInfo CloseEvent;
         public delegate void JobInfo_base(DataBase db);
         public static event JobInfo_base ReadDataDone;
+
+        public delegate void LogInfo(string text);
+        public static event LogInfo LogInfoSend;
         //public delegate void UserEvents(NpcWorker user);
 
 
         //public delegate void GroupEvents(NpcSector user);
-
+        public static void InvokeLogSend(string db)
+        {
+            Debug.WriteLine(db);
+            LogInfoSend?.Invoke(db);
+        }
 
         public static void InvokeReadDataDone(DataBase db)
         {

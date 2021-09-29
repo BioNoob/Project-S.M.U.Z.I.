@@ -140,6 +140,8 @@ namespace Project_smuzi.Models
                         SharedModel.InvokeReadDataStart();
                         //SharedModel.DB.Clear();
                         //DB.Clear();
+                        LogWindow lgw = new LogWindow();
+                        lgw.Show();
                         Selector = new ObservableCollection<Product>();
                         if (string.IsNullOrWhiteSpace(Prefix))
                             System.Windows.Forms.MessageBox.Show("Префикс изделий не установлен!");
