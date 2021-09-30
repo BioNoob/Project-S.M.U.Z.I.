@@ -74,6 +74,37 @@ namespace Project_smuzi.Classes
             set { contaiment = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Contaiment")); }
         }
 
+        [JsonIgnore]
+        public ObservableCollection<Element> Contaiments_elements_in_prod
+        {
+            get
+            {
+                ObservableCollection<Element> prd = new ObservableCollection<Element>();
+                foreach (var item in Contaiment.Keys)
+                {
+                    var r = SharedModel.DB.Elementes.Where(t => t.BaseId == item).FirstOrDefault();
+                    if (r != null)
+                        prd.Add(r);
+                }
+                return prd;
+            }
+        }
+        [JsonIgnore]
+        public ObservableCollection<Product> Contaiments_products_in_prod
+        {
+            get
+            {
+                ObservableCollection<Product> prd = new ObservableCollection<Product>();
+                foreach (var item in Contaiment.Keys)
+                {
+                    var r = SharedModel.DB.Productes.Where(t => t.BaseId == item).FirstOrDefault();
+                    if (r != null)
+                        prd.Add(r);
+                }
+                return prd;
+            }
+        }
+
         public string PathTo { get; set; }
         [JsonIgnore]
         public string FolderTo => Path.GetDirectoryName(PathTo);

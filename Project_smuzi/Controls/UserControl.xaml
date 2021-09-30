@@ -58,7 +58,6 @@
                                                     <Image Source="/Resources/редактировать_16.png" Width="16" Height="16" Stretch="Fill"/>
                                                 </MenuItem.Icon>
                                             </MenuItem>
-
                                         </MenuItem>
                                         <MenuItem Header="Удалить группу" Command="{Binding DeleteGroupCommand}"/>
                                     </ContextMenu>

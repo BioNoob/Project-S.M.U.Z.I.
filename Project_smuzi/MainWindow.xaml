@@ -6,9 +6,9 @@
         xmlns:cm="clr-namespace:System.ComponentModel;assembly=System"
         xmlns:local_class="clr-namespace:Project_smuzi.Classes"
         xmlns:local="clr-namespace:Project_smuzi.Models"
-        x:Name="_window"
+        x:Name="_window" Left="{Binding Lefter}" Top="{Binding Topper}"
         mc:Ignorable="d"
-        Title="MainWindow" Height="768" Width="1024">
+        Title="MainWindow" Height="768" Width="{Binding Widhter}">
     <Window.DataContext>
         <local:MainViewModel/>
     </Window.DataContext>

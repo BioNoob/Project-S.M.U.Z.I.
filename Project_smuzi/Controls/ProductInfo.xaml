@@ -148,9 +148,9 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock Text="Кол-во изделий" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-            <TextBlock Text="{Binding Prod.Products.Count}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <TextBlock Text="{Binding Prod.Contaiments_products_in_prod.Count}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
             <TextBlock Text="Кол-во элемемнтов" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
-            <TextBlock Text="{Binding Prod.Elements.Count}" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <TextBlock Text="{Binding Prod.Contaiments_elements_in_prod.Count}" Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,0,0,0"/>
         </Grid>
         <Border BorderThickness="1,1,1,1" Margin="5,-6,5,5" Grid.Row="3" Grid.Column="2" Grid.ColumnSpan="1" BorderBrush="Gray" HorizontalAlignment="Stretch"/>
         <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" Margin="5,-6,5,5">

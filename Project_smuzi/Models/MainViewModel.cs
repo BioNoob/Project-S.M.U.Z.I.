@@ -35,9 +35,16 @@ namespace Project_smuzi.Models
             SharedModel.ReadDataDone += SharedModel_ReadDataDone;
 
             SharedModel.OpenInfoEvent += SharedModel_OpenInfoEvent;
+            Widhter = 1024;
 
         }
 
+        double lefter;
+        double topper;
+        int width;
+        public double Lefter { get => lefter; set { lefter = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Lefter")); } }
+        public double Topper { get => topper; set { topper = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Topper")); } }
+        public int  Widhter { get => width; set { width = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Widhter")); } }
         private void SharedModel_ReadDataDone(DataBase db)
         {
             Application.Current.Dispatcher.Invoke(new Action(() =>
@@ -132,7 +139,7 @@ namespace Project_smuzi.Models
         {
             get
             {
-                return _startread ?? (_startread = new CommandHandler(async obj =>
+                return _startread ?? (_startread = new CommandHandler(obj =>
                 {
                     FolderBrowserDialog ofd = new FolderBrowserDialog();
                     if (ofd.ShowDialog() == DialogResult.OK)
@@ -141,6 +148,9 @@ namespace Project_smuzi.Models
                         //SharedModel.DB.Clear();
                         //DB.Clear();
                         LogWindow lgw = new LogWindow();
+                        lgw.WindowStartupLocation = WindowStartupLocation.Manual;
+                        lgw.Left = lefter + Widhter;
+                        lgw.Top = Topper;
                         lgw.Show();
                         Selector = new ObservableCollection<Product>();
                         if (string.IsNullOrWhiteSpace(Prefix))

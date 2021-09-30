@@ -50,7 +50,9 @@ namespace Project_smuzi.Classes
             var q = new List<Product>();
             foreach (var item in SectorProducts)
             {
-                q.Add(DB.Productes.Where(t => t.BaseId == item).FirstOrDefault());
+                var r = DB.Productes.Where(t => t.BaseId == item).FirstOrDefault();
+                if (r != null)
+                    q.Add(r);
             }
             return new ObservableCollection<Product>(q);
         }
