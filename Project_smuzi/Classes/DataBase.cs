@@ -246,11 +246,11 @@ namespace Project_smuzi.Classes
             //var in_in = base_product.Elements.Where(t => t.Name == naimenovanie).FirstOrDefault();
             if (base_product.Contaiment.ContainsKey(element_in.BaseId))
             {
-                base_product.Contaiment[element_in.BaseId] = kolichestvo;// += kolichestvo;
+                base_product.Contaiment[element_in.BaseId] += kolichestvo;
             }
             else
             {
-                base_product.Contaiment.Add(element_in.BaseId, element_in.Count);
+                base_product.Contaiment.Add(element_in.BaseId, kolichestvo);
             }
         }
         private static void AddProduct(string oboznachenie, string naimenovanie, int section_num, double kolichestvo, Product base_product, bool isAdd, DataBase db)
@@ -282,11 +282,11 @@ namespace Project_smuzi.Classes
 
             if (base_product.Contaiment.ContainsKey(product_in.BaseId))
             {
-                base_product.Contaiment[product_in.BaseId] = kolichestvo;// += kolichestvo;
+                base_product.Contaiment[product_in.BaseId] += kolichestvo;
             }
             else
             {
-                base_product.Contaiment.Add(product_in.BaseId, product_in.Count);
+                base_product.Contaiment.Add(product_in.BaseId, kolichestvo);
             }
             //Если есть такое изделие внутри издеия, то увеличиваем кол-во, если нет добавляем
             //var in_in = base_product.Products.Where(t => t.Identification == oboznachenie).FirstOrDefault();
