@@ -58,17 +58,22 @@ namespace Project_smuzi.Classes
         public ObservableCollection<int> Contaiments_in { get => contaiments_in; set { contaiments_in = value; PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Contaiments_in")); } }
 
         [JsonIgnore]
-        public ObservableCollection<Product> Contaiments_in_prod
+        public Dictionary<Product, double> Contaiments_in_prod
         {
             get
             {
-                ObservableCollection<Product> prd = new ObservableCollection<Product>();
+                Dictionary<Product, double> prd = new Dictionary<Product, double>();
                 foreach (var item in Contaiments_in)
                 {
-                    prd.Add(SharedModel.DB.Productes.Where(t => t.BaseId == item).FirstOrDefault());
+                    var r = SharedModel.DB.Productes.FirstOrDefault(t => t.BaseId == item);
+                    if (r != null)
+                        if (!prd.ContainsKey(r))
+                        {
+                            var rs = r.Contaiment[this.BaseId];
+                            prd.Add(r,rs);
+                        }   
                 }
                 return prd;
-
             }
         }
 

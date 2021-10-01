@@ -218,5 +218,10 @@ namespace Project_smuzi.Classes
         }
         public delegate void ItemClick();
         public event ItemClick ItemClickEvent;
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

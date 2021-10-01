@@ -246,7 +246,7 @@ namespace Project_smuzi.Classes
             //var in_in = base_product.Elements.Where(t => t.Name == naimenovanie).FirstOrDefault();
             if (base_product.Contaiment.ContainsKey(element_in.BaseId))
             {
-                base_product.Contaiment[element_in.BaseId] += kolichestvo;
+                base_product.Contaiment[element_in.BaseId] = kolichestvo;// += kolichestvo;
             }
             else
             {
@@ -282,7 +282,7 @@ namespace Project_smuzi.Classes
 
             if (base_product.Contaiment.ContainsKey(product_in.BaseId))
             {
-                base_product.Contaiment[product_in.BaseId] += kolichestvo;
+                base_product.Contaiment[product_in.BaseId] = kolichestvo;// += kolichestvo;
             }
             else
             {

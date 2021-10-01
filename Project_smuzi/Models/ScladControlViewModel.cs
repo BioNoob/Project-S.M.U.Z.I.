@@ -19,6 +19,7 @@ namespace Project_smuzi.Models
             SharedModel.ReadDataDone += SharedModel_ReadDataDone;
             DB = new DataBase();
         }
+
         private Element selectedelement;
         public Element SelectedElement { get => selectedelement; set => SetProperty(ref selectedelement, value); }
         public ObservableCollection<Element> Elements { get => DB.Elementes; }
@@ -28,7 +29,6 @@ namespace Project_smuzi.Models
             DB.Elementes = new ObservableCollection<Element>(DB.Elementes.Where(t => t.Section_id != 5));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Elements"));
         }
-        public object SelectedVal { get; set; }
         private DataBase _db;
         public DataBase DB { get => _db; set => SetProperty(ref _db, value); }
 

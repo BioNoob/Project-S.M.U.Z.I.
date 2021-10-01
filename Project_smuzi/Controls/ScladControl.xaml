@@ -128,15 +128,16 @@
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Открыть продукт" HorizontalContentAlignment="Center">
-                        <MenuItem Template="{DynamicResource MenuItemControlTemplate1}" > >
+                        <MenuItem Template="{DynamicResource MenuItemControlTemplate1}">
                             <MenuItem.Header>
                                 <ListBox ItemsSource="{Binding SelectedElement.Contaiments_in_prod, Mode=OneWay, UpdateSourceTrigger=Default}">
                                     <ListBox.ItemTemplate>
-                                        <DataTemplate DataType="{x:Type Classes:Product}">
+                                        <DataTemplate>
                                             <StackPanel Orientation="Horizontal" Margin="0">
-                                                <TextBlock Text="{Binding Name}" Padding="0" VerticalAlignment="Center" TextWrapping="Wrap" Width="150"/>
+                                                <TextBlock Text="{Binding Key}" Padding="0" VerticalAlignment="Center" TextWrapping="Wrap" Width="150"/>
                                                 <Rectangle Fill="LightGray" Width="1" />
-                                                <TextBlock Text="Сложный бинд" Margin="5,0" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding Value}" Margin="5,0" VerticalAlignment="Center" Width="24" TextAlignment="Center" Padding="0"/>
+                                                <Rectangle Fill="LightGray" Width="1" />
                                                 <Button Command="{Binding OpenInfoCommand}" Padding="0" Margin="5,0,0,0" Width="24" Height="24">
                                                     <Image Source="/Resources/деталь_инфо_16.png" Stretch="None"/>
                                                 </Button>
