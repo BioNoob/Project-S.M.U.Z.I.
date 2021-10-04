@@ -194,7 +194,7 @@ namespace Project_smuzi.Classes
             oboznachenie = oboznachenie.Replace("\n", " ");
             if (string.IsNullOrEmpty(naimenovanie) & string.IsNullOrEmpty(oboznachenie))
                 return;
-            double kolichestvo = 0;
+            double kolichestvo = 1;
             double.TryParse(iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnCount, 1, 0].Text.Str, out kolichestvo);//   # кол-во   
             Placer(base_product, sect_num, naimenovanie, oboznachenie, kolichestvo, false, db);
         }
@@ -214,6 +214,7 @@ namespace Project_smuzi.Classes
         }
         private static void Placer(Product base_product, int sect_num, string naimenovanie, string oboznachenie, double kolichestvo, bool isadditional, DataBase db)
         {
+            Debug.WriteLine(kolichestvo);
             if (oboznachenie.Contains(db.Prefix))//item.Contains(Prefix))
             {
                 if ("Документация" != Element.GetInterpritation(sect_num))
