@@ -131,6 +131,9 @@
                         <MenuItem Template="{DynamicResource MenuItemControlTemplate1}">
                             <MenuItem.Header>
                                 <ListBox ItemsSource="{Binding SelectedElement.Contaiments_in_prod, Mode=OneWay, UpdateSourceTrigger=Default}">
+
+
+
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" Margin="0">
@@ -138,7 +141,7 @@
                                                 <Rectangle Fill="LightGray" Width="1" />
                                                 <TextBlock Text="{Binding Value}" Margin="5,0" VerticalAlignment="Center" Width="24" TextAlignment="Center" Padding="0"/>
                                                 <Rectangle Fill="LightGray" Width="1" />
-                                                <Button Command="{Binding OpenInfoCommand}" Padding="0" Margin="5,0,0,0" Width="24" Height="24">
+                                                <Button  Command="{Binding  Key.OpenInfoCommand}" CommandTarget="{Binding }" Padding="0" Margin="5,0,0,0" Width="24" Height="24">
                                                     <Image Source="/Resources/деталь_инфо_16.png" Stretch="None"/>
                                                 </Button>
                                             </StackPanel>

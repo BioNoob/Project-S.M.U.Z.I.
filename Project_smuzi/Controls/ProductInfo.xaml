@@ -98,14 +98,15 @@
                     <StackPanel Orientation="Horizontal">
                         <Image Width="16" Height="16" Source="{Binding GetUriImg}" />
                         <TextBlock Text="{Binding ToXString}" Width="300" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0"/>
+                        <TextBlock Text="{Binding Count}"/>
                     </StackPanel>
                 </DataTemplate>
             </TreeView.Resources>
         </TreeView>
         <TreeView Grid.Row="2" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="5,0,5,5"
-                                    ItemsSource="{Binding Prod.Contaiments_in_prod }">
+                                    ItemsSource="{Binding Prod.Contaiments_in_prod.Keys }">
             <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type local_class:Product}" ItemsSource="{Binding Contaiments_in_prod}">
+                <HierarchicalDataTemplate DataType="{x:Type local_class:Product}" ItemsSource="{Binding Contaiments_in_prod.Keys}">
                     <StackPanel Orientation="Horizontal">
                         <Image Width="16" Height="16" Source="{Binding GetUriImg}" />
                         <TextBlock Text="{Binding ToXString}" Width="300" TextWrapping="Wrap" TextTrimming="WordEllipsis" Margin="5,0,0,0">
