@@ -155,12 +155,22 @@ namespace Project_smuzi.Classes
                 {
                     var t = SharedModel.DB.Productes.FirstOrDefault(t => t.BaseId == prd);
                     if (t != null)
-                        childNodes.Add(t);
+                    {
+                        Product b = t.Copy();
+                        b.Count = Contaiment[prd];
+                        childNodes.Add(b);
+                    }
+
                     else
                     {
                         var s = SharedModel.DB.Elementes.FirstOrDefault(t => t.BaseId == prd);
                         if (s != null)
-                            childNodes.Add(s);
+                        {
+                            Element a = s.Copy();
+                            a.Count = Contaiment[prd];
+                            childNodes.Add(a);
+                        }
+                            
                     }
                 }
                 //foreach (var group in this.Products.OrderByDescending(t => t.Products.Count))

@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Project_smuzi.Models;
 using Project_smuzi.Properties;
 using System;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -133,14 +134,32 @@ namespace Project_smuzi.Classes
                         }
                     }
 
-                    var newTEST = spec_descript.Active.Objects;
-                    var cnt = spec_descript.Active.BaseObjects.Count + spec_descript.Active.CommentObjects.Count;
+                    var newTEST = (IList)spec_descript.Active.Objects;
 
-                    for (int i = 0; i < cnt; i++)
+                    //var cnt = spec_descript.Active.BaseObjects.Count + spec_descript.Active.CommentObjects.Count;
+
+                    for (int i = 0; i < newTEST.Count; i++)
                     {
                         try
                         {
 
+                            ISpecificationObject ispecobj = (ISpecificationObject)newTEST[i];
+                            var type = ispecobj.ObjectType;
+                            var sect = ispecobj.Section;
+                            var sect_dop = ispecobj.AdditionalSection;
+
+
+                            /*
+                             * проблемы
+                             * 1. узнаем раздел ли это криво добавленный
+                             *  - если след строка пустая и все поля пустые кроме наименования и объект вспомогательный (? и предыдущая пустая ?)
+                             *  то раздел
+                             * 2. если строка след. не пустая, то это наименование обобщение. его не добавляем, а просто вхуяриваем дальше всем тем кто снизу 
+                             * то что в ней
+                             * до каких то пор
+                             * наверное до тех, пока не будет такая же отбитая строка, или пустая
+                             * 
+                             */
                         }
                         catch (Exception)
                         {

@@ -134,9 +134,10 @@
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" Margin="0">
-                                                <TextBlock Text="{Binding Key}" Padding="0" VerticalAlignment="Center" TextWrapping="Wrap" Width="150"/>
+                                                <TextBlock Text="{Binding Key.ToXString}" Padding="0" VerticalAlignment="Center" TextWrapping="Wrap" Width="150"/>
                                                 <Rectangle Fill="LightGray" Width="1" />
-                                                <TextBlock Text="{Binding Value}" Margin="5,0" VerticalAlignment="Center" Width="24" TextAlignment="Center" Padding="0"/>
+                                                <TextBlock Text="{Binding Value,StringFormat={}{0:0.###}}" Margin="5,0" VerticalAlignment="Center" Width="45" TextAlignment="Center" Padding="0"
+                                                            TextTrimming="CharacterEllipsis"/>
                                                 <Rectangle Fill="LightGray" Width="1" />
                                                 <Button  Command="{Binding  Key.OpenInfoCommand}" CommandTarget="{Binding }" Padding="0" Margin="5,0,0,0" Width="24" Height="24">
                                                     <Image Source="/Resources/деталь_инфо_16.png" Stretch="None"/>
@@ -186,7 +187,7 @@
                 <DataGridTemplateColumn  Header="Кол-во" Width="50" CanUserSort="True" SortMemberPath="Count">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Count}" TextWrapping="Wrap" TextTrimming="WordEllipsis" HorizontalAlignment="Center" VerticalAlignment="Center"
+                            <TextBlock Text="{Binding Count,StringFormat={}{0:0.###}}" TextWrapping="Wrap" TextTrimming="WordEllipsis" HorizontalAlignment="Center" VerticalAlignment="Center"
                                        Width="Auto"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
