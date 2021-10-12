@@ -6,6 +6,7 @@
         xmlns:cm="clr-namespace:System.ComponentModel;assembly=System"
         xmlns:local_class="clr-namespace:Project_smuzi.Classes"
         xmlns:local="clr-namespace:Project_smuzi.Models"
+        
         x:Name="_window" Left="{Binding Lefter}" Top="{Binding Topper}"
         mc:Ignorable="d"
         Title="MainWindow" Height="768" Width="{Binding Widhter}">
@@ -56,6 +57,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="20"/>
@@ -66,6 +68,8 @@
                      Text="{Binding Prefix, Mode=TwoWay, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}" Background="#FFF1B6B6"/>
             <Button x:Name="Start_btn" Content="Запуск" Grid.Column="2" HorizontalAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Center" Width="65"
                     Command="{Binding StartReadCommand}" Visibility="{Binding IsAdmin,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+            <Button x:Name="Select_doc_type_btn" Content="Выбор разделов" Grid.Column="3" HorizontalAlignment="Center" Margin="10,0,0,0" VerticalAlignment="Center" Width="105"
+                    Command="{Binding SelectSectionsCommand}" Visibility="{Binding IsAdmin,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
         </Grid>
         <Grid Grid.ColumnSpan="2" Grid.Row="1" Margin="0,2,0,0">
             <Grid.ColumnDefinitions>

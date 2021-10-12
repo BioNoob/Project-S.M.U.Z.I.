@@ -15,6 +15,7 @@
     <None Remove="Resources\группа_16.png" />
     <None Remove="Resources\деталь_16.png" />
     <None Remove="Resources\деталь_инфо_16.png" />
+    <None Remove="Resources\добавить_16.png" />
     <None Remove="Resources\добавить_группу_16.png" />
     <None Remove="Resources\добавить_юзера_16.png" />
     <None Remove="Resources\документ_16.png" />
@@ -28,6 +29,7 @@
     <None Remove="Resources\сборочные_16.png" />
     <None Remove="Resources\сохранить_24.png" />
     <None Remove="Resources\стандарт_16.png" />
+    <None Remove="Resources\удалить_16.png" />
     <None Remove="Resources\удалить_группу_16.png" />
     <None Remove="Resources\удалить_юзера_16.png" />
     <None Remove="Resources\юзер_16.png" />
@@ -36,6 +38,7 @@
   <ItemGroup>
     <Resource Include="Controls\anchor.ico" />
     <Resource Include="Resources\деталь_инфо_16.png" />
+    <Resource Include="Resources\добавить_16.png" />
     <Resource Include="Resources\редактировать_16.png" />
   </ItemGroup>
 
@@ -75,6 +78,7 @@
     <Resource Include="Resources\сборочные_16.png" />
     <Resource Include="Resources\сохранить_24.png" />
     <Resource Include="Resources\стандарт_16.png" />
+    <Resource Include="Resources\удалить_16.png" />
     <Resource Include="Resources\удалить_группу_16.png" />
     <Resource Include="Resources\удалить_юзера_16.png" />
     <Resource Include="Resources\юзер_16.png" />

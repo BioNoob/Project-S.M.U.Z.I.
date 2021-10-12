@@ -123,6 +123,16 @@ namespace Project_smuzi.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap добавить_16 {
+            get {
+                object obj = ResourceManager.GetObject("добавить_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap добавить_группу_16 {
             get {
                 object obj = ResourceManager.GetObject("добавить_группу_16", resourceCulture);
@@ -246,6 +256,16 @@ namespace Project_smuzi.Properties {
         public static System.Drawing.Bitmap стандарт_16 {
             get {
                 object obj = ResourceManager.GetObject("стандарт_16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap удалить_16 {
+            get {
+                object obj = ResourceManager.GetObject("удалить_16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -1,0 +1,27 @@
+﻿<Window x:Class="Project_smuzi.Controls.InputBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Project_smuzi.Controls" xmlns:models="clr-namespace:Project_smuzi.Models"
+        mc:Ignorable="d"
+        Title="Ввод" Height="120" Width="200" MinWidth="200" MinHeight="100" WindowStyle="ToolWindow" VerticalContentAlignment="Stretch">
+    <Window.DataContext>
+        <models:InputBoxViewModel/>
+    </Window.DataContext>
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.5*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="25"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Request}" Grid.ColumnSpan="2" TextWrapping="Wrap"/>
+        <TextBox Grid.Row="1" Grid.ColumnSpan="2" Margin="0,5" Padding="0" TextAlignment="Left" Text="{Binding Input}"/>
+        <Button Grid.Row="2" Content="Отмена" Width="55" HorizontalAlignment="Left" IsCancel="True" Click="Button_Click_1"/>
+        <Button Grid.Column="1" Grid.Row="2" Content="OK" Width="55" HorizontalAlignment="Right" IsDefault="True" Click="Button_Click"/>
+    </Grid>
+</Window>

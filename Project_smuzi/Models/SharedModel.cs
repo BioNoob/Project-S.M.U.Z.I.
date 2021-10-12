@@ -1,7 +1,9 @@
 ﻿using Newtonsoft.Json;
 using Project_smuzi.Classes;
 using Project_smuzi.Properties;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Project_smuzi.Models
 {
@@ -12,6 +14,40 @@ namespace Project_smuzi.Models
         public static NpcBase DB_Workers { get; set; }
 
         public static NpcWorker CurrentUser { get; set; }
+
+        public static Dictionary<int, string> Sections = new Dictionary<int, string>(8)
+        {
+            {5, "Документация"},
+            {10, "Комплексы"},
+            {15, "Сборочные единицы"},
+            {20, "Детали"},
+            {25, "Стандартные изделия"},
+            {30, "Прочие изделия"},
+            {35, "Материалы"},
+            {40, "Комплекты"}
+        };
+        public static void AddSection(string label)
+        {
+            int idlast = Sections.Keys.Max();
+            Sections.Add(idlast + 5, label);
+        }
+        public static bool CanRemove(int id)
+        {
+            if (id > 40)
+                return true;
+            else
+                return false;
+        }
+        public static void RemoveSection(int key)
+        {
+            Sections.Remove(key);
+        }
+        public static string GetInterpritation(int id)
+        {
+            return Sections[id];
+        }
+        public static Dictionary<int, string> Sections_dic => Sections;
+
 
         public delegate void OpenInfo(Product product);
         public static event OpenInfo OpenInfoEvent;

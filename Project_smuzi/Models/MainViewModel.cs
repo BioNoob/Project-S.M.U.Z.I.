@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Forms;
 using Application = System.Windows.Application;
+using System.Windows.Input;
 
 namespace Project_smuzi.Models
 {
@@ -187,6 +188,15 @@ namespace Project_smuzi.Models
         void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             //System.Windows.MessageBox.Show("Numbers between 0 and 10000 divisible by 7: " + e.Result);
+        }
+
+        private CommandHandler selectSectionsCommand;
+        public ICommand SelectSectionsCommand => selectSectionsCommand ??= new CommandHandler(SelectSections);
+
+        private void SelectSections(object commandParameter)
+        {
+            SwitchSections sws = new SwitchSections();
+            sws.Show();
         }
     }
 }

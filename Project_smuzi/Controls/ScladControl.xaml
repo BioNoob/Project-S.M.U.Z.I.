@@ -131,9 +131,6 @@
                         <MenuItem Template="{DynamicResource MenuItemControlTemplate1}">
                             <MenuItem.Header>
                                 <ListBox ItemsSource="{Binding SelectedElement.Contaiments_in_prod, Mode=OneWay, UpdateSourceTrigger=Default}">
-
-
-
                                     <ListBox.ItemTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" Margin="0">

@@ -133,6 +133,22 @@ namespace Project_smuzi.Classes
                         }
                     }
 
+                    var newTEST = spec_descript.Active.Objects;
+                    var cnt = spec_descript.Active.BaseObjects.Count + spec_descript.Active.CommentObjects.Count;
+
+                    for (int i = 0; i < cnt; i++)
+                    {
+                        try
+                        {
+
+                        }
+                        catch (Exception)
+                        {
+
+                            throw;
+                        }
+                    }
+
                     var iSpecificationBaseObjects = spec_descript.Active.BaseObjects;
                     for (int i = 0; i < iSpecificationBaseObjects.Count; i++)
                     {
@@ -217,7 +233,7 @@ namespace Project_smuzi.Classes
             Debug.WriteLine(kolichestvo);
             if (oboznachenie.Contains(db.Prefix))//item.Contains(Prefix))
             {
-                if ("Документация" != Element.GetInterpritation(sect_num))
+                if ("Документация" != SharedModel.GetInterpritation(sect_num))
                     AddProduct(oboznachenie, naimenovanie, sect_num, kolichestvo, base_product, isadditional, db);
                 else
                     AddElement(oboznachenie, naimenovanie, sect_num, kolichestvo, base_product, isadditional, db);
