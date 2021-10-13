@@ -5,11 +5,13 @@ using Project_smuzi.Models;
 using Project_smuzi.Properties;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 #pragma warning disable CS0067
 namespace Project_smuzi.Classes
 {
@@ -90,9 +92,11 @@ namespace Project_smuzi.Classes
 
             kmpsApp.HideMessage = ksHideMessageEnum.ksHideMessageYes;
 
+
             var all_dir = Directory.GetFiles(FolderPath, "*sp.spw", SearchOption.AllDirectories).ToList();
             int progerss = 0;
             int iter = all_dir.Count / 100;
+
             foreach (var item in all_dir)
             {
                 try
@@ -137,29 +141,144 @@ namespace Project_smuzi.Classes
                     var newTEST = (IList)spec_descript.Active.Objects;
 
                     //var cnt = spec_descript.Active.BaseObjects.Count + spec_descript.Active.CommentObjects.Count;
-
+                    string helpfullstr_naimen = string.Empty;
+                    string helpfullstr_oboz = string.Empty;
                     for (int i = 0; i < newTEST.Count; i++)
                     {
                         try
                         {
 
                             ISpecificationObject ispecobj = (ISpecificationObject)newTEST[i];
-                            var type = ispecobj.ObjectType;
-                            var sect = ispecobj.Section;
-                            var sect_dop = ispecobj.AdditionalSection;
-
+                            ksSpecificationObjectTypeEnum type = ispecobj.ObjectType;
 
                             /*
-                             * проблемы
-                             * 1. узнаем раздел ли это криво добавленный
-                             *  - если след строка пустая и все поля пустые кроме наименования и объект вспомогательный (? и предыдущая пустая ?)
-                             *  то раздел
-                             * 2. если строка след. не пустая, то это наименование обобщение. его не добавляем, а просто вхуяриваем дальше всем тем кто снизу 
-                             * то что в ней
-                             * до каких то пор
-                             * наверное до тех, пока не будет такая же отбитая строка, или пустая
-                             * 
-                             */
+ * проблемы
+ * 1. узнаем раздел ли это криво добавленный
+ *  - если след строка пустая и все поля пустые кроме наименования и объект вспомогательный (? и предыдущая пустая ?)
+ *  то раздел
+ * 2. если строка след. не пустая, то это наименование обобщение. его не добавляем, а просто вхуяриваем дальше всем тем кто снизу 
+ * то что в ней
+ * до каких то пор
+ * наверное до тех, пока не будет такая же отбитая строка, или пустая
+ * 
+ */
+                            bool isadd = false;
+                            switch (type)
+                            {
+                                case ksSpecificationObjectTypeEnum.ksSpecificationBaseObject:
+                                    isadd = false;
+                                    break;
+                                case ksSpecificationObjectTypeEnum.ksSpecificationComment:
+                                    isadd = true;
+                                    break;
+                                case ksSpecificationObjectTypeEnum.ksSpecificationUnknownObject:
+                                case ksSpecificationObjectTypeEnum.ksSpecificationSectionName:
+                                case ksSpecificationObjectTypeEnum.ksSpecificationBlock:
+                                case ksSpecificationObjectTypeEnum.ksSpecificationReserveString:
+                                case ksSpecificationObjectTypeEnum.ksSpecificationEmptyString:
+                                    continue;
+                            }
+                            string format, zone, poz, naimenovanie, oboznachenie, comment;
+
+                            SpecificationColumn b = ispecobj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnFormat, 1, 0];
+                            if (b != null)
+                                format = b.Text.Str.Trim();//   # формат
+                            else
+                                format = string.Empty;
+
+                            b = ispecobj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnZone, 1, 0];
+                            if (b != null)
+                                zone = b.Text.Str.Trim();//   # зона
+                            else
+                                zone = string.Empty;
+                            b = ispecobj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnPosition, 1, 0];
+                            if (b != null)
+                                poz = b.Text.Str.Trim();//   # позиция
+                            else
+                                poz = string.Empty;
+                            b = ispecobj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnName, 1, 0];
+                            if (b != null)
+                                naimenovanie = b.Text.Str.Trim();//   # Наименование
+                            else
+                                naimenovanie = string.Empty;
+                            b = ispecobj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnMark, 1, 0];
+                            if (b != null)
+                                oboznachenie = b.Text.Str.Trim();//   # Обозначение
+                            else
+                                oboznachenie = string.Empty;
+                            b = ispecobj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnNote, 1, 0];
+                            if (b != null)
+                                comment = b.Text.Str.Trim();//   # примечание
+                            else
+                                comment = string.Empty;
+
+                            double.TryParse(ispecobj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnCount, 1, 0].Text.Str, out double kolichestvo);//   # кол-во   
+
+
+                            naimenovanie = naimenovanie.Replace("\t", " ");
+                            oboznachenie = oboznachenie.Replace("\t", " ");
+                            naimenovanie = naimenovanie.Replace("\n", " ");
+                            oboznachenie = oboznachenie.Replace("\n", " ");
+
+                            naimenovanie = naimenovanie.Replace(Environment.NewLine, " ");
+                            oboznachenie = oboznachenie.Replace(Environment.NewLine, " ");
+
+
+
+
+
+                            if (string.IsNullOrWhiteSpace(format + zone + poz + oboznachenie + kolichestvo + comment) && isadd) //признак всяких трубок криворуких
+                            {
+                                if ((i + 1) < newTEST.Count) //если след строка существует
+                                {
+                                    ISpecificationObject ispecobj_dop = (ISpecificationObject)newTEST[i];
+                                    if (ispecobj.ObjectType == ksSpecificationObjectTypeEnum.ksSpecificationBaseObject ||
+                                        ispecobj.ObjectType == ksSpecificationObjectTypeEnum.ksSpecificationComment)
+                                    {
+                                        helpfullstr_naimen = naimenovanie;
+                                    }
+                                    else
+                                    {
+                                        if (System.Windows.Forms.MessageBox.Show($"ВОЗМОЖНАЯ категория новая {naimenovanie}", "", System.Windows.Forms.MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                                        {
+                                            int vb = 0;
+                                        }
+                                    }
+
+                                }
+                                continue;
+                            }
+
+                            if (!Regex.Match(naimenovanie, @"^\D{3,}.+$").Success) //провека на вменяемость названия
+                            {
+                                naimenovanie = helpfullstr_naimen + " " + naimenovanie;
+                            }
+
+                            if (Regex.Match(oboznachenie, @"^-\d{1,}$").Success)
+                                //определяем что строка = -01 и тд
+                                oboznachenie = helpfullstr_oboz + oboznachenie;
+                            else
+                                helpfullstr_oboz = oboznachenie;
+
+
+                            //if (string.IsNullOrEmpty(naimenovanie) & string.IsNullOrEmpty(oboznachenie))
+                            //   continue;
+
+                            if (string.IsNullOrEmpty(poz))
+                            {
+                                //заглушка дабы не залетало то чего нет в позициях (документы и прочее барахло)
+                                continue;
+                            }
+
+
+
+
+
+                            var sect_num = ispecobj.Section;//aw.Section; // id секции в которой находится
+                            if (sect_num == 0)
+                                sect_num = ispecobj.AdditionalSection;
+                            Placer(product, sect_num, naimenovanie, oboznachenie, kolichestvo, isadd, db);
+
                         }
                         catch (Exception)
                         {
@@ -168,26 +287,27 @@ namespace Project_smuzi.Classes
                         }
                     }
 
-                    var iSpecificationBaseObjects = spec_descript.Active.BaseObjects;
-                    for (int i = 0; i < iSpecificationBaseObjects.Count; i++)
-                    {
-                        try
-                        {
-                            InnerVorker_Base(iSpecificationBaseObjects[i], product, db);
-                        }
-                        catch (Exception ex)
-                        {
-                            if (ex.HResult == 101)
-                                SharedModel.InvokeLogSend($"{ex.Message}\n{product.Identification}\nБазовый объект спецификации. Строка № {i}");
-                            else
-                                throw ex;
-                        }
-                    }
-                    var iSpecificationCommentObjects = spec_descript.Active.CommentObjects;
-                    for (int i = 0; i < iSpecificationCommentObjects.Count; i++)
-                    {
-                        InnerVorker_Additioanl(iSpecificationCommentObjects[i], product, db);
-                    }
+                    //var iSpecificationBaseObjects = spec_descript.Active.BaseObjects;
+                    //for (int i = 0; i < iSpecificationBaseObjects.Count; i++)
+                    //{
+                    //    try
+                    //    {
+                    //        InnerVorker_Base(iSpecificationBaseObjects[i], product, db);
+                    //    }
+                    //    catch (Exception ex)
+                    //    {
+                    //        if (ex.HResult == 101)
+                    //            SharedModel.InvokeLogSend($"{ex.Message}\n{product.Identification}\nБазовый объект спецификации. Строка № {i}");
+                    //        else
+                    //            throw ex;
+                    //    }
+                    //}
+                    //var iSpecificationCommentObjects = spec_descript.Active.CommentObjects;
+                    //for (int i = 0; i < iSpecificationCommentObjects.Count; i++)
+                    //{
+                    //    InnerVorker_Additioanl(iSpecificationCommentObjects[i], product, db);
+                    //}
+
                     kmpsdoc.Close(DocumentCloseOptions.kdDoNotSaveChanges);
                     db.PropertyChanged?.Invoke(db, new PropertyChangedEventArgs("DB"));
                     //Selector = HeavyProducts;
@@ -229,8 +349,7 @@ namespace Project_smuzi.Classes
             oboznachenie = oboznachenie.Replace("\n", " ");
             if (string.IsNullOrEmpty(naimenovanie) & string.IsNullOrEmpty(oboznachenie))
                 return;
-            double kolichestvo = 1;
-            double.TryParse(iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnCount, 1, 0].Text.Str, out kolichestvo);//   # кол-во   
+            double.TryParse(iSepcObj.Columns.Column[ksSpecificationColumnTypeEnum.ksSColumnCount, 1, 0].Text.Str, out double kolichestvo);//   # кол-во   
             Placer(base_product, sect_num, naimenovanie, oboznachenie, kolichestvo, false, db);
         }
         private static void InnerVorker_Additioanl(ISpecificationCommentObject iSepcObj, Product base_product, DataBase db)
@@ -298,7 +417,8 @@ namespace Project_smuzi.Classes
                 product_in = buf_in;
                 if (product_in.BaseId == base_product.BaseId)
                     throw new Exception($"Ошибка чтения строки спецификации\n" +
-                        $"Обозначение {oboznachenie} | Наименование {naimenovanie} | Кол. {kolichestvo} | Раздел {product_in.Section}") { HResult = 101 };
+                        $"Обозначение {oboznachenie} | Наименование {naimenovanie} | Кол. {kolichestvo} | Раздел {product_in.Section}")
+                    { HResult = 101 };
             }
             else
             {
